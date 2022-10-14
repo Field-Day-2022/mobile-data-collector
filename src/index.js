@@ -11,6 +11,7 @@ import App from './App';
 import {rootReducer} from './redux/reducers/root-reducer';
 import * as serviceWorker from './serviceWorker';
 import './index.css';
+import firebase from './utils/firebase';
 
 const persistConfig = {
     key: 'root',
