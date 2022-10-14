@@ -1,0 +1,9 @@
+#capture-history-modal{
+    max-width: 100%;
+    padding: 3% 3% 3% 0;
+    overflow: scroll;
+}
+
+.recapture-history-modal-rows:nth-child(odd){
+    background-color: rgba(220,231,247, .6);
+}

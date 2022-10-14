@@ -1,0 +1,92 @@
+.App {
+    text-align: center;
+}
+
+/*Common Form CSS Rules*/
+.form-header {
+    background: rgb(0, 0, 255);
+    background: linear-gradient(180deg, rgba(218, 168, 33, 1) 0%, rgba(252, 197, 41, 1) 100%);
+    padding: 5%;
+    margin-bottom: 5%;
+}
+
+form {
+    padding-top: 5vh;
+}
+
+.form-group {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 3%;
+    border-bottom: solid 1px #8c1c40;
+}
+
+.select-group {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.form-check-input {
+    position: relative;
+}
+
+.select-group > select {
+    width: 50%;
+}
+
+.rounded-input-fields {
+    border-radius: 10px;
+    width: 50%;
+}
+
+.checkbox-container {
+    display: flex;
+    flex-flow: row;
+    align-content: space-between;
+}
+
+.dark-table-row {
+    background-color: #cccccc;
+}
+
+/*Common CSS Rules for Errors*/
+.error-class {
+    background-color: red;
+}
+
+.error-text {
+    color: white;
+    font-weight: bold;
+}
+
+/*Toe Clip Code*/
+.toe-clip-question-column {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.toe-clip-question-row {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.modal-content {
+    width: 100%;
+}
+
+.login-modal {
+    margin-top: 3%;
+}
+
+.login-form{
+    margin-top: 3px;
+    padding-top: 0;
+}
+
+
+
+

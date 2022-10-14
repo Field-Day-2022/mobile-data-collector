@@ -1,0 +1,74 @@
+.home-page-backing {
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.93), rgba(19, 18, 18, 0.15)),
+    url('../../img/arizona-desert.jpg') no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    min-height: 100vh;
+}
+
+.header {
+    padding: 30px;
+    text-align: left;
+    background: rgb(140,29,64);
+    color: white;
+    font-size: 20px;
+}
+
+.circle-img {
+    height: 200px;
+    width: 200px;
+    border-radius: 50%;
+}
+
+.center-column {
+    margin: 0 auto;
+    min-height: 100vh;
+    max-width: 720px;
+    background-color: rgba(255, 255, 255, 100);
+}
+
+.button-container {
+    margin: 0 auto 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    max-width: 720px;
+    padding: 30px;
+}
+
+.label-container {
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    max-width: 350px;
+    text-align: -moz-center;
+    color: #e9e8df;
+    font-size: 20px;
+}
+
+.button-style {
+    background: rgb(140,29,64);
+    border-radius: 25px;
+    padding: 5% 3% 3%;
+    margin: 10vh 0 5vh;
+    border: 2px solid grey;
+}
+
+.button-style:hover {
+    background: linear-gradient(#7c7541, #7c7541);
+}
+
+.image-style {
+    max-width: 35vw;
+    max-height: 35vh;
+    cursor: pointer;
+}
+
+.buttonlabel {
+    font-weight: bolder;
+    font-size: 10pt;
+    color: #eeeef3;
+}

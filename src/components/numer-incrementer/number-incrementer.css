@@ -1,0 +1,22 @@
+.context-btn {
+    background-color: #8c1c40;
+    border-color: black;
+}
+
+.context-btn:hover{
+    background: linear-gradient(#f5d81e, #7c7541);
+    color: black;
+}
+
+.context-btn:focus{
+    background: linear-gradient(#f5d81e, #7c7541);
+    color: black;
+}
+
+.counter-number{
+    margin: 0 2px;
+    border: black solid 2px;
+    border-radius: 10px;
+    padding: 1rem;
+    max-width: 100px;
+}
