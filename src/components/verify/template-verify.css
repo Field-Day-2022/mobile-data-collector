@@ -1,0 +1,26 @@
+#amphibian-verify{
+    padding-top: 3%;
+    max-width: 720px;
+}
+
+.amphibian-header {
+    background: rgb(218, 168, 33);
+    background: linear-gradient(180deg, rgba(218, 168, 33, 1) 0%, rgba(252, 197, 41, 1) 100%);
+    padding: 5%;
+    margin-bottom: 5%;
+}
+
+.verify-section{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 3% 0  1%;
+    border-bottom: solid 1px #8c1c40;
+}
+
+.next-button{
+    margin-top: 3%;
+    background-color: #8c1c40;
+    color: white;
+    min-width: 150px;
+}

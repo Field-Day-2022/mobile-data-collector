@@ -1,0 +1,44 @@
+.home-page-backing{
+    background:
+            linear-gradient(to top, rgba(0, 0, 0, 0.93), rgba(19, 18, 18, 0.15)),
+            url('../../img/arizona-desert.jpg') no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    min-height: 100vh;
+}
+
+.about-us-header{
+    text-align: left;
+    padding-left: .5em;
+    margin-bottom: 5vh;
+}
+
+.about-text{
+    color: black;
+    font-size: 30px;
+}
+
+.button{
+    background: none;
+    border: none;
+    margin-bottom: 0
+}
+.image-style{
+    cursor: pointer;
+}
+.next-button{
+    margin: 3% 0;
+    background-color: #8c1c40;
+    color: white;
+    min-width: 150px;
+}
+
+.developer-table{
+    margin: 0 auto;
+}
+
+.developer{
+    padding: 5px;
+}

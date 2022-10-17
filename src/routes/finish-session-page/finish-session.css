@@ -1,0 +1,68 @@
+.finish-session-header {
+    background: rgb(218, 168, 33);
+    background: linear-gradient(180deg, rgba(218, 168, 33, 1) 0%, rgba(252, 197, 41, 1) 100%);
+    padding: 5%;
+    margin-bottom: 5%;
+}
+
+.finish-session-form {
+    max-width: 550px;
+}
+
+.finish-session-group {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 3%;
+    border-bottom: solid 1px #8c1c40;
+}
+
+#speciesCode, #fenceTrap, #sex{
+    width: 50%;
+}
+
+h2.capture-title{
+    margin-bottom: 5%;
+}
+
+.finish-session-comments{
+    display: flex;
+    flex-flow: column;
+    min-width: 100%;
+}
+
+#finish-session-comment-section{
+    border-radius: 10px;
+    min-height: 200px;
+    min-width: 100%;
+    padding: 2px;
+}
+
+.green-rounded-rect{
+    border-radius: 10px;
+    background-color: #1d8d69;
+}
+
+.rounded-input-fields{
+    border-radius: 10px;
+    width: 50%;
+}
+
+.list-item{
+    background-color: white;
+}
+
+.next-button{
+    background-color: #8c1c40;
+    color: white;
+    min-width: 150px;
+}
+
+input[type="checkbox"]{
+    height: 1.5em;
+    width: 50px;
+}
+
+.finish-session-icon{
+    max-width: 40px;
+    max-height: 40px;
+}

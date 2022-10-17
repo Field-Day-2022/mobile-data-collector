@@ -1,0 +1,10 @@
+#session-entry-counts{
+    text-align: left;
+}
+
+.session-count-row{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: .5em;
+}
