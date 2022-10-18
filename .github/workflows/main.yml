@@ -14,6 +14,7 @@ on:
 
 jobs:
   prettier:
+    if: ${{ github.event.action != 'synchronize' }}
     runs-on: ubuntu-latest
 
     steps:
