@@ -16,53 +16,55 @@
     border-bottom: solid 1px #8c1c40;
 }
 
-#speciesCode, #fenceTrap, #sex{
+#speciesCode,
+#fenceTrap,
+#sex {
     width: 50%;
 }
 
-h2.capture-title{
+h2.capture-title {
     margin-bottom: 5%;
 }
 
-.finish-session-comments{
+.finish-session-comments {
     display: flex;
     flex-flow: column;
     min-width: 100%;
 }
 
-#finish-session-comment-section{
+#finish-session-comment-section {
     border-radius: 10px;
     min-height: 200px;
     min-width: 100%;
     padding: 2px;
 }
 
-.green-rounded-rect{
+.green-rounded-rect {
     border-radius: 10px;
     background-color: #1d8d69;
 }
 
-.rounded-input-fields{
+.rounded-input-fields {
     border-radius: 10px;
     width: 50%;
 }
 
-.list-item{
+.list-item {
     background-color: white;
 }
 
-.next-button{
+.next-button {
     background-color: #8c1c40;
     color: white;
     min-width: 150px;
 }
 
-input[type="checkbox"]{
+input[type='checkbox'] {
     height: 1.5em;
     width: 50px;
 }
 
-.finish-session-icon{
+.finish-session-icon {
     max-width: 40px;
     max-height: 40px;
 }

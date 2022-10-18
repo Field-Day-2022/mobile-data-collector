@@ -1,6 +1,6 @@
 .home-page-backing {
     background: linear-gradient(to top, rgba(0, 0, 0, 0.93), rgba(19, 18, 18, 0.15)),
-    url('../../img/arizona-desert.jpg') no-repeat center center fixed;
+        url('../../img/arizona-desert.jpg') no-repeat center center fixed;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
@@ -11,7 +11,7 @@
 .header {
     padding: 30px;
     text-align: left;
-    background: rgb(140,29,64);
+    background: rgb(140, 29, 64);
     color: white;
     font-size: 20px;
 }
@@ -50,7 +50,7 @@
 }
 
 .button-style {
-    background: rgb(140,29,64);
+    background: rgb(140, 29, 64);
     border-radius: 25px;
     padding: 5% 3% 3%;
     margin: 10vh 0 5vh;

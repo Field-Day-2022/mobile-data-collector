@@ -1,16 +1,16 @@
-import {UPDATE_LOCATION, UPDATE_SITE} from "../actions/location-actions";
+import { UPDATE_LOCATION, UPDATE_SITE } from '../actions/location-actions';
 
 const initialState = {
     location: '',
-    site: ''
-}
+    site: '',
+};
 
 const LocationReducer = (state = initialState, action) => {
     switch (action.type) {
         case UPDATE_LOCATION:
-            return {...state, location: action.payload};
+            return { ...state, location: action.payload };
         case UPDATE_SITE:
-            return {...state, site: action.payload};
+            return { ...state, site: action.payload };
         default:
             return state;
     }

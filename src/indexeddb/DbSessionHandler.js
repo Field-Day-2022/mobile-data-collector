@@ -1,6 +1,5 @@
 import db from './Db';
-import APIAccessor from "./APIAccessor";
-
+import APIAccessor from './APIAccessor';
 
 /**
  *
@@ -10,9 +9,8 @@ import APIAccessor from "./APIAccessor";
  */
 const getSession = async (session_id, result) => {
     let session = await db.session.get(session_id);
-    return session
-
-}
+    return session;
+};
 /**
  *
  * @returns {Promise<void>}
@@ -20,31 +18,25 @@ const getSession = async (session_id, result) => {
 const getSessionsFromRemote = async () => {
     let bulkData = await APIAccessor.getSessions();
 
-    for (let jsonObject in bulkData){
+    for (let jsonObject in bulkData) {
         let tempItem = bulkData[jsonObject];
-        let nestedArray = tempItem["session_json"]
+        let nestedArray = tempItem['session_json'];
 
-        if(Array.isArray(nestedArray)) {
-
-
+        if (Array.isArray(nestedArray)) {
             const result = {};
 
             for (let item in nestedArray) {
-                let key = Object.keys(nestedArray[item])
-                let value = nestedArray[item][key]
+                let key = Object.keys(nestedArray[item]);
+                let value = nestedArray[item][key];
                 result[key] = value;
             }
 
-
-            bulkData[jsonObject]["session_json"] = result;
+            bulkData[jsonObject]['session_json'] = result;
         }
-
-
-
     }
 
-    await db.session.bulkPut(bulkData)
-}
+    await db.session.bulkPut(bulkData);
+};
 
 /**
  *
@@ -53,10 +45,10 @@ const getSessionsFromRemote = async () => {
  */
 const getDateCreated = async (session_id) => {
     let session = await db.session.get(session_id);
-    let dateCreated = await (session.date_modified);
+    let dateCreated = await session.date_modified;
 
-    return dateCreated
-}
+    return dateCreated;
+};
 /**
  *
  * @param session_id
@@ -64,9 +56,9 @@ const getDateCreated = async (session_id) => {
  */
 const getProjectID = async (session_id) => {
     let session = await db.session.get(session_id);
-    let projectId = await (session.project_id);
-    return projectId
-}
+    let projectId = await session.project_id;
+    return projectId;
+};
 /**
  *
  * @param session_id
@@ -74,10 +66,9 @@ const getProjectID = async (session_id) => {
  */
 const getDateModified = async (session_id) => {
     let session = await db.session.get(session_id);
-    let dateMod = await (session.date_modified);
-    return dateMod
-
-}
+    let dateMod = await session.date_modified;
+    return dateMod;
+};
 /**
  *
  * @param session_id
@@ -86,12 +77,12 @@ const getDateModified = async (session_id) => {
 const getSessionJson = async (session_id) => {
     let session = await db.session.get(session_id);
     if (session === undefined) {
-        console.log('session ', session,' ', session_id)
-        return
+        console.log('session ', session, ' ', session_id);
+        return;
     }
     let sessJson = await session.session_json;
-    return sessJson
-}
+    return sessJson;
+};
 /**
  *Adds a session to IndexedDb.
  *
@@ -109,14 +100,12 @@ const getSessionJson = async (session_id) => {
  */
 const addSession = async (object, session_id) => {
     try {
-        await db.session.add(object, {Key: session_id});
+        await db.session.add(object, { Key: session_id });
     } catch (err) {
-        console.log(err)
-        return err
+        console.log(err);
+        return err;
     }
-
-
-}
+};
 /**
  * * Best practices for updating a session is to call getSession, then modify the object that is returned directly
  * then pass that object into updateSession.
@@ -129,12 +118,12 @@ const addSession = async (object, session_id) => {
  */
 const updateSession = async (object, session_id) => {
     try {
-        await db.session.put(object, {Key: session_id});
+        await db.session.put(object, { Key: session_id });
     } catch (err) {
-        console.log(err)
-        return err
+        console.log(err);
+        return err;
     }
-}
+};
 /**
  *Deletes session session entry from IndexedDb
  *
@@ -143,17 +132,12 @@ const updateSession = async (object, session_id) => {
  */
 const deleteSession = async (session_id) => {
     try {
-        db.session.delete(session_id)
+        db.session.delete(session_id);
     } catch (err) {
         console.log(err);
         return err;
     }
-}
-
-
-
-
-
+};
 
 export {
     deleteSession,
@@ -164,10 +148,5 @@ export {
     getProjectID,
     getSession,
     getSessionsFromRemote,
-    getDateCreated
-}
-
-
-
-
-
+    getDateCreated,
+};

@@ -3,17 +3,17 @@
     border-color: black;
 }
 
-.context-btn:hover{
+.context-btn:hover {
     background: linear-gradient(#f5d81e, #7c7541);
     color: black;
 }
 
-.context-btn:focus{
+.context-btn:focus {
     background: linear-gradient(#f5d81e, #7c7541);
     color: black;
 }
 
-.counter-number{
+.counter-number {
     margin: 0 2px;
     border: black solid 2px;
     border-radius: 10px;

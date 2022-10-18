@@ -1,4 +1,4 @@
-#amphibian-verify{
+#amphibian-verify {
     padding-top: 3%;
     max-width: 720px;
 }
@@ -10,15 +10,15 @@
     margin-bottom: 5%;
 }
 
-.verify-section{
+.verify-section {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    padding: 3% 0  1%;
+    padding: 3% 0 1%;
     border-bottom: solid 1px #8c1c40;
 }
 
-.next-button{
+.next-button {
     margin-top: 3%;
     background-color: #8c1c40;
     color: white;

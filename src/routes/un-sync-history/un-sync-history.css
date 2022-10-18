@@ -1,8 +1,8 @@
-#unsynced-history-modal{
+#unsynced-history-modal {
     overflow-x: scroll;
     padding: 0;
 }
 
-.unsync-table-row{
+.unsync-table-row {
     cursor: pointer;
 }

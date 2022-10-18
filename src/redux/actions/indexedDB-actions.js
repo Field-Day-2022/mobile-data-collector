@@ -1,6 +1,6 @@
-import {getAllForms} from "../../indexeddb/DbDataFormHandler";
-import {getAnswerSets} from "../../indexeddb/DbAnswerSetHandler";
-import {getProjects} from "../../indexeddb/DbProjectsHandler";
+import { getAllForms } from '../../indexeddb/DbDataFormHandler';
+import { getAnswerSets } from '../../indexeddb/DbAnswerSetHandler';
+import { getProjects } from '../../indexeddb/DbProjectsHandler';
 
 export const GET_ALL_LIZARDS = 'GET_ALL_LIZARDS';
 export const GET_DATA_FORMS_BY_NAME_FROM_INDEXED = 'GET_DATA_FORMS_BY_NAME_FROM_INDEXED';
@@ -9,38 +9,37 @@ export const GET_PROJECT_IDS = 'GET_PROJECT_IDS';
 
 export const getDataFormByNameFromIndexed = () => {
     return async (dispatch) => {
-
         //Form Data from IndexedDB
-        await getAllForms().then(response => {
+        await getAllForms().then((response) => {
             dispatch({
                 type: GET_DATA_FORMS_BY_NAME_FROM_INDEXED,
-                payload: response
-            })
-        })
+                payload: response,
+            });
+        });
     };
 };
 
 export const getAnswerSetsFromIndexed = () => {
     return async (dispatch) => {
-        await getAnswerSets().then(response => {
+        await getAnswerSets().then((response) => {
             dispatch({
                 type: GET_ALL_ANSWER_SETS,
-                payload: response
-            })
-        })
-    }
-}
+                payload: response,
+            });
+        });
+    };
+};
 
 export const getAllProjectIdsFromIndexedDB = () => {
-    return async dispatch => {
-        await getProjects().then(response => {
+    return async (dispatch) => {
+        await getProjects().then((response) => {
             dispatch({
                 type: GET_PROJECT_IDS,
-                payload: response
-            })
-        })
-    }
-}
+                payload: response,
+            });
+        });
+    };
+};
 
 export const getAllLizards = () => async (dispatch) => {
     /*let lizards = await getLizard(currentSessions.project_id);
@@ -59,4 +58,4 @@ export const getAllLizards = () => async (dispatch) => {
           payload: res
       })
   });*/
-}
+};
