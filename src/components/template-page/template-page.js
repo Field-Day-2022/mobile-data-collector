@@ -1,19 +1,35 @@
-import React, { memo, useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Button, Col, Container, Row } from 'react-bootstrap';
-import _ from 'lodash';
+/**
+ * Template page.
+ * This page is generated with dynamic routes.
+ * '/Session' maps to a new session, and runs this page
+ */
+
+import React, { 
+    memo, // memoizes the render result for a performance boost
+    useState, // tracking local component state
+    useEffect,  // hook that runs when a specified variable changes, or on mount/unmount
+} from 'react';
+import { 
+    useDispatch, // for executing actions on the redux store https://react-redux.js.org/api/hooks#usedispatch
+    useSelector, // for getting data from redux store https://react-redux.js.org/api/hooks#useselector
+} from 'react-redux';
+import { Button, Col, Container, Row } from 'react-bootstrap'; // for styling
+import _ from 'lodash'; // https://lodash.com/docs/4.17.15
 import {
-    UPDATE_SESSION,
-    CLEAR_CURRENT_SESSION_STATE,
-    UPDATE_ERROR_STATE,
-    createCurrentSliceAndErrorStates,
+    UPDATE_SESSION, // for type safety
+    CLEAR_CURRENT_SESSION_STATE, // for type safety
+    UPDATE_ERROR_STATE, // for  type safety
+    createCurrentSliceAndErrorStates, // import action 
 } from '../../redux/actions/session-actions';
-import * as CONSTANTS from '../../constants';
-import FormFactory from '../form-factory/form-factory';
-import TemplateVerify from '../verify/template-verify';
-import './template-page.css';
+import * as CONSTANTS from '../../constants'; // for type safety
+import FormFactory from '../form-factory/form-factory'; // for building dynamic forms
+import TemplateVerify from '../verify/template-verify'; // verification page
+import './template-page.css'; // styling
 
 const TemplatePage = (props) => {
+    // console.log("starting template page");
+    // console.log(props);
+
     const dispatch = useDispatch();
     const date_modified = (Date.now() / 1000).toFixed();
 

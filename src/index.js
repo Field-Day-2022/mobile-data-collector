@@ -19,6 +19,8 @@ const persistConfig = {
 };
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+
+// use redux-persist to save redux store in persistent storage
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 const store = createStore(
     persistedReducer,
@@ -26,6 +28,7 @@ const store = createStore(
 );
 const persistor = persistStore(store);
 
+// Provider provides state throughout the entire app: https://react-redux.js.org/api/provider
 ReactDOM.render(
     <Provider store={store}>
         <Router>
