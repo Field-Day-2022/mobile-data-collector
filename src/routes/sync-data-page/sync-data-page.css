@@ -1,0 +1,11 @@
+#syncSpinner {
+    margin-right: 3vw;
+}
+
+#uploadSpinner {
+    margin-right: 3vw;
+}
+
+.next-button:disabled {
+    background-color: grey;
+}

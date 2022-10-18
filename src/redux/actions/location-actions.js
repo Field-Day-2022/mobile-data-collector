@@ -1,0 +1,2 @@
+export const UPDATE_LOCATION = 'UPDATE_LOCATION';
+export const UPDATE_SITE = 'UPDATE_SITE';
