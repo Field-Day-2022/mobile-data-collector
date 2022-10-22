@@ -4,12 +4,12 @@
  * '/Session' maps to a new session, and runs this page
  */
 
-import React, { 
+import React, {
     memo, // memoizes the render result for a performance boost
     useState, // tracking local component state
-    useEffect,  // hook that runs when a specified variable changes, or on mount/unmount
+    useEffect, // hook that runs when a specified variable changes, or on mount/unmount
 } from 'react';
-import { 
+import {
     useDispatch, // for executing actions on the redux store https://react-redux.js.org/api/hooks#usedispatch
     useSelector, // for getting data from redux store https://react-redux.js.org/api/hooks#useselector
 } from 'react-redux';
@@ -19,7 +19,7 @@ import {
     UPDATE_SESSION, // for type safety
     CLEAR_CURRENT_SESSION_STATE, // for type safety
     UPDATE_ERROR_STATE, // for  type safety
-    createCurrentSliceAndErrorStates, // import action 
+    createCurrentSliceAndErrorStates, // import action
 } from '../../redux/actions/session-actions';
 import * as CONSTANTS from '../../constants'; // for type safety
 import FormFactory from '../form-factory/form-factory'; // for building dynamic forms
