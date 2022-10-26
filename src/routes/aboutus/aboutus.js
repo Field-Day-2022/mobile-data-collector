@@ -12,6 +12,25 @@ let AboutUs = (props) => {
             <div className="center-column">
                 <h2 className="about-us-header">Wildlife Data Collection & Query</h2>
 
+                <p className="about-text">2022-2023 Developers:</p>
+                <Container fluid>
+                    <Row>
+                        <Col xs={6} className="developer-table">
+                            <table>
+                                <tr>
+                                    <td className="developer">Ian Skelskey</td>
+                                    <td className="developer">Isaiah Lathem</td>
+                                    <td className="developer">Jack Norman</td>
+                                </tr>
+                                <tr>
+                                    <td className="developer">Zachary Jacobson</td>
+                                    <td className="developer">Dennis Grassl</td>
+                                </tr>
+                            </table>
+                        </Col>
+                    </Row>
+                </Container>
+
                 <p className="about-text">2020-2021 Developers:</p>
                 <Container fluid>
                     <Row>
