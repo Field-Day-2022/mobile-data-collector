@@ -1,6 +1,15 @@
 import axios from 'axios';
 
+import { db } from '../utils/firebase'
+import { 
+    collection,
+    getDocsFromServer, 
+    query
+} from 'firebase/firestore'
+
 const ApiURL = 'https://uljllddgme.execute-api.us-east-2.amazonaws.com/dev/';
+
+
 
 //const ApiURL = 'http://localhost:3000/dev/'
 class APIAccessor {
@@ -38,6 +47,23 @@ class APIAccessor {
 
     static async getSessions() {
         const promise = await axios.get(ApiURL + 'session');
+
+        const getAllSessionsQuery = query(collection(db, "Session"))
+        const querySnapshot = await getDocsFromServer(getAllSessionsQuery)
+        let firebaseArr = []
+        querySnapshot.forEach(queryDocSnap => {
+            firebaseArr = [
+                ...firebaseArr,
+                queryDocSnap.data()
+            ]
+        })   
+
+        console.log("getting session data...")
+        console.log("from aws:")
+        console.log(promise.data)
+        console.log("from firestore:")
+        console.log(querySnapshot.docs)
+        console.log(firebaseArr)
 
         return promise.data;
     }

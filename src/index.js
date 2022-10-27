@@ -19,11 +19,15 @@ const persistConfig = {
 };
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+
 const persistedReducer = persistReducer(persistConfig, rootReducer);
+
 const store = createStore(
     persistedReducer,
-    /* preloadedState, */ composeEnhancers(applyMiddleware(thunk))
+    /* preloadedState, */ 
+    composeEnhancers(applyMiddleware(thunk))
 );
+
 const persistor = persistStore(store);
 
 ReactDOM.render(
