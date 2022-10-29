@@ -12,13 +12,13 @@
 
 const isLocalhost = Boolean(
     window.location.hostname === 'localhost' ||
-    // [::1] is the IPv6 localhost address.
-    window.location.hostname === '[::1]' ||
-    // 127.0.0.0/8 are considered localhost for IPv4.
-    window.location.hostname
-    	.split(".")
-    	.map(octet => parseInt(octet))
-    	.every((octet,n) => n==0 ? octet==127 : (octet >= 0 && octet <= 255))
+        // [::1] is the IPv6 localhost address.
+        window.location.hostname === '[::1]' ||
+        // 127.0.0.0/8 are considered localhost for IPv4.
+        window.location.hostname
+            .split('.')
+            .map((octet) => parseInt(octet))
+            .every((octet, n) => (n == 0 ? octet == 127 : octet >= 0 && octet <= 255))
 );
 
 export function register(config) {
@@ -42,7 +42,9 @@ export function register(config) {
                 // Add some additional logging to localhost, pointing developers to the
                 // service worker/PWA documentation.
                 navigator.serviceWorker.ready.then(() =>
-                    console.log('This web app is being served cache-first by a service worker. To learn more, visit https://bit.ly/CRA-PWA')
+                    console.log(
+                        'This web app is being served cache-first by a service worker. To learn more, visit https://bit.ly/CRA-PWA'
+                    )
                 );
             } else {
                 // Is not localhost. Just register service worker
@@ -55,22 +57,22 @@ export function register(config) {
 function registerValidSW(swUrl, config) {
     navigator.serviceWorker
         .register(swUrl)
-        .then(registration => {
+        .then((registration) => {
             registration.onupdatefound = () => {
                 const installingWorker = registration.installing;
-                if (!installingWorker)
-                	return;
+                if (!installingWorker) return;
                 installingWorker.onstatechange = () => {
                     if (installingWorker.state === 'installed') {
                         if (navigator.serviceWorker.controller) {
                             // At this point, the updated precached content has been fetched,
                             // but the previous service worker will still serve the older
                             // content until all client tabs are closed.
-                            console.log('New content is available and will be used when all tabs for this page are closed. See https://bit.ly/CRA-PWA.');
+                            console.log(
+                                'New content is available and will be used when all tabs for this page are closed. See https://bit.ly/CRA-PWA.'
+                            );
 
                             // Execute callback
-                            if (config && config.onUpdate)
-                                config.onUpdate(registration);
+                            if (config && config.onUpdate) config.onUpdate(registration);
                         } else {
                             // At this point, everything has been precached.
                             // It's the perfect time to display a
@@ -78,14 +80,13 @@ function registerValidSW(swUrl, config) {
                             console.log('Content is cached for offline use.');
 
                             // Execute callback
-                            if (config && config.onSuccess)
-                                config.onSuccess(registration);
+                            if (config && config.onSuccess) config.onSuccess(registration);
                         }
                     }
                 };
             };
         })
-        .catch(error => console.error('Error during service worker registration:', error));
+        .catch((error) => console.error('Error during service worker registration:', error));
 }
 
 function checkValidServiceWorker(swUrl, config) {
@@ -93,7 +94,7 @@ function checkValidServiceWorker(swUrl, config) {
     fetch(swUrl, {
         headers: { 'Service-Worker': 'script' },
     })
-        .then(response => {
+        .then((response) => {
             // Ensure service worker exists, and that we really are getting a JS file.
             const contentType = response.headers.get('content-type');
             if (
@@ -119,7 +120,7 @@ function checkValidServiceWorker(swUrl, config) {
 export function unregister() {
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.ready
-            .then(registration => {
+            .then((registration) => {
                 registration.unregister();
             })
             .catch((error) => {
