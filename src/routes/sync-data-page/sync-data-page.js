@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, Col, Container, Form, FormLabel, Row, Spinner } from 'react-bootstrap';
@@ -13,6 +14,10 @@ import { ADD_SPECIES } from '../../redux/actions/toe-clip-code-actions';
 import { getAnswerSets } from '../../indexeddb/DbAnswerSetHandler';
 import '../../App.css';
 import './sync-data-page.css';
+import { db } from '../../utils/firebase'
+import { doc, setDoc, addDoc, collection, getDocs, query, limit, where, updateDoc } from 'firebase/firestore'
+import { useCollectionData } from 'react-firebase-hooks/firestore'
+import { toeCodes } from '../../toeCodes';
 
 const SyncData = (props) => {
     // Local State
@@ -43,9 +48,303 @@ const SyncData = (props) => {
         delete errors[fieldName];
     };
 
+    let localCodes = {
+        GWA1: {
+            1: {
+                // eslint-disable-next-line no-undef
+                ASTI: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                CADR: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                COVA: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                CRCO: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                GAWI: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                PHSO: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                SCMA: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                UNKL: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                URGR: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                UROR: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                UTST: structuredClone(toeCodes),
+            },
+            2: {
+                // eslint-disable-next-line no-undef
+                ASTI: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                CADR: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                COVA: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                CRCO: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                GAWI: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                PHSO: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                SCMA: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                UNKL: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                URGR: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                UROR: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                UTST: structuredClone(toeCodes),
+            }
+            
+        },
+        GWA2: {
+            1: {
+                // eslint-disable-next-line no-undef
+                ASTI: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                CADR: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                COVA: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                CRCO: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                GAWI: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                PHSO: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                SCMA: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                UNKL: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                URGR: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                UROR: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                UTST: structuredClone(toeCodes),
+            },
+            2: {
+                // eslint-disable-next-line no-undef
+                ASTI: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                CADR: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                COVA: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                CRCO: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                GAWI: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                PHSO: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                SCMA: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                UNKL: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                URGR: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                UROR: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                UTST: structuredClone(toeCodes),
+            }
+        },
+        GWA3: {
+            1: {
+                // eslint-disable-next-line no-undef
+                ASTI: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                CADR: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                COVA: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                CRCO: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                GAWI: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                PHSO: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                SCMA: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                UNKL: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                URGR: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                UROR: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                UTST: structuredClone(toeCodes),
+            },
+            2: {
+                // eslint-disable-next-line no-undef
+                ASTI: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                CADR: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                COVA: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                CRCO: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                GAWI: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                PHSO: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                SCMA: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                UNKL: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                URGR: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                UROR: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                UTST: structuredClone(toeCodes),
+            }
+        },
+        TOT1: {
+            1: {
+                // eslint-disable-next-line no-undef
+                ASTI: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                CADR: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                COVA: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                CRCO: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                GAWI: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                PHSO: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                SCMA: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                UNKL: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                URGR: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                UROR: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                UTST: structuredClone(toeCodes),
+            },
+            2: {
+                // eslint-disable-next-line no-undef
+                ASTI: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                CADR: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                COVA: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                CRCO: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                GAWI: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                PHSO: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                SCMA: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                UNKL: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                URGR: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                UROR: structuredClone(toeCodes),
+                // eslint-disable-next-line no-undef
+                UTST: structuredClone(toeCodes),
+            }
+        }
+    }
+
+    // instantiate toe code meta data (site, array, species)
+    for (const site in localCodes) {
+        for (const array in localCodes[site]) {
+            for (const species in localCodes[site][array]) {
+                localCodes[site][array][species] = {
+                    ...localCodes[site][array][species],
+                    "SiteCode": site,
+                    "ArrayCode": array,
+                    "SpeciesCode": species
+                }
+            }
+        }
+    }
+
+    const pushToeCodesToFirestore = async () => {
+        await addDoc(collection(db, 'ToeClipCodes'), {
+            SiteCode: "GWA1",
+            ...localCodes.GWA1
+        })
+        await addDoc(collection(db, 'ToeClipCodes'), {
+            SiteCode: "GWA2",
+            ...localCodes.GWA2
+        })
+        await addDoc(collection(db, 'ToeClipCodes'), {
+            SiteCode: "GWA3",
+            ...localCodes.GWA3
+        })
+        await addDoc(collection(db, 'ToeClipCodes'), {
+            SiteCode: "TOT1",
+            ...localCodes.TOT1
+        })
+    }
+    
+    const collQuery = query(collection(db, "GatewayData"))
+    // read in gateway data
+    const [ data, loading, error, snapshot ] = useCollectionData(collQuery)
+
+    if (data) {
+        for (const doc of data) {
+            let array = doc.array
+            let dateTime =  doc.dateTime
+            let speciesCode = doc.speciesCode
+            let site = doc.site
+            let toeClipCode = doc.toeClipCode
+            // console.log(doc)
+            // console.log(`Array: ${array}`)
+            // console.log(`Date Time String: ${dateTime}`)
+
+            let parsedDate = new Date(Date.parse(dateTime))
+            // console.log(`parsedDate: ${parsedDate}`)
+            let anotherDate = new Date(Date.parse(parsedDate))
+            // console.log(`anotherDate: ${anotherDate}`)
+            
+            // console.log(`Species code: ${speciesCode}`)
+            // console.log(`Site: ${site}`)
+            // console.log(`ToeCode: ${toeClipCode}`)
+            // only update the code if the species code is not N/A and 
+            // all the data we need is available
+            if (speciesCode !== "N/A" &&
+                array != null &&
+                dateTime != null &&
+                speciesCode != null &&
+                site != null &&
+                toeClipCode != null
+            ) {
+                console.log(`Updating: ${site}-${array}-${speciesCode}-${toeClipCode}`)
+                localCodes[site][array][speciesCode] = {
+                    ...localCodes[site][array][speciesCode],
+                    [toeClipCode]: parsedDate,
+                }
+            } else {
+                console.log(`Species code is ${speciesCode}, not updating`)
+            }
+        }
+        console.log(localCodes)
+
+        // after constructing the toe codes, push to firestore
+        pushToeCodesToFirestore()
+
+
+
+    }
+
+
+
+
+
+
+
     const handleSubmit = async (event) => {
         event.preventDefault();
         setIsLoading(true);
+
 
         const validForm = validateThisForm();
         if (validForm) {
@@ -83,6 +382,7 @@ const SyncData = (props) => {
         }
     };
 
+    // TODO: change to get from firestore 
     const getLizardEntriesFromDB = async (projectId, objectOfClipCodesEmptyArrays) => {
         await DBConfig.filterLizardEntries(projectId, objectOfClipCodesEmptyArrays);
         console.log(

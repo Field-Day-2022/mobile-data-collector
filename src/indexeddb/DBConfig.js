@@ -8,6 +8,8 @@ const NewDataEntryDb = require('./DbNewDataEntryHandler');
 
 class DBConfig {
     static async getAnswersFromDynamoDB() {
+        // Don't need all this data in the PWA, just need the toe codes
+        // TODO: configure toe codes in database, and make the pwa work with those instead of scanning the entire entry table
         await SessionDb.getSessionsFromRemote(); // pulls entire Session table from Dynamo and stores in IndexedDb.
         await DataEntryDb.getDataEntryFromRemote(); // pulls entire Data entry table from Dynamo
         await DataFormDb.getDataFormFromRemote();

@@ -115,6 +115,10 @@ const getLizard = async (projectId) => {
     return lizards;
 };
 
+export const getToeCodesFromRemote = async () => {
+    // get toecodes from firestore
+}
+
 export {
     getLizard,
     getDataBySessionId,

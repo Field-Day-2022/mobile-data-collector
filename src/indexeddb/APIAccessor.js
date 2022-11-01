@@ -66,6 +66,15 @@ class APIAccessor {
 
     static async getAnswerSets() {
         const promise = await axios.get((await ApiURL) + 'answer_set');
+        // const getAllAnswerSetsQuery = query(collection(db, 'Answer_Set'));
+        // const querySnapshot = await getDocsFromServer(getAllAnswerSetsQuery);
+        // let formattedData = [];
+        // querySnapshot.forEach((queryDocSnap) => {
+        //     formattedData = [...formattedData, queryDocSnap.data()];
+        // })
+        // console.log(formattedData);
+        // console.log(promise.data);
+
         return promise.data;
     }
 
