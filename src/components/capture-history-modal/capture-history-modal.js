@@ -27,17 +27,7 @@ const CaptureHistory = (props) => {
                     <Table>
                         <thead>
                             <tr>
-                                <th>Date</th>
-                                <th>Array</th>
-                                <th>Recapture</th>
-                                <th>SVL(mm)</th>
-                                <th>VTL(mm)</th>
-                                <th>Regen Tail?</th>
-                                <th>OTL(mm)</th>
-                                <th>Hatchling?</th>
-                                <th>Mass(g)</th>
-                                <th>Sex</th>
-                                <th>Dead?</th>
+                            {['Date', 'Array', 'Recapture', 'SVL(mm)', 'VTL(mm)', 'Regen Tail?', 'OTL(mm)', 'Hatchling?', 'Mass(g)', 'Sex', 'Dead?'].map(ttl => (<th>{ttl}</th>))}
                             </tr>
                         </thead>
                         <tbody>

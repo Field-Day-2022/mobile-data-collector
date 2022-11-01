@@ -22,8 +22,7 @@ const Home = (props) => {
     const handleLogin = (username, password) => {
         if (
             (username.trim() === CONSTANTS.USER_NAME && password.trim() === CONSTANTS.PASS_WORD) ||
-            (username.trim() === CONSTANTS.USER_NAME_INS &&
-                password.trim() === CONSTANTS.PASS_WORD_INS)
+            (username.trim() === CONSTANTS.USER_NAME_INS && password.trim() === CONSTANTS.PASS_WORD_INS)
         ) {
             setShowLoginModal(false);
             sessionStorage.setItem('username', username);

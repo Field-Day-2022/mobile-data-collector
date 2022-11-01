@@ -34,31 +34,13 @@ const TemplateVerify = (props) => {
 
         let arr = Object.keys(currentFormData)
             .map((key) => ({ key, value: currentFormData[key] }))
-            .filter(
-                (el) =>
-                    el.key !== CONSTANTS.DATE_CREATED &&
-                    el.key !== CONSTANTS.DATE_MODIFIED &&
-                    el.key !== CONSTANTS.PROJECT_ID &&
-                    el.key !== CONSTANTS.FORM_ID
-            );
+            .filter( el => ![CONSTANTS.DATE_CREATED, CONSTANTS.DATE_MODIFIED, CONSTANTS.PROJECT_ID, CONSTANTS.FORM_ID].includes(el.key));
 
         if (props.formName === CONSTANTS.ARTHROPOD) {
             arr = Object.keys(currentFormData)
-                .map((key) => ({ key, value: currentFormData[key] }))
-                .filter(
-                    (el) =>
-                        el.key !== CONSTANTS.DATE_CREATED &&
-                        el.key !== CONSTANTS.DATE_MODIFIED &&
-                        el.key !== CONSTANTS.PROJECT_ID &&
-                        el.key !== CONSTANTS.FORM_ID
-                )
-                .filter(
-                    (keyObj) =>
-                        keyObj.key === CONSTANTS.FENCE_TRAP ||
-                        keyObj.key === CONSTANTS.PREDATOR ||
-                        Number(keyObj.value) > 0 ||
-                        keyObj.key === CONSTANTS.COMMENTS
-                );
+                .map(key => ({ key, value: currentFormData[key] }))
+                .filter(el => ![CONSTANTS.DATE_CREATED, CONSTANTS.DATE_MODIFIED, CONSTANTS.PROJECT_ID, CONSTANTS.FORM_ID].includes(el.key))
+                .filter(keyObj => [CONSTANTS.FENCE_TRAP, CONSTANTS.PREDATOR, CONSTANTS.COMMENTS].includes(keyObj.key) || Number(keyObj.value) > 0);
         }
 
         return arr.map((el) => {
