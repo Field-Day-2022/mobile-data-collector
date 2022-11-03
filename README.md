@@ -66,3 +66,11 @@ This section has moved here: https://facebook.github.io/create-react-app/docs/de
 ### `npm run build` fails to minify
 
 This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+
+### Firebase Documentation
+
+This documentation gives the basics of how to set up Firebase for the project: https://firebase.google.com/docs/web/setup
+
+### Firestore Documentation
+
+This documentation gives an overview of the database functionality from Firebase: https://firebase.google.com/docs/firestore
