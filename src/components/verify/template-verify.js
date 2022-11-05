@@ -15,9 +15,9 @@ const TemplateVerify = (props) => {
     const dispatch = useDispatch();
 
     // Redux Store
-    const currentSite = useSelector((state) => state.Location_Info.site);
-    const dataEntries = useSelector((state) => state.Session_Info.data_entries);
-    const currentSession = useSelector((state) => state.Session_Info.currentSession);
+    const currentSite = useSelector(state => state.Location_Info.site);
+    const dataEntries = useSelector(state => state.Session_Info.data_entries);
+    const currentSession = useSelector(state => state.Session_Info.currentSession);
 
     const showTrueFalseValues = (value) => {
         if (value === true) {

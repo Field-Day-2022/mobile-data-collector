@@ -15,10 +15,9 @@ const FormFactory = ({ fields }) => {
             {fields.map((field) => {
                 switch (field.type) {
                     case CONSTANTS.SHORT_TEXT:
-                        if (field.prompt === 'Toe-clip Code') {
-                            return <ToeClipCodeWrapper field={field} key={field.prompt} />;
-                        }
-                        return <ShortTextWrapper field={field} key={field.prompt} />;
+                        return (field.prompt === 'Toe-clip Code') ?
+                            (<ToeClipCodeWrapper field={field} key={field.prompt} />) :
+                            (<ShortTextWrapper field={field} key={field.prompt} />);
                     case CONSTANTS.LONG_TEXT:
                         return <LongTextWrapper key={field.prompt} field={field} />;
                     case CONSTANTS.COMBO_BOX:

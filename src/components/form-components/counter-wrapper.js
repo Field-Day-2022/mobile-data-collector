@@ -9,8 +9,8 @@ const CounterWrapper = ({ field }) => {
     const dispatch = useDispatch();
 
     // Redux Store
-    const current_slice = useSelector((state) => state.Session_Info.currentSession);
-    const current_error_state = useSelector((state) => state.Session_Info.currentErrorState);
+    const current_slice = useSelector(state => state.Session_Info.currentSession);
+    const current_error_state = useSelector(state => state.Session_Info.currentErrorState);
 
     // Local State
     const [relies_on, setReliesOn] = useState([]);

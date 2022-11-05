@@ -20,11 +20,11 @@ const ToeClipCodeWrapper = ({ field }) => {
     const dispatch = useDispatch();
 
     // Redux Store
-    const current_slice = useSelector((state) => state.Session_Info.currentSession);
-    const current_error_state = useSelector((state) => state.Session_Info.currentErrorState);
-    const redux_field = useSelector((state) => state.Session_Info.currentSession.data);
-    const currentSite = useSelector((state) => state.Location_Info.site);
-    const currentToeClipCodes = useSelector((state) => state.Toe_Clip_Code[currentSite]);
+    const current_slice = useSelector(state => state.Session_Info.currentSession);
+    const current_error_state = useSelector(state => state.Session_Info.currentErrorState);
+    const redux_field = useSelector(state => state.Session_Info.currentSession.data);
+    const currentSite = useSelector(state => state.Location_Info.site);
+    const currentToeClipCodes = useSelector(state => state.Toe_Clip_Code[currentSite]);
 
     const [modalShowing, updateModalShowing] = useState(false);
     const [showCaptureHistory, setShowCaptureHistory] = useState(false);

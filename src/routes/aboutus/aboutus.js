@@ -2,6 +2,10 @@ import React from 'react';
 import { Button, Col, Container, Row } from 'react-bootstrap';
 import './aboutus.css';
 
+let arrChunk = (arr,chunkSz) => arr.map((val,n) => ({val, grpN: ~~(n / chunkSz)})).reduce((grps, el) => (grps[el.grpN] ??= []).push(el.val) && grps, []);
+
+let genDevJSX = devNames => arrChunk(devNames, 3).map(grp => (<tr>{grp.map(devName => (<td className="developer">{devName}</td>))}<tr/>));
+
 let AboutUs = (props) => {
     return (
         <div className="home-page-backing">
@@ -17,15 +21,7 @@ let AboutUs = (props) => {
                     <Row>
                         <Col xs={6} className="developer-table">
                             <table>
-                                <tr>
-                                    <td className="developer">Ian Skelskey</td>
-                                    <td className="developer">Isaiah Lathem</td>
-                                    <td className="developer">Jack Norman</td>
-                                </tr>
-                                <tr>
-                                    <td className="developer">Zachary Jacobson</td>
-                                    <td className="developer">Dennis Grassl</td>
-                                </tr>
+                                {genDevJSX(['Ian Skelskey', 'Isaiah Lathem', 'Jack Norman', 'Zachary Jacobson', 'Dennis Grassl'])}
                             </table>
                         </Col>
                     </Row>
@@ -36,15 +32,7 @@ let AboutUs = (props) => {
                     <Row>
                         <Col xs={6} className="developer-table">
                             <table>
-                                <tr>
-                                    <td className="developer">Brent Garcia</td>
-                                    <td className="developer">Alexander Mack</td>
-                                    <td className="developer">Amy Kiely</td>
-                                </tr>
-                                <tr>
-                                    <td className="developer">Phil McElroy</td>
-                                    <td className="developer">Carlo Pelosi</td>
-                                </tr>
+                                {genDevJSX(['Brent Garcia', 'Alexander Mack', 'Amy Kiely', 'Phil McElroy', 'Carlo Pelosi'])}
                             </table>
                         </Col>
                     </Row>
@@ -55,15 +43,7 @@ let AboutUs = (props) => {
                     <Row>
                         <Col xs={6} className="developer-table">
                             <table>
-                                <tr>
-                                    <td className="developer">Colton Wiethorn</td>
-                                    <td className="developer">Kevin Shelley</td>
-                                    <td className="developer">Kimberlee Gentry</td>
-                                </tr>
-                                <tr>
-                                    <td className="developer">Marcella Sellers</td>
-                                    <td className="developer">Taryn Betz</td>
-                                </tr>
+                                {genDevJSX(['Colton Wiethorn', 'Kevin Shelley', 'Kimberlee Gentry', 'Marcella Sellers', 'Taryn Betz'])}
                             </table>
                         </Col>
                     </Row>
@@ -74,15 +54,7 @@ let AboutUs = (props) => {
                     <Row>
                         <Col xs={6} className="developer-table">
                             <table>
-                                <tr>
-                                    <td className="developer">Ashley Giamona</td>
-                                    <td className="developer">Edward Woelke</td>
-                                    <td className="developer">Joshua Owczarek</td>
-                                </tr>
-                                <tr>
-                                    <td className="developer">Matt Kharrl</td>
-                                    <td className="developer">Phil Soucheray</td>
-                                </tr>
+                                {genDevJSX(['Ashley Giamona', 'Edward Woelke', 'Joshua Owczarek', 'Matt Kharrl', 'Phil Soucheray'])}
                             </table>
                         </Col>
                     </Row>
