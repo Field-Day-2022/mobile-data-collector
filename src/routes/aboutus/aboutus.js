@@ -4,7 +4,7 @@ import './aboutus.css';
 
 let arrChunk = (arr,chunkSz) => arr.map((val,n) => ({val, grpN: ~~(n / chunkSz)})).reduce((grps, el) => (grps[el.grpN] ??= []).push(el.val) && grps, []);
 
-let genDevJSX = devNames => arrChunk(devNames, 3).map(grp => (<tr>{grp.map(devName => (<td className="developer">{devName}</td>))}<tr/>));
+let genDevJSX = devNames => arrChunk(devNames, 3).map(grp => (<tr>{grp.map(devName => (<td className="developer">{devName}</td>))}</tr>));
 
 let AboutUs = (props) => (
     <div className="home-page-backing">
