@@ -6,7 +6,7 @@ import '../../App.css';
 
 const NumberIncrementer = (props) => {
     // Redux State
-    const redux_field = useSelector(state => state.Session_Info.currentSession.data);
+    const redux_field = useSelector((state) => state.Session_Info.currentSession.data);
 
     // Local State
     const [currentNumber, setCurrentNumber] = useState(0);

@@ -28,11 +28,11 @@ const TemplatePage = (props) => {
     } = props.match;
 
     // Redux Store
-    const all_data_forms = useSelector(state => state.Database.data_form);
-    const all_projects = useSelector(state => state.Database.projects);
-    const currentLocation = useSelector(state => state.Location_Info.location);
-    const currentSite = useSelector(state => state.Location_Info.site);
-    const usedToeClipCode = useSelector(state => state.Toe_Clip_Code.currentSpecies);
+    const all_data_forms = useSelector((state) => state.Database.data_form);
+    const all_projects = useSelector((state) => state.Database.projects);
+    const currentLocation = useSelector((state) => state.Location_Info.location);
+    const currentSite = useSelector((state) => state.Location_Info.site);
+    const usedToeClipCode = useSelector((state) => state.Toe_Clip_Code.currentSpecies);
 
     // Use the dynamic route to find the specific data form
     const locationDataForm = _.find(
@@ -51,8 +51,8 @@ const TemplatePage = (props) => {
         form_name_n === CONSTANTS.SESSION ? locationDataForm.start.next : locationDataForm.next;
     //console.log("Next Array: ", nextArr);
 
-    const currentSession = useSelector(state => state.Session_Info.currentSession.data);
-    const reduxErrorState = useSelector(state => state.Session_Info.currentErrorState.data);
+    const currentSession = useSelector((state) => state.Session_Info.currentSession.data);
+    const reduxErrorState = useSelector((state) => state.Session_Info.currentErrorState.data);
 
     // Local State
     const [onVerifyPage, setOnVerifyPage] = useState(false);

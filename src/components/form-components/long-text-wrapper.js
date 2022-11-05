@@ -9,9 +9,9 @@ const LongTextWrapper = ({ field }) => {
     const dispatch = useDispatch();
 
     // Redux Store
-    const current_slice = useSelector(state => state.Session_Info.currentSession);
-    const current_error_state = useSelector(state => state.Session_Info.currentErrorState);
-    const redux_field = useSelector(state => state.Session_Info.currentSession.data);
+    const current_slice = useSelector((state) => state.Session_Info.currentSession);
+    const current_error_state = useSelector((state) => state.Session_Info.currentErrorState);
+    const redux_field = useSelector((state) => state.Session_Info.currentSession.data);
 
     // Local State
     const [relies_on, setReliesOn] = useState([]);

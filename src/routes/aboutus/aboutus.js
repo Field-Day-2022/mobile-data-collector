@@ -2,9 +2,19 @@ import React from 'react';
 import { Button, Col, Container, Row } from 'react-bootstrap';
 import './aboutus.css';
 
-let arrChunk = (arr,chunkSz) => arr.map((val,n) => ({val, grpN: ~~(n / chunkSz)})).reduce((grps, el) => (grps[el.grpN] ??= []).push(el.val) && grps, []);
+let arrChunk = (arr, chunkSz) =>
+    arr
+        .map((val, n) => ({ val, grpN: ~~(n / chunkSz) }))
+        .reduce((grps, el) => (grps[el.grpN] ??= []).push(el.val) && grps, []);
 
-let genDevJSX = devNames => arrChunk(devNames, 3).map(grp => (<tr>{grp.map(devName => (<td className="developer">{devName}</td>))}</tr>));
+let genDevJSX = (devNames) =>
+    arrChunk(devNames, 3).map((grp) => (
+        <tr>
+            {grp.map((devName) => (
+                <td className="developer">{devName}</td>
+            ))}
+        </tr>
+    ));
 
 let AboutUs = (props) => (
     <div className="home-page-backing">
@@ -20,7 +30,13 @@ let AboutUs = (props) => (
                 <Row>
                     <Col xs={6} className="developer-table">
                         <table>
-                            {genDevJSX(['Ian Skelskey', 'Isaiah Lathem', 'Jack Norman', 'Zachary Jacobson', 'Dennis Grassl'])}
+                            {genDevJSX([
+                                'Ian Skelskey',
+                                'Isaiah Lathem',
+                                'Jack Norman',
+                                'Zachary Jacobson',
+                                'Dennis Grassl',
+                            ])}
                         </table>
                     </Col>
                 </Row>
@@ -31,7 +47,13 @@ let AboutUs = (props) => (
                 <Row>
                     <Col xs={6} className="developer-table">
                         <table>
-                            {genDevJSX(['Brent Garcia', 'Alexander Mack', 'Amy Kiely', 'Phil McElroy', 'Carlo Pelosi'])}
+                            {genDevJSX([
+                                'Brent Garcia',
+                                'Alexander Mack',
+                                'Amy Kiely',
+                                'Phil McElroy',
+                                'Carlo Pelosi',
+                            ])}
                         </table>
                     </Col>
                 </Row>
@@ -42,7 +64,13 @@ let AboutUs = (props) => (
                 <Row>
                     <Col xs={6} className="developer-table">
                         <table>
-                            {genDevJSX(['Colton Wiethorn', 'Kevin Shelley', 'Kimberlee Gentry', 'Marcella Sellers', 'Taryn Betz'])}
+                            {genDevJSX([
+                                'Colton Wiethorn',
+                                'Kevin Shelley',
+                                'Kimberlee Gentry',
+                                'Marcella Sellers',
+                                'Taryn Betz',
+                            ])}
                         </table>
                     </Col>
                 </Row>
@@ -53,7 +81,13 @@ let AboutUs = (props) => (
                 <Row>
                     <Col xs={6} className="developer-table">
                         <table>
-                            {genDevJSX(['Ashley Giamona', 'Edward Woelke', 'Joshua Owczarek', 'Matt Kharrl', 'Phil Soucheray'])}
+                            {genDevJSX([
+                                'Ashley Giamona',
+                                'Edward Woelke',
+                                'Joshua Owczarek',
+                                'Matt Kharrl',
+                                'Phil Soucheray',
+                            ])}
                         </table>
                     </Col>
                 </Row>

@@ -8,12 +8,12 @@ import Combobox from './combo-box';
 import ErrorMessage from '../error-message/error-message';
 
 const ComboBoxWrapper = ({ field }) => {
-    const current_Location = useSelector(state => state.Location_Info.location);
-    const current_site = useSelector(state => state.Location_Info.site);
-    const all_answer_sets = useSelector(state => state.Database.answer_sets);
-    const current_slice = useSelector(state => state.Session_Info.currentSession);
-    const current_error_state = useSelector(state => state.Session_Info.currentErrorState);
-    const redux_field = useSelector(state => state.Session_Info.currentSession.data);
+    const current_Location = useSelector((state) => state.Location_Info.location);
+    const current_site = useSelector((state) => state.Location_Info.site);
+    const all_answer_sets = useSelector((state) => state.Database.answer_sets);
+    const current_slice = useSelector((state) => state.Session_Info.currentSession);
+    const current_error_state = useSelector((state) => state.Session_Info.currentErrorState);
+    const redux_field = useSelector((state) => state.Session_Info.currentSession.data);
 
     const dispatch = useDispatch();
 
