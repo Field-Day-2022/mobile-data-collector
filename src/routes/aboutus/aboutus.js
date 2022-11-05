@@ -7,7 +7,7 @@ let arrChunk = (arr,chunkSz) => arr.map((val,n) => ({val, grpN: ~~(n / chunkSz)}
 let genDevJSX = devNames => arrChunk(devNames, 3).map(grp => (<tr>{grp.map(devName => (<td className="developer">{devName}</td>))}<tr/>));
 
 let AboutUs = (props) => {
-    return (
+    (
         <div className="home-page-backing">
             <div className="header">
                 <h1>About FieldDay</h1>
