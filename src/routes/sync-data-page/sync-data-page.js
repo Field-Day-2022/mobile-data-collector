@@ -27,9 +27,7 @@ import {
     updateDoc,
 } from 'firebase/firestore';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
-import {
-    virginRiverCodes as localCodes
-} from '../../localToeCodeObjects'
+import { virginRiverCodes as localCodes } from '../../localToeCodeObjects';
 
 const SyncData = (props) => {
     // Local State
@@ -76,57 +74,81 @@ const SyncData = (props) => {
 
     const pushToeCodesToFirestore = async () => {
         let docs = [];
-        docs.push(await addDoc(collection(db, 'ToeClipCodes'), {
-            SiteCode: 'BBM',
-            ...localCodes.BBM,
-        }));
-        docs.push(await addDoc(collection(db, 'ToeClipCodes'), {
-            SiteCode: 'BKM',
-            ...localCodes.BKM,
-        }));
-        docs.push(await addDoc(collection(db, 'ToeClipCodes'), {
-            SiteCode: 'BKT',
-            ...localCodes.BKT,
-        }));
-        docs.push(await addDoc(collection(db, 'ToeClipCodes'), {
-            SiteCode: 'FWT',
-            ...localCodes.FWT,
-        }));
-        docs.push(await addDoc(collection(db, 'ToeClipCodes'), {
-            SiteCode: 'GBM',
-            ...localCodes.GBM,
-        }));
-        docs.push(await addDoc(collection(db, 'ToeClipCodes'), {
-            SiteCode: 'GBT',
-            ...localCodes.GBT,
-        }));
-        docs.push(await addDoc(collection(db, 'ToeClipCodes'), {
-            SiteCode: 'LFM',
-            ...localCodes.LFM,
-        }));
-        docs.push(await addDoc(collection(db, 'ToeClipCodes'), {
-            SiteCode: 'LSM',
-            ...localCodes.LSM,
-        }));
-        docs.push(await addDoc(collection(db, 'ToeClipCodes'), {
-            SiteCode: 'MQM',
-            ...localCodes.MQM,
-        }));
-        docs.push(await addDoc(collection(db, 'ToeClipCodes'), {
-            SiteCode: 'MQT',
-            ...localCodes.MQT,
-        }));
-        docs.push(await addDoc(collection(db, 'ToeClipCodes'), {
-            SiteCode: 'RSM',
-            ...localCodes.RSM,
-        }));
-        docs.push(await addDoc(collection(db, 'ToeClipCodes'), {
-            SiteCode: 'TOT',
-            ...localCodes.TOT,
-        }));
-        console.log("docs written");
+        docs.push(
+            await addDoc(collection(db, 'ToeClipCodes'), {
+                SiteCode: 'BBM',
+                ...localCodes.BBM,
+            })
+        );
+        docs.push(
+            await addDoc(collection(db, 'ToeClipCodes'), {
+                SiteCode: 'BKM',
+                ...localCodes.BKM,
+            })
+        );
+        docs.push(
+            await addDoc(collection(db, 'ToeClipCodes'), {
+                SiteCode: 'BKT',
+                ...localCodes.BKT,
+            })
+        );
+        docs.push(
+            await addDoc(collection(db, 'ToeClipCodes'), {
+                SiteCode: 'FWT',
+                ...localCodes.FWT,
+            })
+        );
+        docs.push(
+            await addDoc(collection(db, 'ToeClipCodes'), {
+                SiteCode: 'GBM',
+                ...localCodes.GBM,
+            })
+        );
+        docs.push(
+            await addDoc(collection(db, 'ToeClipCodes'), {
+                SiteCode: 'GBT',
+                ...localCodes.GBT,
+            })
+        );
+        docs.push(
+            await addDoc(collection(db, 'ToeClipCodes'), {
+                SiteCode: 'LFM',
+                ...localCodes.LFM,
+            })
+        );
+        docs.push(
+            await addDoc(collection(db, 'ToeClipCodes'), {
+                SiteCode: 'LSM',
+                ...localCodes.LSM,
+            })
+        );
+        docs.push(
+            await addDoc(collection(db, 'ToeClipCodes'), {
+                SiteCode: 'MQM',
+                ...localCodes.MQM,
+            })
+        );
+        docs.push(
+            await addDoc(collection(db, 'ToeClipCodes'), {
+                SiteCode: 'MQT',
+                ...localCodes.MQT,
+            })
+        );
+        docs.push(
+            await addDoc(collection(db, 'ToeClipCodes'), {
+                SiteCode: 'RSM',
+                ...localCodes.RSM,
+            })
+        );
+        docs.push(
+            await addDoc(collection(db, 'ToeClipCodes'), {
+                SiteCode: 'TOT',
+                ...localCodes.TOT,
+            })
+        );
+        console.log('docs written');
         for (const doc of docs) {
-            console.log(`ID: ${doc.id}`)
+            console.log(`ID: ${doc.id}`);
         }
     };
 
@@ -170,7 +192,9 @@ const SyncData = (props) => {
                     [toeClipCode]: parsedDate,
                 };
             } else {
-                console.log(`Species code is ${speciesCode} and toe code is ${toeClipCode}, not updating`);
+                console.log(
+                    `Species code is ${speciesCode} and toe code is ${toeClipCode}, not updating`
+                );
             }
         }
         console.log(localCodes);
