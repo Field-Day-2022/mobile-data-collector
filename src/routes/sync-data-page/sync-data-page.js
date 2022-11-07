@@ -154,54 +154,54 @@ const SyncData = (props) => {
 
     const collQuery = query(collection(db, 'VirginRiverData'));
     // read in san pedro data
-    const [data, loading, error, snapshot] = useCollectionData(collQuery);
+    // const [data, loading, error, snapshot] = useCollectionData(collQuery);
 
-    if (data) {
-        for (const doc of data) {
-            let array = doc.array;
-            let dateTime = doc.dateTime;
-            let speciesCode = doc.speciesCode;
-            let site = doc.site;
-            let toeClipCode = doc.toeClipCode;
-            // console.log(doc)
-            // console.log(`Array: ${array}`)
-            // console.log(`Date Time String: ${dateTime}`)
+    // if (data) {
+    //     for (const doc of data) {
+    //         let array = doc.array;
+    //         let dateTime = doc.dateTime;
+    //         let speciesCode = doc.speciesCode;
+    //         let site = doc.site;
+    //         let toeClipCode = doc.toeClipCode;
+    //         // console.log(doc)
+    //         // console.log(`Array: ${array}`)
+    //         // console.log(`Date Time String: ${dateTime}`)
 
-            let parsedDate = new Date(Date.parse(dateTime));
-            // console.log(`parsedDate: ${parsedDate}`)
-            let anotherDate = new Date(Date.parse(parsedDate));
-            // console.log(`anotherDate: ${anotherDate}`)
+    //         let parsedDate = new Date(Date.parse(dateTime));
+    //         // console.log(`parsedDate: ${parsedDate}`)
+    //         let anotherDate = new Date(Date.parse(parsedDate));
+    //         // console.log(`anotherDate: ${anotherDate}`)
 
-            // console.log(`Species code: ${speciesCode}`)
-            // console.log(`Site: ${site}`)
-            // console.log(`ToeCode: ${toeClipCode}`)
-            // only update the code if the species code is not N/A and
-            // all the data we need is available
-            if (
-                speciesCode !== 'N/A' &&
-                array != null &&
-                dateTime != null &&
-                speciesCode != null &&
-                site != null &&
-                toeClipCode != null &&
-                toeClipCode !== 'N/A'
-            ) {
-                console.log(`Updating: ${site}-${array}-${speciesCode}-${toeClipCode}`);
-                localCodes[site][array][speciesCode] = {
-                    ...localCodes[site][array][speciesCode],
-                    [toeClipCode]: parsedDate,
-                };
-            } else {
-                console.log(
-                    `Species code is ${speciesCode} and toe code is ${toeClipCode}, not updating`
-                );
-            }
-        }
-        console.log(localCodes);
+    //         // console.log(`Species code: ${speciesCode}`)
+    //         // console.log(`Site: ${site}`)
+    //         // console.log(`ToeCode: ${toeClipCode}`)
+    //         // only update the code if the species code is not N/A and
+    //         // all the data we need is available
+    //         if (
+    //             speciesCode !== 'N/A' &&
+    //             array != null &&
+    //             dateTime != null &&
+    //             speciesCode != null &&
+    //             site != null &&
+    //             toeClipCode != null &&
+    //             toeClipCode !== 'N/A'
+    //         ) {
+    //             console.log(`Updating: ${site}-${array}-${speciesCode}-${toeClipCode}`);
+    //             localCodes[site][array][speciesCode] = {
+    //                 ...localCodes[site][array][speciesCode],
+    //                 [toeClipCode]: parsedDate,
+    //             };
+    //         } else {
+    //             console.log(
+    //                 `Species code is ${speciesCode} and toe code is ${toeClipCode}, not updating`
+    //             );
+    //         }
+    //     }
+    //     console.log(localCodes);
 
-        // after constructing the toe codes, push to firestore
-        // pushToeCodesToFirestore();
-    }
+    //     // after constructing the toe codes, push to firestore
+    //     // pushToeCodesToFirestore();
+    // }
 
     const handleSubmit = async (event) => {
         event.preventDefault();
