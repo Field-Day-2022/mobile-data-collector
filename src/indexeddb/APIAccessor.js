@@ -64,25 +64,21 @@ class APIAccessor {
     //     return promise.data;
     // }
 
-    static async getAnswerSets() {        
-        let answerSetArray = []
-        const querySnapshot = await getDocs(
-            query(collection(db, "AnswerSet"))
-        )
-        querySnapshot.forEach(doc => {
-            answerSetArray.push(doc.data())
-        })
+    static async getAnswerSets() {
+        let answerSetArray = [];
+        const querySnapshot = await getDocs(query(collection(db, 'AnswerSet')));
+        querySnapshot.forEach((doc) => {
+            answerSetArray.push(doc.data());
+        });
         return answerSetArray;
     }
 
     static async getDataForm() {
-        let dataFormsArray = []
-        const querySnapshot = await getDocs(
-            query(collection(db, "DataForm"))
-        )
-        querySnapshot.forEach(doc => {
+        let dataFormsArray = [];
+        const querySnapshot = await getDocs(query(collection(db, 'DataForm')));
+        querySnapshot.forEach((doc) => {
             dataFormsArray.push(doc.data());
-        })
+        });
         return dataFormsArray;
     }
 
