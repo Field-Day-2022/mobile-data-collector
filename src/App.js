@@ -7,6 +7,7 @@ import FieldDayFormSelectionForm from './routes/FieldDayFormSelectionForm/FieldD
 import SyncData from './routes/sync-data-page/sync-data-page';
 import UnSyncHistory from './routes/un-sync-history/un-sync-history';
 import TemplatePage from './components/template-page/template-page';
+import DataSheets from './pages/DataSheets';
 
 import './App.css';
 
@@ -20,6 +21,7 @@ const App = () => {
                 <Route path="/sync-data" component={SyncData} />
                 <Route path="/new-data" component={UnSyncHistory} />
                 <Route path="/FieldDayFormSelectionForm" component={FieldDayFormSelectionForm} />
+                <Route path="/data-sheets" component={DataSheets} exact />
                 <Route path="/:form_name_n" component={TemplatePage} exact />
             </Switch>
         </div>
