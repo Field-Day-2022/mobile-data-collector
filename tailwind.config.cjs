@@ -9,6 +9,9 @@ module.exports = {
       colors: {
         'asu-maroon': '#8C1D40',
         'asu-gold': '#FFC627'
+      },
+      fontFamily: {
+        'openSans': ['Open\\ Sans', 'sans-serif']
       }
     },
   },
