@@ -147,7 +147,9 @@ export default function InitialsForm({ label, setState }: Props) {
   
   return (
     <div 
-      className="relative text-3xl border-black border-0 text-left flex justify-start">
+      className="relative cursor-default select-none text-3xl border-black border-0 text-center flex justify-start"
+      onClick={() => firstInitialRef.current?.select()}
+      >
       <motion.p className="italic">
         {`${label}: `.split("").map((char, i) => {
           if (char.charCodeAt(0) === 32) char = "\u00A0"
@@ -185,7 +187,7 @@ export default function InitialsForm({ label, setState }: Props) {
 
       <motion.input
         value={firstInitial}
-        className="w-5 outline-none bg-transparent"
+        className="w-5 active:text-asu-maroon outline-none bg-transparent cursor-default select-none"
         onKeyUp={enterFirstInitial}
         ref={firstInitialRef}
         readOnly

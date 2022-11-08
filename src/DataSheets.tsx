@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { ChangeEvent, useEffect, useState } from 'react'
 import InitialsForm from './components/InitialsForm'
+import InitialsForm1 from './components/InitialsForm1'
 
 export default function DataSheets() {
   const [ recorder, setRecorder ] = useState<string>("")
