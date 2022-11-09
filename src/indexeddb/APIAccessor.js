@@ -1,7 +1,15 @@
-import axios from 'axios';  // TODO: Remove axios
+import axios from 'axios'; // TODO: Remove axios
 
 import { db } from '../utils/firebase';
-import { addDoc, collection, getDocs, getDocsFromServer, query, QuerySnapshot, setDoc } from 'firebase/firestore';
+import {
+    addDoc,
+    collection,
+    getDocs,
+    getDocsFromServer,
+    query,
+    QuerySnapshot,
+    setDoc,
+} from 'firebase/firestore';
 
 const ApiURL = 'https://uljllddgme.execute-api.us-east-2.amazonaws.com/dev/'; // TODO: Remove AWS URL
 
@@ -70,9 +78,9 @@ class APIAccessor {
 
     static async getProjects() {
         let projectsArray = [];
-        const querySnapshot = await getDocs(query(collection(db, 'Project')))
+        const querySnapshot = await getDocs(query(collection(db, 'Project')));
         querySnapshot.forEach((doc) => {
-            projectsArray.push(doc.data())
+            projectsArray.push(doc.data());
         });
     }
 
@@ -82,9 +90,9 @@ class APIAccessor {
      */
     static async getAllDocDataFromCollection(collectionName) {
         let collectionArray = [];
-        const querySnapshot = await getDocs(query(collection(db, collectionName)))
+        const querySnapshot = await getDocs(query(collection(db, collectionName)));
         querySnapshot.forEach((doc) => {
-            collectionArray.push(doc.data())
+            collectionArray.push(doc.data());
         });
     }
 }
