@@ -1,4 +1,7 @@
-import axios from 'axios';
+import axios from 'axios';  // TODO: Remove axios
+
+import { db } from '../utils/firebase';
+import { addDoc, collection, getDocs, getDocsFromServer, query, setDoc } from 'firebase/firestore';
 
 const ApiURL = 'https://uljllddgme.execute-api.us-east-2.amazonaws.com/dev/';
 
@@ -48,13 +51,21 @@ class APIAccessor {
     }
 
     static async getAnswerSets() {
-        const promise = await axios.get((await ApiURL) + 'answer_set');
-        return promise.data;
+        let answerSetArray = [];
+        const querySnapshot = await getDocs(query(collection(db, 'AnswerSet')));
+        querySnapshot.forEach((doc) => {
+            answerSetArray.push(doc.data());
+        });
+        return answerSetArray;
     }
 
     static async getDataForm() {
-        const promise = await axios.get((await ApiURL) + 'data_form');
-        return promise.data;
+        let dataFormsArray = [];
+        const querySnapshot = await getDocs(query(collection(db, 'DataForm')));
+        querySnapshot.forEach((doc) => {
+            dataFormsArray.push(doc.data());
+        });
+        return dataFormsArray;
     }
 
     static async getProjects() {
