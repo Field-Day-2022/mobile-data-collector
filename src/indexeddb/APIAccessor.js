@@ -64,6 +64,7 @@ class APIAccessor {
     //     return promise.data;
     // }
 
+    // TODO: Transfer to US113-TS141
     static async getAnswerSets() {
         let answerSetArray = [];
         const querySnapshot = await getDocs(query(collection(db, 'AnswerSet')));
@@ -72,7 +73,7 @@ class APIAccessor {
         });
         return answerSetArray;
     }
-
+    // TODO: Transfer to US113-TS141
     static async getDataForm() {
         let dataFormsArray = [];
         const querySnapshot = await getDocs(query(collection(db, 'DataForm')));
