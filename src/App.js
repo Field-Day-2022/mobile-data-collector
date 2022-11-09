@@ -1,24 +1,9 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import DataSheets from "./pages/DataSheets";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="font-openSans overflow-hidden absolute flex items-start pt-10 justify-center inset-0 bg-gradient-to-tr from-asu-maroon to-asu-gold">
+      <DataSheets />
     </div>
   );
 }
