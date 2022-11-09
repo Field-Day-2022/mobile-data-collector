@@ -86,7 +86,7 @@ class APIAccessor {
 
     /**
      * @param {string} collectionName The name of the desired collection.
-     * @returns An array of all doc data in the provided collection. 
+     * @returns An array of all doc data in the provided collection.
      */
     static async getAllDocDataFromCollection(collectionName) {
         let collectionArray = [];
