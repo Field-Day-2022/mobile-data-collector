@@ -6,6 +6,8 @@ import { addDoc, collection, getDocs, getDocsFromServer, query, setDoc } from 'f
 const ApiURL = 'https://uljllddgme.execute-api.us-east-2.amazonaws.com/dev/';
 
 //const ApiURL = 'http://localhost:3000/dev/'
+
+/** APIAccessor is a util class that is designed to interact with Firestore */
 class APIAccessor {
     static async sendSession(sessionObject) {
         await axios({
