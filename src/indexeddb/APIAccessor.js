@@ -82,6 +82,7 @@ class APIAccessor {
         querySnapshot.forEach((doc) => {
             projectsArray.push(doc.data());
         });
+        return projectsArray;
     }
 
     /**
@@ -94,6 +95,7 @@ class APIAccessor {
         querySnapshot.forEach((doc) => {
             collectionArray.push(doc.data());
         });
+        return collectionArray;
     }
 }
 
