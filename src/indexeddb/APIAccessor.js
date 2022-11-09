@@ -1,13 +1,11 @@
-import axios from 'axios'; // TODO: Remove axios
+import axios from 'axios';  // TODO: Remove axios
 
 import { db } from '../utils/firebase';
-import { addDoc, collection, getDocs, getDocsFromServer, query, setDoc } from 'firebase/firestore';
+import { addDoc, collection, getDocs, getDocsFromServer, query, QuerySnapshot, setDoc } from 'firebase/firestore';
 
-const ApiURL = 'https://uljllddgme.execute-api.us-east-2.amazonaws.com/dev/';
+const ApiURL = 'https://uljllddgme.execute-api.us-east-2.amazonaws.com/dev/'; // TODO: Remove AWS URL
 
-//const ApiURL = 'http://localhost:3000/dev/'
-
-/** APIAccessor is a util class that is designed to interact with Firestore */
+/** APIAccessor is a util class that is designed to encapsulate all interactions with Firestore */
 class APIAccessor {
     static async sendSession(sessionObject) {
         await axios({
@@ -71,8 +69,19 @@ class APIAccessor {
     }
 
     static async getProjects() {
-        const promise = await axios.get((await ApiURL) + 'project');
-        return promise.data;
+        let projectsArray = [];
+        const querySnapshot = await getDocs(query(collection(db, 'Project')))
+        querySnapshot.forEach((doc) => {
+            projectsArray.push(doc.data())
+        });
+    }
+
+    static async getAllDocDataFromCollection(collectionName) {
+        let collectionArray = [];
+        const querySnapshot = await getDocs(query(collection(db, collectionName)))
+        querySnapshot.forEach((doc) => {
+            collectionArray.push(doc.data())
+        });
     }
 }
 
