@@ -1,4 +1,4 @@
-import axios from 'axios';  // TODO: Remove axios
+import axios from 'axios'; // TODO: Remove axios
 
 import { db } from '../utils/firebase';
 import { addDoc, collection, getDocs, getDocsFromServer, query, setDoc } from 'firebase/firestore';
