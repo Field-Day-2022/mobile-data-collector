@@ -76,6 +76,10 @@ class APIAccessor {
         });
     }
 
+    /**
+     * @param {string} collectionName The name of the desired collection.
+     * @returns An array of all doc data in the provided collection. 
+     */
     static async getAllDocDataFromCollection(collectionName) {
         let collectionArray = [];
         const querySnapshot = await getDocs(query(collection(db, collectionName)))
