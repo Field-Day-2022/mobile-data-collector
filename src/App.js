@@ -1,9 +1,11 @@
 import DataSheets from "./pages/DataSheets";
+import CollectData from "./pages/CollectData";
 
 function App() {
   return (
-    <div className="font-openSans overflow-hidden absolute flex items-start pt-10 pb-10 justify-center inset-0 bg-gradient-to-tr from-asu-maroon to-asu-gold">
-      <DataSheets />
+    <div className="font-openSans overflow-hidden absolute flex flex-col items-center text-center pt-10 pb-10 justify-center inset-0 bg-gradient-to-tr from-asu-maroon to-asu-gold">
+      {/* <DataSheets /> */}
+      <CollectData />
     </div>
   );
 }
