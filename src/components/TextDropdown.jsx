@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { motion, useAnimationControls } from 'framer-motion'
 
-export default function TextInput({type, prompt, placeholder, setValue, value, inputRef}) {
+export default function TextDropdown({type, prompt, placeholder, setValue, value, inputRef}) {
   const styles = {
     short: {
       div: "form-control w-full max-w-[6rem]",
@@ -16,6 +16,8 @@ export default function TextInput({type, prompt, placeholder, setValue, value, i
       input: "input input-secondary bg-slate-200/50 input-bordered w-full max-w-[10rem] text-xl text-secondary placeholder:text-secondary/50"
     },
   }
+
+  const [ isOpen, setIsOpen ] = useState(false)
 
   let style
   if (type ==='initials' || type === 'short') style = styles.short
@@ -37,35 +39,42 @@ export default function TextInput({type, prompt, placeholder, setValue, value, i
       }
     }
   }
-  controls.start('initial')
 
   return (
-    <div className={style.div}>
-      <label className="label">
-        <span className="label-text text-asu-maroon">{prompt}</span>
-      </label>
-      <input 
+    <motion.div 
+      className={style.div}
+      initial={false}  
+      animate={isOpen ? "open" : "closed"}
+    >
+      <motion.label className="label">
+        <motion.span className="label-text text-asu-maroon">{prompt}</motion.span>
+      </motion.label>
+      <motion.input 
         maxLength={type === 'initials' ? 3 : 100} 
         value={value} 
         onChange={e => {
-          if (type === 'initials') setValue(e.target.value.toUpperCase())
-          else setValue(e.target.value)
-          if (e.target.value > 0 && type === 'dropdown') controls.start("dropdownVariant") 
+          setValue(e.target.value)
+          if (e.target.value > 0 && type === 'dropdown') setIsOpen(true)
+          else setIsOpen(false)
         }}
         type="text" 
         placeholder={placeholder} 
         className={style.input} 
       />
-      {type.includes('dropdown') &&
-        <motion.ul 
-          animate={controls}
-          variants={dropdownVariant}
-          className="border-2 border-asu-maroon border-t-0 flex items-center flex-col justify-center text-asu-maroon text-xl">
-          <li>1</li>
-          <li>1</li>
-          <li>1</li>
-        </motion.ul>
-      }
-    </div>
+      <motion.ul 
+        className="border-2 border-asu-maroon border-t-0 flex items-center flex-col justify-center text-asu-maroon text-xl"
+        variants={{
+          open: {
+            opacity: 0,
+          },
+          closed: {
+            opacity: 1,
+          }
+        }}>
+        <li>1</li>
+        <li>1</li>
+        <li>1</li>
+      </motion.ul>
+    </motion.div>
   )
 }
