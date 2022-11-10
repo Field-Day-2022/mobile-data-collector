@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { motion, LayoutGroup } from 'framer-motion';
 import { useState, useRef } from 'react';
 
 import TextInput from '../components/TextInput';
@@ -14,14 +14,15 @@ export default function DataSheets() {
 
   const siteRef = useRef()
 
-  // TODO: install and integrate https://react-hook-form.com/
-
   return (
     <motion.div
-      layout
-      className='flex flex-col items-start w-11/12 bg-gradient-to-r from-slate-300/75 p-5 rounded-lg'
+      className='flex flex-col items-start h-full w-11/12 bg-gradient-to-r from-slate-300/75 p-5 rounded-lg'
       initial={{ opacity: 0, x: '200%' }}
       animate={{ opacity: 1, x: 0, transition: { duration: 0.25 } }}
+    >
+    <LayoutGroup
+      layout
+      transition={{duration: 1}}
     >
       <h1 className='text-5xl text-black/75'>New Data Sheet</h1>
       <form onSubmit={onSubmit}>
@@ -52,8 +53,9 @@ export default function DataSheets() {
           }
           inputRef={siteRef}
         />
-        <button type='submit' className='btn btn-secondary mt-5'>Submit</button>
+        <motion.button layout type='submit' className='btn btn-secondary mt-5'>Submit</motion.button>
       </form>
+    </LayoutGroup>
     </motion.div>
   );
 }
