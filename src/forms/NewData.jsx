@@ -1,6 +1,6 @@
 export default function NewData({ data, setData }) {
   return (
-    <div className="form-control items-center justify-start overflow-x-hidden overflow-y-scroll scrollbar scrollbar-track-asu-maroon/50 scrollbar-thumb-asu-gold/75 hover:scrollbar-thumb-asu-gold border-0 border-black w-full h-full">
+    <div className="form-control items-center justify-start overflow-x-hidden overflow-y-scroll scrollbar scrollbar-track-asu-maroon/50 scrollbar-thumb-asu-gold/75 hover:scrollbar-thumb-asu-gold scrollbar-thumb-rounded-lg scrollbar-track-rounded-lg rounded-lg w-full h-full">
       <h1 className="text-5xl mb-5">New Data</h1>
       <label className="input-group justify-center m-1">
         <span>Recorder</span>
