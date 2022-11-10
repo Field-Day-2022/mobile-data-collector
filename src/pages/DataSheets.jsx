@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion'
-import { ChangeEvent, useEffect, useState } from 'react'
+import { useState } from 'react'
 
-import Initials from '../components/Initials'
+import TextInput from '../components/TextInput'
 
 export default function DataSheets() {
   const [ currentDataSheet, setCurrentDataSheet ] = useState()
@@ -17,13 +17,8 @@ export default function DataSheets() {
       animate={{ opacity: 1, x: 0, transition: { duration: .25 }}}
       >
       <h1 className="text-5xl text-black/75">New Data Sheet</h1>
-      <Initials 
-        placeholder="Recorder initials" 
-        initials={currentDataSheet?.recorder}
-        setInitials={(initials) => {
-          setCurrentDataSheet({...currentDataSheet, recorder: initials})
-        }
-      }/>
+      <TextInput type="initials" prompt="Recorder" placeholder="Initials" value={currentDataSheet?.recorder || ''} setValue={(initials) => setCurrentDataSheet({...currentDataSheet, recorder: initials})} />
+      <TextInput type="initials" prompt="Handler" placeholder="Initials" value={currentDataSheet?.handler || ''} setValue={(initials) => setCurrentDataSheet({...currentDataSheet, handler: initials})} />
     </motion.div>
   )
 }
