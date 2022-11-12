@@ -1,4 +1,4 @@
-import { collection, getDocs, where, query } from 'firebase/firestore'
+import { collection, getDocsFromCache, where, query } from 'firebase/firestore'
 import { useEffect, useState, useRef } from 'react'
 import { db } from '../index'
 
@@ -16,11 +16,11 @@ export default function NewData({ data, setData }) {
     if (projectName !== currentProject) setCurrentSite('Site')
     let sitesSnapshot = null;
     if (projectName === 'Gateway') {
-      sitesSnapshot = await getDocs(query(collection(db, "AnswerSet"), where("set_name", "==", "GatewaySites")))
+      sitesSnapshot = await getDocsFromCache(query(collection(db, "AnswerSet"), where("set_name", "==", "GatewaySites")))
     } else if (projectName ==="San Pedro") {
-      sitesSnapshot = await getDocs(query(collection(db, "AnswerSet"), where("set_name", "==", "San PedroSites")))
+      sitesSnapshot = await getDocsFromCache(query(collection(db, "AnswerSet"), where("set_name", "==", "San PedroSites")))
     } else if (projectName ==="Virgin River") {
-      sitesSnapshot = await getDocs(query(collection(db, "AnswerSet"), where("set_name", "==", "Virgin RiverSites")))
+      sitesSnapshot = await getDocsFromCache(query(collection(db, "AnswerSet"), where("set_name", "==", "Virgin RiverSites")))
     }
     if (sitesSnapshot) {
       let tempSites = []
@@ -36,7 +36,7 @@ export default function NewData({ data, setData }) {
         siteName !== currentSite) setCurrentArray('Array')
     let arraysSnapshot = null;
     const set_name = `${projectName}${siteName}Array`
-    arraysSnapshot = await getDocs(query(collection(db, "AnswerSet"), where("set_name", "==", set_name)))
+    arraysSnapshot = await getDocsFromCache(query(collection(db, "AnswerSet"), where("set_name", "==", set_name)))
     if (arraysSnapshot.docs[0]) {
       let tempArrays = []
       for (const array of arraysSnapshot.docs[0].data().answers) {
