@@ -1,5 +1,5 @@
 import { collection, getDocsFromCache, where, query } from 'firebase/firestore'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { db } from '../index'
 
 export default function NewData({ data, setData }) {
@@ -8,10 +8,10 @@ export default function NewData({ data, setData }) {
   const [ currentArray, setCurrentArray ] = useState('Array')
   const [ recorder, setRecorder ] = useState('')
   const [ handler, setHandler ] = useState('')
-  
+
   const [ sites, setSites] = useState()
   const [ arrays, setArrays ] = useState()
-  
+
   const getSites = async (projectName) => {
     if (projectName !== currentProject) setCurrentSite('Site')
     let sitesSnapshot = null;
@@ -52,9 +52,9 @@ export default function NewData({ data, setData }) {
         ...data,
         recorder,
         handler,
-        currentProject,
-        currentSite,
-        currentArray,
+        project: currentProject,
+        site: currentSite,
+        array: currentArray,
         captureStatus: 'withCaptures'
       })
     } else if (captureStatus === 'withoutCaptures') {
@@ -62,9 +62,9 @@ export default function NewData({ data, setData }) {
         ...data,
         recorder,
         handler,
-        currentProject,
-        currentSite,
-        currentArray,
+        project: currentProject,
+        site: currentSite,
+        array: currentArray,
         captureStatus: 'withoutCaptures'
       })
     }
