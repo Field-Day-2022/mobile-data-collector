@@ -1,5 +1,5 @@
 import { collection, getDocsFromCache, where, query } from 'firebase/firestore'
-import { useEffect, useState, useRef } from 'react'
+import { useState } from 'react'
 import { db } from '../index'
 
 export default function NewData({ data, setData }) {
@@ -43,6 +43,30 @@ export default function NewData({ data, setData }) {
         tempArrays.push(array.primary)
       }
       setArrays(tempArrays)
+    }
+  }
+
+  const finishForm = (captureStatus) => {
+    if (captureStatus === 'withCaptures') {
+      setData({
+        ...data,
+        recorder,
+        handler,
+        currentProject,
+        currentSite,
+        currentArray,
+        captureStatus: 'withCaptures'
+      })
+    } else if (captureStatus === 'withoutCaptures') {
+      setData({
+        ...data,
+        recorder,
+        handler,
+        currentProject,
+        currentSite,
+        currentArray,
+        captureStatus: 'withoutCaptures'
+      })
     }
   }
 
@@ -148,8 +172,8 @@ export default function NewData({ data, setData }) {
         <div className='flex flex-col justify-center items-center border-black border-0'>
           <p className="text-xl mb-1 text-asu-maroon font-semibold">Any captures?</p>
           <div className='flex'>
-            <button className='btn w-28 mr-2 glass text-asu-maroon text-xl capitalize'>Yes</button>
-            <button className='btn w-28 glass text-asu-maroon text-xl capitalize'>No</button>
+            <button onClick={() => finishForm('withCaptures')}className='btn w-28 mr-2 glass text-asu-maroon text-xl capitalize'>Yes</button>
+            <button onClick={() => finishForm('withoutCaptures')} className='btn w-28 glass text-asu-maroon text-xl capitalize'>No</button>
           </div>
         </div>
       }
