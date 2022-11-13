@@ -5,7 +5,7 @@ import NewDataEntry from '../forms/NewDataEntry'
 
 export default function CollectData() {
   const [ currentData, setCurrentData ] = useState()
-  const [ currentFormName, setCurrentFormName ] = useState('New Data Entry')
+  const [ currentFormName, setCurrentFormName ] = useState('New Data')
 
   // currentData && console.log(currentData)
 
@@ -26,8 +26,21 @@ export default function CollectData() {
   }
 
   useEffect(() => {
-    setCurrentData(testSessionData)
-  }, [])
+    if (currentData?.captureStatus &&
+        currentData?.array &&
+        currentData?.project &&
+        currentData?.site &&
+        currentData?.handler &&
+        currentData?.recorder
+      ) setCurrentFormName('New Data Entry')
+  }, [ currentData] )
+
+  // for testing
+  // useEffect(() => {
+  //   setCurrentData(testSessionData)
+  //   setCurrentFormName("New Data Entry")
+  // }, [])
+  
 
   return (
     <div className='flex flex-col overflow-visible items-center h-screen sm:w-11/12 w-full pr-0 bg-gradient-to-r from-slate-300/75 rounded-lg'>

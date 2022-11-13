@@ -13,7 +13,7 @@ export default function ButtonDropdown({
       <ul tabIndex={0} className="dropdown-content menu menu-compact p-2 shadow bg-base-100 rounded-box w-28">
         {options.map(option => (
           <li 
-            onClick={onClickHandler(options)}
+            onClick={onClickHandler(option)}
             key={option}
           ><a>{option}</a></li>
         ))}

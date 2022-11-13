@@ -2,6 +2,8 @@ import { collection, getDocsFromCache, where, query } from 'firebase/firestore'
 import { useEffect, useState } from 'react'
 import { db } from '../index'
 
+import ButtonDropdown from '../components/ButtonDropdown'
+
 export default function NewData({ data, setData }) {
   const [ currentProject, setCurrentProject ] = useState('Project')
   const [ currentSite, setCurrentSite ] = useState('Site')
@@ -108,7 +110,9 @@ export default function NewData({ data, setData }) {
             setCurrentProject("Gateway")
             getSites("Gateway")
             document.activeElement.blur()
-          }}><a>Gateway</a></li>
+            }}
+            className='border-b-2 border-black/50'
+          ><a>Gateway</a></li>
           <li onClick={() => {
             if (currentProject !== "San Pedro") { 
               setArrays(null)
@@ -117,7 +121,9 @@ export default function NewData({ data, setData }) {
             setCurrentProject("San Pedro")
             getSites("San Pedro")
             document.activeElement.blur()
-          }}><a>San Pedro</a></li>
+            }}
+            className='border-b-2 border-black/50'
+          ><a>San Pedro</a></li>
           <li onClick={() => {
             if (currentProject !== "Virgin River") { 
               setArrays(null)
@@ -136,13 +142,14 @@ export default function NewData({ data, setData }) {
             className="btn glass m-1 text-asu-maroon text-xl capitalize font-medium"
           >{currentSite !== 'Site' ? `Site ${currentSite}` : currentSite}</label>
           <ul tabIndex={0} className="dropdown-content menu menu-compact p-2 shadow bg-base-100 rounded-box w-28">
-            {sites.map(site => (
+            {sites.map((site, index) => (
               <li 
                 onClick={() => {
                   setCurrentSite(site)
                   getArrays(currentProject, site)
                   document.activeElement.blur()
                 }}
+                className={index < sites.length - 1 && 'border-b-2 border-black/50'}
                 key={site}
               ><a>{site}</a></li>
             ))}
@@ -156,12 +163,13 @@ export default function NewData({ data, setData }) {
             className="btn glass m-1 text-asu-maroon text-xl capitalize font-medium"
           >{currentArray !== 'Array' ? `Array ${currentArray}` : currentArray}</label>
           <ul tabIndex={0} className="dropdown-content menu menu-compact p-2 shadow bg-base-100 rounded-box w-28">
-            {arrays.map(array => (
+            {arrays.map((array, index) => (
               <li 
                 onClick={() => {
                   setCurrentArray(array)
                   document.activeElement.blur()
                 }}
+                className={index < arrays.length - 1 && 'border-b-2 border-black/50'}
                 key={array}
               ><a>{array}</a></li>
             ))}
