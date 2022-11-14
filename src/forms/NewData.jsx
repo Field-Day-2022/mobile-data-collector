@@ -4,7 +4,7 @@ import { db } from '../index'
 
 import ButtonDropdown from '../components/ButtonDropdown'
 
-export default function NewData({ data, setData }) {
+export default function NewData({ data, setData, setForm }) {
   const [ currentProject, setCurrentProject ] = useState('Project')
   const [ currentSite, setCurrentSite ] = useState('Site')
   const [ currentArray, setCurrentArray ] = useState('Array')
@@ -70,10 +70,24 @@ export default function NewData({ data, setData }) {
         captureStatus: 'withoutCaptures'
       })
     }
+    setForm('New Data Entry')
   }
 
   return (
-    <div className="text-center form-control items-center justify-start overflow-x-hidden overflow-y-scroll scrollbar scrollbar-track-asu-maroon/50 scrollbar-thumb-asu-gold/75 hover:scrollbar-thumb-asu-gold scrollbar-thumb-rounded-lg scrollbar-track-rounded-lg rounded-lg w-full h-full">
+    <div className="
+      text-center 
+      form-control 
+      items-center 
+      justify-start 
+      overflow-x-hidden 
+      overflow-y-auto 
+      scrollbar 
+      scrollbar-track-asu-maroon/50 
+      scrollbar-thumb-asu-gold/75 
+      hover:scrollbar-thumb-asu-gold 
+      scrollbar-thumb-rounded-lg 
+      scrollbar-track-rounded-lg 
+      rounded-lg w-full h-full">
       <label className="input-group input-group-vertical justify-center m-1 w-28">
         <span className='glass text-xl text-asu-maroon justify-center'>Recorder</span>
         <input maxLength="3" type="text" placeholder="Initials" className="text-center input glass text-xl text-asu-maroon placeholder:text-black/50 tracking-widest placeholder:tracking-wide" 
@@ -96,12 +110,22 @@ export default function NewData({ data, setData }) {
           }}
         />
       </label>
-      <div className="dropdown dropdown-bottom justify-center items-center">
+      <div className="dropdown dropdown-bottom flex justify-center items-center">
         <label 
           tabIndex={0} 
           className="btn glass m-1 text-asu-maroon text-xl capitalize font-medium"
         >{currentProject}</label>
-        <ul tabIndex={0} className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-48">
+        <ul tabIndex={0} className="
+          dropdown-content 
+          menu 
+          p-2 
+          shadow 
+          bg-transparent
+          backdrop-blur
+          rounded-box 
+          w-48
+          text-asu-maroon
+          ">
           <li onClick={() => {
             if (currentProject !== "Gateway") { 
               setArrays(null)
@@ -111,8 +135,8 @@ export default function NewData({ data, setData }) {
             getSites("Gateway")
             document.activeElement.blur()
             }}
-            className='border-b-2 border-black/50'
-          ><a>Gateway</a></li>
+            className='border-b-2 border-black/25'
+          ><a className="flex justify-center text-xl">Gateway</a></li>
           <li onClick={() => {
             if (currentProject !== "San Pedro") { 
               setArrays(null)
@@ -122,8 +146,8 @@ export default function NewData({ data, setData }) {
             getSites("San Pedro")
             document.activeElement.blur()
             }}
-            className='border-b-2 border-black/50'
-          ><a>San Pedro</a></li>
+            className='border-b-2 border-black/25'
+          ><a className="flex justify-center text-xl">San Pedro</a></li>
           <li onClick={() => {
             if (currentProject !== "Virgin River") { 
               setArrays(null)
@@ -132,16 +156,30 @@ export default function NewData({ data, setData }) {
             setCurrentProject("Virgin River")
             getSites("Virgin River")
             document.activeElement.blur()
-          }}><a>Virgin River</a></li>
+          }}><a className="flex justify-center text-xl">Virgin River</a></li>
         </ul>
       </div>
       {sites && 
-        <div className="dropdown dropdown-bottom justify-center items-center">
+        <div className="
+          dropdown 
+          dropdown-bottom 
+          flex
+          justify-center
+          ">
           <label
             tabIndex={0} 
             className="btn glass m-1 text-asu-maroon text-xl capitalize font-medium"
           >{currentSite !== 'Site' ? `Site ${currentSite}` : currentSite}</label>
-          <ul tabIndex={0} className="dropdown-content menu menu-compact p-2 shadow bg-base-100 rounded-box w-28">
+          <ul tabIndex={0} className="
+            dropdown-content 
+            menu 
+            p-2 
+            shadow 
+            bg-transparent
+            backdrop-blur
+            text-asu-maroon 
+            rounded-box w-28
+            ">
             {sites.map((site, index) => (
               <li 
                 onClick={() => {
@@ -149,29 +187,38 @@ export default function NewData({ data, setData }) {
                   getArrays(currentProject, site)
                   document.activeElement.blur()
                 }}
-                className={index < sites.length - 1 && 'border-b-2 border-black/50'}
+                className={index < sites.length - 1 ? 'border-b-2 border-black/50' : ''}
                 key={site}
-              ><a>{site}</a></li>
+              ><a className="flex justify-center text-xl">{site}</a></li>
             ))}
           </ul>
         </div>
       }
       {arrays && 
-        <div className="dropdown dropdown-bottom justify-center items-center">
+        <div className="dropdown dropdown-bottom flex justify-center items-center">
           <label
             tabIndex={0} 
             className="btn glass m-1 text-asu-maroon text-xl capitalize font-medium"
           >{currentArray !== 'Array' ? `Array ${currentArray}` : currentArray}</label>
-          <ul tabIndex={0} className="dropdown-content menu menu-compact p-2 shadow bg-base-100 rounded-box w-28">
+          <ul tabIndex={0} className="
+            dropdown-content 
+            menu 
+            p-2 
+            shadow 
+            bg-transparent
+            backdrop-blur
+            text-asu-maroon
+            rounded-box 
+            w-28">
             {arrays.map((array, index) => (
               <li 
                 onClick={() => {
                   setCurrentArray(array)
                   document.activeElement.blur()
                 }}
-                className={index < arrays.length - 1 && 'border-b-2 border-black/50'}
+                className={index < arrays.length - 1 ? 'border-b-2 border-black/50' : ''}
                 key={array}
-              ><a>{array}</a></li>
+              ><a className="flex justify-center text-xl">{array}</a></li>
             ))}
           </ul>
         </div>
