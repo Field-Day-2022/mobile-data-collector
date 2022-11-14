@@ -11,23 +11,21 @@ export default function NewDataEntry({data, setData}) {
   
   
   return (
-    <div className="
-      rounded-lg 
-      w-full 
-      h-full
-      text-center 
-      form-control 
-      items-center 
-      justify-start 
-      overflow-x-hidden 
-      overflow-y-scroll 
-      scrollbar 
-      scrollbar-track-asu-maroon/50 
-      scrollbar-thumb-asu-gold/75 
-      hover:scrollbar-thumb-asu-gold 
-      scrollbar-thumb-rounded-lg 
-      scrollbar-track-rounded-lg 
-    ">
+    <div 
+      
+      className="
+        rounded-lg 
+        w-full 
+        h-full
+        text-center 
+        form-control 
+        items-center 
+        justify-start 
+        overflow-x-hidden 
+        overflow-y-scroll
+        scrollbar-thumb-rounded-lg 
+        scrollbar-track-rounded-lg 
+      ">
       <p className="text-lg">{`Project: ${data.project}`}</p>
       <p className="text-lg">{`Site: ${data.site}`}</p>
       <p className="text-lg">{`Array: ${data.array}`}</p>

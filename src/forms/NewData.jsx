@@ -74,20 +74,19 @@ export default function NewData({ data, setData, setForm }) {
   }
 
   return (
-    <div className="
+    <div 
+      id="wrapper"
+      className="
       text-center 
       form-control 
       items-center 
       justify-start 
       overflow-x-hidden 
       overflow-y-auto 
-      scrollbar 
-      scrollbar-track-asu-maroon/50 
-      scrollbar-thumb-asu-gold/75 
-      hover:scrollbar-thumb-asu-gold 
-      scrollbar-thumb-rounded-lg 
-      scrollbar-track-rounded-lg 
-      rounded-lg w-full h-full">
+      rounded-lg 
+      w-full 
+      h-full"
+    >
       <label className="input-group input-group-vertical justify-center m-1 w-28">
         <span className='glass text-xl text-asu-maroon justify-center'>Recorder</span>
         <input maxLength="3" type="text" placeholder="Initials" className="text-center input glass text-xl text-asu-maroon placeholder:text-black/50 tracking-widest placeholder:tracking-wide" 
@@ -110,7 +109,7 @@ export default function NewData({ data, setData, setForm }) {
           }}
         />
       </label>
-      <div className="dropdown dropdown-bottom flex justify-center items-center">
+      <div className="dropdown flex justify-center items-center">
         <label 
           tabIndex={0} 
           className="btn glass m-1 text-asu-maroon text-xl capitalize font-medium"
@@ -161,8 +160,7 @@ export default function NewData({ data, setData, setForm }) {
       </div>
       {sites && 
         <div className="
-          dropdown 
-          dropdown-bottom 
+          dropdown
           flex
           justify-center
           ">
@@ -172,13 +170,17 @@ export default function NewData({ data, setData, setForm }) {
           >{currentSite !== 'Site' ? `Site ${currentSite}` : currentSite}</label>
           <ul tabIndex={0} className="
             dropdown-content 
-            menu 
-            p-2 
+            -bottom-[25%]
+            pl-2
+            pr-2
             shadow 
             bg-transparent
             backdrop-blur
+            overflow-y-auto
+            max-h-72
             text-asu-maroon 
-            rounded-box w-28
+            rounded-box
+            w-36
             ">
             {sites.map((site, index) => (
               <li 
@@ -189,13 +191,13 @@ export default function NewData({ data, setData, setForm }) {
                 }}
                 className={index < sites.length - 1 ? 'border-b-2 border-black/50' : ''}
                 key={site}
-              ><a className="flex justify-center text-xl">{site}</a></li>
+              ><a className="flex flex-col justify-center text-xl p-2">{site}</a></li>
             ))}
           </ul>
         </div>
       }
       {arrays && 
-        <div className="dropdown dropdown-bottom flex justify-center items-center">
+        <div className="dropdown flex justify-center items-center">
           <label
             tabIndex={0} 
             className="btn glass m-1 text-asu-maroon text-xl capitalize font-medium"
@@ -203,6 +205,7 @@ export default function NewData({ data, setData, setForm }) {
           <ul tabIndex={0} className="
             dropdown-content 
             menu 
+            -bottom-[25%]
             p-2 
             shadow 
             bg-transparent

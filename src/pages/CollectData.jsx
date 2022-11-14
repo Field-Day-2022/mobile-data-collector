@@ -36,7 +36,7 @@ export default function CollectData() {
 
   // for testing
   useEffect(() => {
-    // setCurrentData(testSessionData)
+    setCurrentData(testSessionData)
     setCurrentFormName("New Data")
   }, [])
 
