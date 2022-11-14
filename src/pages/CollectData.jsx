@@ -1,3 +1,4 @@
+import { current } from 'daisyui/src/colors'
 import { useEffect, useState } from 'react'
 import NewArthropodEntry from '../forms/NewArthropodEntry'
 
@@ -5,10 +6,20 @@ import NewData from "../forms/NewData"
 import NewDataEntry from '../forms/NewDataEntry'
 
 export default function CollectData() {
-  const [ currentData, setCurrentData ] = useState()
+  const [ currentData, setCurrentData ] = useState({
+      captureStatus: '',
+      array: '',
+      project: '',
+      site: '',
+      handler: '',
+      recorder: '',
+      arthropod: [],
+      amphibian: [],
+      lizard: [],
+      mammal: [],
+      snake: []
+    })
   const [ currentFormName, setCurrentFormName ] = useState('New Data')
-
-  // currentData && console.log(currentData)
 
   const testSessionData = {
     captureStatus: 'withCaptures',
@@ -17,41 +28,29 @@ export default function CollectData() {
     site: 'GWA1',
     handler: 'FFF',
     recorder: 'FFF',
-    arthropod: [1, 2, 3, 4],
-    amphibian: [1],
-    lizard: [],
-    mammal: [],
-    snake: [1, 2, 3, 4, 5]
   }
-
-  // useEffect(() => {
-  //   if (currentData?.captureStatus &&
-  //       currentData?.array &&
-  //       currentData?.project &&
-  //       currentData?.site &&
-  //       currentData?.handler &&
-  //       currentData?.recorder
-  //     ) setCurrentFormName('New Data Entry')
-  // }, [ currentData] )
 
   // for testing
   useEffect(() => {
-    setCurrentData(testSessionData)
-    setCurrentFormName("New Data")
+    setCurrentData({...currentData, 
+      project: testSessionData.project,
+      array: testSessionData.array,
+      site: testSessionData.site
+    })
+    setCurrentFormName("New Data Entry")
   }, [])
 
   const updateData = (species, data) => {
-    if (species === 'arthropod') {
-      setCurrentData({
-        ...currentData,
-        arthropod: [
-          ...currentData.arthropod,
-          data
-        ]
-      })
-    }
+    setCurrentData({
+      ...currentData,
+      [species]: [
+        ...currentData[species],
+        data
+      ]
+    })
   }
-  
+
+  console.log(currentData)
 
   return (
     <div className='
@@ -66,9 +65,10 @@ export default function CollectData() {
       pr-0 
       bg-gradient-to-r 
       from-slate-300/75 
-      rounded-lg'>
+      rounded-lg
+      text-asu-maroon'>
       <h1 className='text-4xl text-asu-maroon font-bold mt-2'>{currentFormName}</h1>
-      <div className='divider mb-0 pb-0 mt-0 h-1' />
+      <div className='divider mb-0 pb-0 mt-0 h-1 bg-asu-gold/75' />
       {currentFormName === 'New Data' && 
         <NewData data={currentData} setData={setCurrentData} setForm={setCurrentFormName} />}
       {(currentFormName === 'New Data Entry' && currentData) &&

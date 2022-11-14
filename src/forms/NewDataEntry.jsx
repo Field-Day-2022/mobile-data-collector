@@ -1,4 +1,4 @@
-export default function NewDataEntry({data, setData}) {
+export default function NewDataEntry({data, setData, setForm}) {
 
 
   const entryTypes = [
@@ -8,7 +8,20 @@ export default function NewDataEntry({data, setData}) {
     'Mammal',
     'Snake'
   ]
+
+  const goToForm = (formName) => {
+    setForm(formName)
+  }
   
+  const getNumberCrittersRecorded = (critter) => {
+    let count = 0;
+    for (const dataEntry of data[critter]) {
+      for (const key in dataEntry.arthropodData) {
+        count += Number(dataEntry.arthropodData[key])
+      }
+    }
+    return count
+  }
   
   return (
     <div 
@@ -35,11 +48,12 @@ export default function NewDataEntry({data, setData}) {
             tabIndex={0} 
             className="btn glass m-1 text-asu-maroon text-xl capitalize font-medium"
           >Select Form</label>
-          <ul tabIndex={0} className="dropdown-content menu p-2 shadow bg-base-100 rounded-box text-xl">
+          <ul tabIndex={0} className="dropdown-content menu p-2 shadow bg-transparent backdrop-blur rounded-box text-xl">
             {entryTypes.map((entry, index) => (
               <li 
                 onClick={() => {
                   document.activeElement.blur()
+                  goToForm(`New ${entry} Entry`)
                 }}
                 className={index < entryTypes.length - 1 ? 'border-b-2 border-black/50' : ''}
                 key={entry}
@@ -49,36 +63,36 @@ export default function NewDataEntry({data, setData}) {
         </div>
         <label htmlFor="my-modal-6" className="btn glass m-1 text-asu-maroon capitalize text-xl font-normal">End Session</label>
       </div>
-      <p className="text-xl mt-2 ">{`Number of Previous Entries:`}</p>
+      <p className="text-xl mt-2 ">{`Number of Critters Recorded:`}</p>
       {data ? 
         <div className="rounded-3xl">
           <table className="table table-compact glass rounded-3xl">
             <thead className="border-b-[3px] border-slate-200">
               <tr>
-                <th className="bg-transparent rounded-tl-3xl">Entry Type</th>
-                <th className="bg-transparent rounded-tr-3xl">Number</th>
+                <th className="bg-transparent rounded-tl-3xl text-center">Critter</th>
+                <th className="bg-transparent rounded-tr-3xl text-center">Number</th>
               </tr>
             </thead>
             <tbody className="text-center">
               <EntryTableRow 
                 entryType={'Arthropod'}
-                entryNumber={data.arthropod?.length || 0}
+                entryNumber={getNumberCrittersRecorded('arthropod')}
               />
               <EntryTableRow 
                 entryType={'Amphibian'}
-                entryNumber={data.amphibian?.length || 0}
+                entryNumber={getNumberCrittersRecorded('amphibian')}
               />
               <EntryTableRow 
                 entryType={'Lizard'}
-                entryNumber={data.lizard?.length || 0}
+                entryNumber={getNumberCrittersRecorded('lizard')}
               />
               <EntryTableRow 
                 entryType={'Mammal'}
-                entryNumber={data.mammal?.length || 0}
+                entryNumber={getNumberCrittersRecorded('mammal')}
               />
               <tr>
                 <td className="bg-transparent text-lg p-1 rounded-bl-3xl">{'Snake'}</td>
-                <td className="bg-transparent text-lg p-1 rounded-br-3xl">{data.snake?.length || 0}</td>
+                <td className="bg-transparent text-lg p-1 rounded-br-3xl">{getNumberCrittersRecorded('snake')}</td>
               </tr>
             </tbody>
           </table>
