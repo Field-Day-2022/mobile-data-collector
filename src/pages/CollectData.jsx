@@ -4,6 +4,7 @@ import NewArthropodEntry from '../forms/NewArthropodEntry'
 
 import NewData from "../forms/NewData"
 import NewDataEntry from '../forms/NewDataEntry'
+import NewAmphibianEntry from '../forms/NewAmphibianEntry'
 
 export default function CollectData() {
   const [ currentData, setCurrentData ] = useState({
@@ -21,6 +22,7 @@ export default function CollectData() {
     })
   const [ currentFormName, setCurrentFormName ] = useState('New Data')
 
+  // for testing
   const testSessionData = {
     captureStatus: 'withCaptures',
     array: '1',
@@ -37,7 +39,7 @@ export default function CollectData() {
       array: testSessionData.array,
       site: testSessionData.site
     })
-    setCurrentFormName("New Data Entry")
+    setCurrentFormName("New Data")
   }, [])
 
   const updateData = (species, data) => {
@@ -75,6 +77,8 @@ export default function CollectData() {
         <NewDataEntry data={currentData} setData={setCurrentData} setForm={setCurrentFormName} />}
       {(currentFormName === 'New Arthropod Entry') &&
         <NewArthropodEntry updateData={updateData} setForm={setCurrentFormName} />}
+      {(currentFormName === 'New Amphibian Entry') &&
+        <NewAmphibianEntry updateData={updateData} setForm={setCurrentFormName} />}
     </div>
   )
 }

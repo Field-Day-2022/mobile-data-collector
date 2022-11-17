@@ -35,9 +35,10 @@ export default function NewDataEntry({data, setData, setForm}) {
         items-center 
         justify-start 
         overflow-x-hidden 
-        overflow-y-scroll
-        scrollbar-thumb-rounded-lg 
-        scrollbar-track-rounded-lg 
+        overflow-y-auto
+        scrollbar-thin 
+        scrollbar-thumb-asu-maroon 
+        scrollbar-thumb-rounded-full
       ">
       <p className="text-lg">{`Project: ${data.project}`}</p>
       <p className="text-lg">{`Site: ${data.site}`}</p>
@@ -48,7 +49,9 @@ export default function NewDataEntry({data, setData, setForm}) {
             tabIndex={0} 
             className="btn glass m-1 text-asu-maroon text-xl capitalize font-medium"
           >Select Form</label>
-          <ul tabIndex={0} className="dropdown-content menu p-2 shadow bg-transparent backdrop-blur rounded-box text-xl">
+          <ul tabIndex={0} className="dropdown-content menu p-2 shadow bg-gradient-radial
+              from-white
+              to-white/50 rounded-box text-xl">
             {entryTypes.map((entry, index) => (
               <li 
                 onClick={() => {

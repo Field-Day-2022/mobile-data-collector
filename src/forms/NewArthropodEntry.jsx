@@ -6,6 +6,9 @@ export default function NewArthropodEntry({ updateData, setForm }) {
   const [ predator, setPredator ] = useState(false)
   const [ arthropodData, setArthropodData ] = useState()
 
+
+  // hard coded values temporary
+  
   const fenceTraps = ['A4', 'B4', 'C4']
 
   const species = [
@@ -42,11 +45,25 @@ export default function NewArthropodEntry({ updateData, setForm }) {
   }
   
   return (
-    <div className="pb-2 text-center form-control items-center justify-start overflow-x-hidden overflow-y-scroll rounded-lg w-full h-full">
+    <div className="
+      pb-2 
+      text-center 
+      form-control 
+      items-center 
+      justify-start 
+      overflow-x-hidden 
+      overflow-y-auto 
+      scrollbar-thin 
+      scrollbar-thumb-asu-maroon 
+      scrollbar-thumb-rounded-full 
+      rounded-lg 
+      w-full 
+      h-full">
      <div className="
       dropdown 
       flex
       justify-center
+      mt-2
       ">
           <label
             tabIndex={0} 
@@ -59,8 +76,9 @@ export default function NewArthropodEntry({ updateData, setForm }) {
               menu
               p-2 
               shadow
-              bg-transparent
-              backdrop-blur
+              bg-gradient-radial
+              from-white
+              to-white/50
               rounded-box 
               text-xl
               text-asu-maroon

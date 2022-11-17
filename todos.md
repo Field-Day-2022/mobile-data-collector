@@ -1,7 +1,13 @@
 # Todos
 
+- [ ] Create components for data entry wrappers and other commonly used forms such as the number input, dropdown, buttons for yes/no, etc.
+- [ ] Create a utils file for commonly used functions such as `completeCap
 - [ ] Arthropod Form
+  - [x] hard code the fields
+  - [ ] dynamic
 - [ ] Amphibian Form
+  - [x] hard coded
+  - [ ] dynamic
 - [ ] Lizard Form
 - [ ] Mammal Form
 - [ ] Snake Form
@@ -11,4 +17,8 @@
 - [ ] Implement hamburger icon in top left for navigating to home, starting a new session (`NewData`), viewing current sessions that have and haven't been finalized yet (still need to implement, make sure to keep finished sessions for that day document id in local storage if the user needs to add to it), and the about us page
 - [ ] Implement a page for viewing all sessions (completed and in-progress) for that device for that day, this will utilize the local storage to be persistent on application restarts, and for completed sessions, only the document id will be stored, as the user will only be allowed to add new data to it
 - [ ] Implement a notification banner that drops down and tells the user various information, such as syncing data with firestore, adding data, if the user still has data they need to sync, etc…
+- [x] Remove `backdrop-blur` because it is too resource intensive
+- [ ] Replace `glass` with the `gradient-radial` like with the backdrop
+- [ ] Add a screen to confirm each entry
+- [ ] (After all core functionality is implemented) Add styling and animations with framer motion
 

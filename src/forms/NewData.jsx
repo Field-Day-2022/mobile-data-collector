@@ -82,7 +82,10 @@ export default function NewData({ data, setData, setForm }) {
       items-center 
       justify-start 
       overflow-x-hidden 
-      overflow-y-auto 
+      overflow-y-auto
+      scrollbar-thin 
+      scrollbar-thumb-asu-maroon 
+      scrollbar-thumb-rounded-full 
       rounded-lg 
       w-full 
       h-full"
@@ -119,8 +122,9 @@ export default function NewData({ data, setData, setForm }) {
           menu 
           p-2 
           shadow 
-          bg-transparent
-          backdrop-blur
+          bg-gradient-radial
+          from-white
+          to-white/50
           rounded-box 
           w-48
           text-asu-maroon
@@ -174,8 +178,9 @@ export default function NewData({ data, setData, setForm }) {
             pl-2
             pr-2
             shadow 
-            bg-transparent
-            backdrop-blur
+            bg-gradient-radial
+            from-white
+            to-white/50
             overflow-y-auto
             max-h-72
             text-asu-maroon 
@@ -197,7 +202,7 @@ export default function NewData({ data, setData, setForm }) {
         </div>
       }
       {arrays && 
-        <div className="dropdown flex justify-center items-center">
+        <div className="dropdown flex justify-center">
           <label
             tabIndex={0} 
             className="btn glass m-1 text-asu-maroon text-xl capitalize font-medium"
@@ -208,8 +213,9 @@ export default function NewData({ data, setData, setForm }) {
             -bottom-[25%]
             p-2 
             shadow 
-            bg-transparent
-            backdrop-blur
+            bg-gradient-radial
+            from-white
+            to-white/50
             text-asu-maroon
             rounded-box 
             w-28">
