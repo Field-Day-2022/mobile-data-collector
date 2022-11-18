@@ -4,7 +4,7 @@ import './index.css';
 import App from './App';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
-
+import { Provider } from 'jotai'
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { 
@@ -43,7 +43,9 @@ enableIndexedDbPersistence(db)
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+    <Provider>
+      <App />
+    </Provider>
   </React.StrictMode>
 );
 

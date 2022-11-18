@@ -1,4 +1,9 @@
-export default function NewDataEntry({data, setData, setForm}) {
+import { useAtom } from 'jotai'
+import { currentFormName, currentSessionData } from '../utils/jotai';
+
+export default function NewDataEntry() {
+  const [currentData, setCurrentData] = useAtom(currentSessionData)
+  const [currentForm, setCurrentForm] = useAtom(currentFormName);
 
 
   const entryTypes = [
@@ -10,14 +15,20 @@ export default function NewDataEntry({data, setData, setForm}) {
   ]
 
   const goToForm = (formName) => {
-    setForm(formName)
+    setCurrentForm(formName)
   }
   
   const getNumberCrittersRecorded = (critter) => {
     let count = 0;
-    for (const dataEntry of data[critter]) {
-      for (const key in dataEntry.arthropodData) {
-        count += Number(dataEntry.arthropodData[key])
+    if (critter === 'arthropod') {
+      for (const dataEntry of currentData[critter]) {
+        for (const key in dataEntry.arthropodData) {
+          count += Number(dataEntry.arthropodData[key])
+        }
+      }
+    } else if (critter === 'amphibian') {
+      for (const dataEntry of currentData[critter]) {
+        count++;
       }
     }
     return count
@@ -40,9 +51,9 @@ export default function NewDataEntry({data, setData, setForm}) {
         scrollbar-thumb-asu-maroon 
         scrollbar-thumb-rounded-full
       ">
-      <p className="text-lg">{`Project: ${data.project}`}</p>
-      <p className="text-lg">{`Site: ${data.site}`}</p>
-      <p className="text-lg">{`Array: ${data.array}`}</p>
+      <p className="text-lg">{`Project: ${currentData.project}`}</p>
+      <p className="text-lg">{`Site: ${currentData.site}`}</p>
+      <p className="text-lg">{`Array: ${currentData.array}`}</p>
       <div className="flex w-full justify-center">
         <div className="dropdown dropdown-bottom justify-center items-center">
           <label
@@ -67,7 +78,7 @@ export default function NewDataEntry({data, setData, setForm}) {
         <label htmlFor="my-modal-6" className="btn glass m-1 text-asu-maroon capitalize text-xl font-normal">End Session</label>
       </div>
       <p className="text-xl mt-2 ">{`Number of Critters Recorded:`}</p>
-      {data ? 
+      {currentData ? 
         <div className="rounded-3xl">
           <table className="table table-compact glass rounded-3xl">
             <thead className="border-b-[3px] border-slate-200">

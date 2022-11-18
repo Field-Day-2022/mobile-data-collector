@@ -2,14 +2,18 @@ import { collection, getDocsFromCache, where, query } from 'firebase/firestore'
 import { useEffect, useState } from 'react'
 import { db } from '../index'
 
-// import ButtonDropdown from '../components/ButtonDropdown'
+import { useAtom } from 'jotai'
+import { currentFormName, currentSessionData } from '../utils/jotai';
 
-export default function NewData({ data, setData, setForm }) {
+export default function NewData() {
   const [ currentProject, setCurrentProject ] = useState('Project')
   const [ currentSite, setCurrentSite ] = useState('Site')
   const [ currentArray, setCurrentArray ] = useState('Array')
   const [ recorder, setRecorder ] = useState('')
   const [ handler, setHandler ] = useState('')
+
+  const [currentData, setCurrentData] = useAtom(currentSessionData)
+  const [currentForm, setCurrentForm] = useAtom(currentFormName);
 
   const [ sites, setSites] = useState()
   const [ arrays, setArrays ] = useState()
@@ -50,8 +54,12 @@ export default function NewData({ data, setData, setForm }) {
 
   const finishForm = (captureStatus) => {
     if (captureStatus === 'withCaptures') {
-      setData({
-        ...data,
+      setCurrentData({
+        arthropod: [],
+        amphibian: [],
+        lizard: [],
+        mammal: [],
+        snake: [],
         recorder,
         handler,
         project: currentProject,
@@ -60,8 +68,12 @@ export default function NewData({ data, setData, setForm }) {
         captureStatus: 'withCaptures'
       })
     } else if (captureStatus === 'withoutCaptures') {
-      setData({
-        ...data,
+      setCurrentData({
+        arthropod: [],
+        amphibian: [],
+        lizard: [],
+        mammal: [],
+        snake: [],
         recorder,
         handler,
         project: currentProject,
@@ -70,7 +82,7 @@ export default function NewData({ data, setData, setForm }) {
         captureStatus: 'withoutCaptures'
       })
     }
-    setForm('New Data Entry')
+    setCurrentForm('New Data Entry')
   }
 
   return (
