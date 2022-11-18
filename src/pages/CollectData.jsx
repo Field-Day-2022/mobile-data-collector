@@ -1,7 +1,7 @@
-import { current } from 'daisyui/src/colors'
 import { useEffect, useState } from 'react'
-import NewArthropodEntry from '../forms/NewArthropodEntry'
 
+import NewArthropodEntry from '../forms/NewArthropodEntry'
+import NewArthropodEntry2 from '../forms/NewArthropodEntry2'
 import NewData from "../forms/NewData"
 import NewDataEntry from '../forms/NewDataEntry'
 import NewAmphibianEntry from '../forms/NewAmphibianEntry'
@@ -39,7 +39,7 @@ export default function CollectData() {
       array: testSessionData.array,
       site: testSessionData.site
     })
-    setCurrentFormName("New Data")
+    setCurrentFormName("New Arthropod Entry")
   }, [])
 
   const updateData = (species, data) => {
@@ -76,7 +76,7 @@ export default function CollectData() {
       {(currentFormName === 'New Data Entry' && currentData) &&
         <NewDataEntry data={currentData} setData={setCurrentData} setForm={setCurrentFormName} />}
       {(currentFormName === 'New Arthropod Entry') &&
-        <NewArthropodEntry updateData={updateData} setForm={setCurrentFormName} />}
+        <NewArthropodEntry2 updateData={updateData} setForm={setCurrentFormName} />}
       {(currentFormName === 'New Amphibian Entry') &&
         <NewAmphibianEntry updateData={updateData} setForm={setCurrentFormName} />}
     </div>

@@ -1,5 +1,7 @@
-import { m } from 'framer-motion'
 import { useState } from 'react'
+
+import NumberInput from '../components/NumberInput'
+import Dropdown from '../components/Dropdown'
 
 export default function NewArthropodEntry({ updateData, setForm }) {
   const [ trap, setTrap ] = useState()
@@ -104,6 +106,7 @@ export default function NewArthropodEntry({ updateData, setForm }) {
         <NumberInput 
           key={item}
           label={item}
+          placeholder="# of critters"
           setValue={value => setArthropodData({...arthropodData, [item]: value})}
         />
       ))}
@@ -119,17 +122,6 @@ export default function NewArthropodEntry({ updateData, setForm }) {
       >
         Finished
       </button>
-    </div>
-  )
-}
-
-const NumberInput = ({ label, setValue }) => {
-  return (
-    <div>
-      <label className="label">
-        <span className="label-text text-asu-maroon">{label}</span>
-      </label>
-      <input onChange={(e) => e.target.value > 0 && setValue(e.target.value)} type="text" placeholder="# of Critters (0 if blank)" className="placeholder:text-asu-maroon text-asu-maroon  input bg-white/25 input-bordered input-secondary w-full max-w-xs" />
     </div>
   )
 }
