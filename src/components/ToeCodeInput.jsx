@@ -4,6 +4,7 @@ export default function ToeCodeInput({
   toeCode,
   setToeCode
 }) {
+  
   const [ selected, setSelected ] = useState({
     a: false,
     b: false,
@@ -18,6 +19,64 @@ export default function ToeCodeInput({
 
   const letters = ['A', 'B', 'C', 'D']
   const numbers = [1, 2, 3, 4, 5]
+
+  const formattedToeCodes = 
+    toeCode ?  
+    toeCode.split('').reduce((total, current, index, array) => {
+      if (index % 2 && index < array.length - 1) {
+        return `${total}${current}-`
+      } else {
+        return `${total}${current}`
+      }
+    })
+    :
+    ''
+
+  const generateToeCode = () => {
+
+  }
+
+  const handleClick = (source) => {
+    if (source !== 'backspace' && toeCode.length !== 8) {
+      if (Number(source)) {
+        if (!Number(toeCode.charAt(toeCode.length - 1))) {
+          setToeCode(`${toeCode}${source}`)
+          setSelected({
+            a: false,
+            b: false,
+            c: false,
+            d: false,
+            1: false,
+            2: false,
+            3: false,
+            4: false,
+            5: false
+          })
+        }
+      } else {
+        if (Number(toeCode.charAt(toeCode.length - 1)) || toeCode.length === 0) {
+          setToeCode(`${toeCode}${source}`)
+          setSelected({...selected, [source]: !selected[source]})
+        }
+      } 
+    } else if (source === 'backspace') {
+      setToeCode(toeCode.substring(0, toeCode.length - 1))
+      setSelected({
+        a: false,
+        b: false,
+        c: false,
+        d: false,
+        1: false,
+        2: false,
+        3: false,
+        4: false,
+        5: false
+      })
+      if (!Number(toeCode.charAt(toeCode.length - 2)) && toeCode.charAt(toeCode.length - 2)) {
+        setSelected({...selected, [toeCode.charAt(toeCode.length - 2)]: true})
+      }
+    }
+  }
 
   return (
     <div>
@@ -36,10 +95,11 @@ export default function ToeCodeInput({
       >{toeCode ? `Toe-Clip Code: ${toeCode}` : 'Toe-Clip Code'}</label>
       <input type="checkbox" id="my-modal-4" 
         className="
-          modal-toggle"   
+          modal-toggle
+          "   
       />
 
-      <div className="modal modal-open">
+      <div className="modal ">
         <div 
           className="
             modal-box 
@@ -49,21 +109,41 @@ export default function ToeCodeInput({
             flex
             flex-col
             items-center
+            max-h-screen
+            p-1
             "
           >
-          <p className="text-xl">{toeCode ? `Toe-Clip Code: ${toeCode}` : 'Toe-Clip Code'}</p>
-          <img src="./toe-clip-example-img.png" alt="example toe codes" className="w-5/6 z-0"/>
+          <div className="flex flex-row">
+            <div className="flex flex-col">
+              <p className="text-sm">Toe-Clip Code:</p>
+              <p className="text-xl">{formattedToeCodes}</p>
+            </div>
+          </div>
+          <img src="./toe-clip-example-img.png" alt="example toe codes" className="w-3/4 z-0"/>
           <div className="flex w-full justify-evenly items-center">
             {letters.map(letter => (
               <Button 
                 key={letter}
                 prompt={letter}
-                handler={() => setSelected({...selected, [letter]: !selected[letter]})}
+                handler={() => handleClick(letter)}
                 isSelected={selected[letter]}
               />
             ))}
-            <div className='bg-asu-maroon rounded-xl'>
-            <svg height="72" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+            <div className='
+              bg-asu-maroon 
+                rounded-xl
+                brightness-100
+                text-2xl 
+                capitalize 
+                text-asu-gold
+                z-10
+                active:brightness-50
+                active:scale-90
+                transition
+                '
+              onClick={() => handleClick('backspace')}
+            >
+            <svg height="72" width="50" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
               <path fillRule="nonzero" d="M 355.684 68.486 C 359.156 65.197 359.172 59.835 355.716 56.523 C 352.273 53.211 346.62 53.197 343.159 56.493 L 144.317 244.006 C 140.845 247.295 140.828 252.657 144.284 255.969 L 343.159 443.513 C 346.631 446.802 352.26 446.787 355.716 443.475 C 359.172 440.163 359.156 434.809 355.684 431.52 L 163.201 250.003 L 355.684 68.486 Z" fill="rgb(255, 198, 39)" paintOrder="fill" strokeMiterlimit={"11"}  />
             </svg>
             </div>
@@ -73,10 +153,34 @@ export default function ToeCodeInput({
               <Button 
                 key={number}
                 prompt={number}
-                handler={() => setSelected({...selected, [number]: !selected[number]})}
+                handler={() => handleClick(number)}
                 isSelected={selected[number]}
               />
             ))}
+          </div>
+          <div className="flex flex-row">
+            <Button 
+              prompt="Generate"
+              handler={() => generateToeCode}
+            />
+            <button
+              className={`
+                bg-asu-maroon
+                brightness-100
+                p-5
+                rounded-xl 
+                text-2xl 
+                capitalize 
+                text-asu-gold
+                z-10
+                m-1
+                active:brightness-50
+                active:scale-90
+                transition
+                select-none
+                `}>
+              <label htmlFor="my-modal-4">Close</label>
+            </button>
           </div>
         </div>
       </div>
@@ -90,7 +194,8 @@ function Button({prompt, handler, isSelected}) {
     <button
       className={
         isSelected ? 
-        `bg-asu-maroon
+        `
+        bg-asu-maroon
         brightness-50
         p-5
         rounded-xl 
@@ -99,9 +204,14 @@ function Button({prompt, handler, isSelected}) {
         text-asu-gold
         z-10
         m-1
+        active:brightness-50
+        active:scale-90
+        transition
+        select-none
         `
         :
-        `bg-asu-maroon
+        `
+        bg-asu-maroon
         brightness-100
         p-5
         rounded-xl 
@@ -110,6 +220,10 @@ function Button({prompt, handler, isSelected}) {
         text-asu-gold
         z-10
         m-1
+        active:brightness-50
+        active:scale-90
+        transition
+        select-none
         `
       }
         

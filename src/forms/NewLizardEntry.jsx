@@ -18,7 +18,7 @@ export default function NewLizardEntry() {
   const [ speciesCode, setSpeciesCode ] = useState()
   const [ trap, setTrap ] = useState()
   const [ isRecapture, setIsRecapture ] = useState()
-  const [ toeCode, setToeCode ] = useState()
+  const [ toeCode, setToeCode ] = useState('A1B2C4')
   const [ svl, setSvl ] = useState()
   const [ vtl, setVtl ] = useState()
   const [ regenTail, setRegenTail ] = useState()

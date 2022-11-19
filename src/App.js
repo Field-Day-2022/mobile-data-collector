@@ -19,7 +19,7 @@ function App() {
     toeCodeError
   ] = useCollection(collection(db, 'ToeClipCodes'))
 
-  if (answerSetSnapshot && toeCodeSnapshot) console.log(`Retrieved answer sets from ${answerSetSnapshot?.metadata.fromCache ? 'cache' : 'server'} and toe clip codes from ${toeCodeSnapshot?.metadata.fromCache ? 'cache' : 'server'}`)
+  // if (answerSetSnapshot && toeCodeSnapshot) console.log(`Retrieved answer sets from ${answerSetSnapshot?.metadata.fromCache ? 'cache' : 'server'} and toe clip codes from ${toeCodeSnapshot?.metadata.fromCache ? 'cache' : 'server'}`)
 
   return (
     <div className="font-openSans overflow-hidden absolute flex flex-col items-center text-center pt-5 pb-5 justify-center inset-0 bg-gradient-to-tr from-asu-maroon to-asu-gold">
