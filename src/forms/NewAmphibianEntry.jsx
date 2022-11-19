@@ -14,7 +14,7 @@ import NumberInput from '../components/NumberInput';
 import FormWrapper from '../components/FormWrapper';
 import Dropdown from '../components/Dropdown';
 import SingleCheckbox from '../components/SingleCheckbox';
-import TextInput from './TextInput';
+import TextInput from '../components/TextInput';
 import Button from '../components/Button';
 
 export default function NewAmphibianEntry() {

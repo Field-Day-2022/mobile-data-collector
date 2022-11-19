@@ -5,7 +5,7 @@ import NumberInput from '../components/NumberInput';
 import Dropdown from '../components/Dropdown';
 import FormWrapper from '../components/FormWrapper';
 import SingleCheckbox from '../components/SingleCheckbox';
-import TextInput from './TextInput';
+import TextInput from '../components/TextInput';
 import Button from '../components/Button';
 
 import { currentFormName, currentSessionData } from '../utils/jotai';

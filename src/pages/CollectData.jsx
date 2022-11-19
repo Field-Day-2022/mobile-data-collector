@@ -1,15 +1,17 @@
 import { useAtom } from 'jotai';
+import { currentSessionData, currentFormName } from '../utils/jotai';
 
 import NewArthropodEntry from '../forms/NewArthropodEntry';
 import NewData from '../forms/NewData';
 import NewDataEntry from '../forms/NewDataEntry';
 import NewAmphibianEntry from '../forms/NewAmphibianEntry';
-import { currentSessionData, currentFormName } from '../utils/jotai';
+import NewLizardEntry from '../forms/NewLizardEntry';
 
 export default function CollectData() {
   const [currentData, setCurrentData] = useAtom(currentSessionData)
   const [currentForm, setCurrentForm] = useAtom(currentFormName);
 
+  // setCurrentForm("New Lizard Entry")
 
   return (
     <div
@@ -36,6 +38,7 @@ export default function CollectData() {
       {currentForm === 'New Data Entry' && currentData && <NewDataEntry />}
       {currentForm === 'New Arthropod Entry' && <NewArthropodEntry />}
       {currentForm === 'New Amphibian Entry' && <NewAmphibianEntry />}
+      {currentForm === 'New Lizard Entry' && <NewLizardEntry />}
     </div>
   );
 }

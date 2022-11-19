@@ -122,7 +122,7 @@ export default function NewDataEntry() {
               <label 
                 htmlFor="my-modal-6" 
                 onClick={() => {
-                  // TODO: send data to firestore, navigate to "
+                  // TODO: send data to firestore, navigate to Home 
                 }}
                 className="btn p-2 h-min glass text-asu-maroon normal-case mb-2 font-normal text-lg">Yes, I'm done with this session</label>
               <label htmlFor="my-modal-6" className="btn p-2 h-min glass text-asu-maroon normal-case font-normal text-lg">No, I'm not finished with this session</label>

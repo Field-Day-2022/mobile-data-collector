@@ -1,3 +1,5 @@
+// TODO: this are for demonstration only, replace with firestore calls in production
+
 export const arthropodSpeciesList = [
   'ARAN',
   'AUCH',
@@ -61,8 +63,14 @@ export const amphibianSpecies = [
   'UNKA'
 ]
 
-export const sexOptions= [
+export const sexOptions = [
   'Male',
   'Female',
   'Undefined'
+]
+
+export const lizardSpeciesList = [
+  'ASTI',
+  'CADR',
+  'COVA'
 ]
