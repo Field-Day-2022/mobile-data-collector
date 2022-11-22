@@ -18,7 +18,7 @@ export default function NewLizardEntry() {
   const [speciesCode, setSpeciesCode] = useState();
   const [trap, setTrap] = useState();
   const [isRecapture, setIsRecapture] = useState();
-  const [toeCode, setToeCode] = useState('A1B2C4');
+  const [toeCode, setToeCode] = useState('');
   const [svl, setSvl] = useState();
   const [vtl, setVtl] = useState();
   const [regenTail, setRegenTail] = useState();
@@ -47,17 +47,19 @@ export default function NewLizardEntry() {
         options={fenceTraps}
       />
       <SingleCheckbox
-        prompt='Is it dead?'
-        value={isDead}
-        setValue={setIsDead}
+        prompt='Is it a recapture?'
+        value={isRecapture}
+        setValue={setIsRecapture}
       />
       {speciesCode && (
         <ToeCodeInput
           toeCode={toeCode}
           setToeCode={setToeCode}
           speciesCode={speciesCode}
+          isRecapture={isRecapture}
         />
       )}
+      {}
     </FormWrapper>
   );
 }
