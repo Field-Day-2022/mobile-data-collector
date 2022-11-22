@@ -1,10 +1,14 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useAtom } from 'jotai'
+import { currentSessionData } from '../utils/jotai'
+import { db } from '../index'
+import { collection, getDocs, query, where } from 'firebase/firestore'
 
 export default function ToeCodeInput({
   toeCode,
-  setToeCode
+  setToeCode,
+  speciesCode
 }) {
-  
   const [ selected, setSelected ] = useState({
     a: false,
     b: false,
@@ -16,7 +20,23 @@ export default function ToeCodeInput({
     4: false,
     5: false
   })
+  const [ toeCodes, setToeCodes ] = useState()
+  
+  const [ currentData, setCurrentData ] = useAtom(currentSessionData)
+  
+  console.log(toeCodes)
 
+  useEffect(() => {
+    const fetchToeCodes = async() => {
+      const toeCodesSnapshot = await getDocs(query(
+        collection(db, 'ToeClipCodes'),
+        where('SiteCode', '==', currentData.site)
+      ))
+      setToeCodes(toeCodesSnapshot.docs[0].data())
+    }
+    fetchToeCodes()
+  }, [])
+  
   const letters = ['A', 'B', 'C', 'D']
   const numbers = [1, 2, 3, 4, 5]
 
@@ -33,8 +53,15 @@ export default function ToeCodeInput({
     ''
 
   const generateToeCode = () => {
-
+    for (const toeClipCode in toeCodes[currentData.array][speciesCode]) {
+      if (toeClipCode.slice(0, toeCode.length) === (toeCode) &&
+        toeCodes[currentData.array][speciesCode][toeClipCode] === 'date') {
+        setToeCode(toeClipCode)
+        return
+      }
+    }
   }
+
 
   const handleClick = (source) => {
     if (source !== 'backspace' && toeCode.length !== 8) {
@@ -161,7 +188,7 @@ export default function ToeCodeInput({
           <div className="flex flex-row">
             <Button 
               prompt="Generate"
-              handler={() => generateToeCode}
+              handler={() => generateToeCode()}
             />
             <button
               className={`
