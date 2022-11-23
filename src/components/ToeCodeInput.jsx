@@ -3,6 +3,7 @@ import { useAtom } from 'jotai'
 import { currentSessionData } from '../utils/jotai'
 import { db } from '../index'
 import { collection, getDocs, query, where } from 'firebase/firestore'
+import Dropdown from './Dropdown'
 
 export default function ToeCodeInput({
   toeCode,
@@ -22,10 +23,15 @@ export default function ToeCodeInput({
     5: false
   })
   const [ toeCodes, setToeCodes ] = useState()
+  const [ preexistingToeClipCodes,
+          setPreexistingToeClipCodes ] = useState([]) 
   
   const [ currentData, setCurrentData ] = useAtom(currentSessionData)
+
   
   console.log(toeCodes)
+
+  // console.log(preexistingToeClipCodes)
 
   useEffect(() => {
     const fetchToeCodes = async() => {
@@ -37,6 +43,35 @@ export default function ToeCodeInput({
     }
     fetchToeCodes()
   }, [])
+
+  useEffect(() => {
+    if (toeCodes) {
+      for (const toeClipCode in toeCodes[currentData.array][speciesCode]) {
+        if (toeCodes[currentData.array][speciesCode][toeClipCode] !== 'date' &&
+            toeClipCode !== 'SpeciesCode' &&
+            toeClipCode !== 'ArrayCode' &&
+            toeClipCode !== 'SiteCode') {
+          setPreexistingToeClipCodes(preexistingToeClipCodes => [...preexistingToeClipCodes, toeClipCode ])
+          // console.log(toeClipCode)
+        }
+      }
+    }
+  }, [toeCodes])
+
+  useEffect(() => {
+    if (toeCodes) {
+      setPreexistingToeClipCodes([])
+      for (const toeClipCode in toeCodes[currentData.array][speciesCode]) {
+        if (toeCodes[currentData.array][speciesCode][toeClipCode] !== 'date' &&
+            toeClipCode !== 'SpeciesCode' &&
+            toeClipCode !== 'ArrayCode' &&
+            toeClipCode !== 'SiteCode') {
+          setPreexistingToeClipCodes(preexistingToeClipCodes => [...preexistingToeClipCodes, toeClipCode ])
+          // console.log(toeClipCode)
+        }
+      }
+    }
+  }, [speciesCode])
   
   const letters = ['A', 'B', 'C', 'D']
   const numbers = [1, 2, 3, 4, 5]
@@ -127,7 +162,7 @@ export default function ToeCodeInput({
           "   
       />
 
-      <div className="modal modal-open">
+      <div className="modal ">
         <div 
           className="
             modal-box 
@@ -186,50 +221,15 @@ export default function ToeCodeInput({
               />
             ))}
           </div>
-          <div className="flex flex-row items-center">
-            {isRecapture ? 
-              <div>
-                {/* The button to open modal */}
-                <button
-                  className='
-                  bg-asu-maroon
-                    brightness-100
-                    p-5
-                    rounded-xl 
-                    text-2xl 
-                    capitalize 
-                    text-asu-gold
-                    active:brightness-50
-                    active:scale-90
-                    transition
-                    select-none
-                  '
-                >
-                <label htmlFor="my-modal">Recapture History</label>
-                </button>
-
-                {/* Put this part before </body> tag */}
-                <input type="checkbox" id="my-modal" className="modal-toggle" />
-                <div className="modal">
-                  <div className="
-                      modal-box 
-                      w-11/12 
-                      max-w-sm
-                      bg-white/90
-                      flex
-                      flex-col
-                      items-center
-                      max-h-screen
-                      p-1
-                    ">
-                    <h3 className="font-bold text-lg">Congratulations random Internet user!</h3>
-                    <p className="py-4">You've been selected for a chance to get one year of subscription to use Wikipedia for free!</p>
-                    <div className="modal-action">
-                      <label htmlFor="my-modal" className="btn">Yay!</label>
-                    </div>
-                  </div>
-                </div>
-              </div>
+          <div className="flex flex-row items-center ">
+            {isRecapture && toeCodes ? 
+              <Dropdown 
+                toeCode
+                value={toeCode}
+                setValue={setToeCode}
+                placeholder="History"
+                options={preexistingToeClipCodes}
+              />
               :
               <Button 
                 prompt="Generate New"

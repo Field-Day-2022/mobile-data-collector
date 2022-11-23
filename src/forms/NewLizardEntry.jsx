@@ -17,7 +17,7 @@ import ToeCodeInput from '../components/ToeCodeInput';
 export default function NewLizardEntry() {
   const [speciesCode, setSpeciesCode] = useState();
   const [trap, setTrap] = useState();
-  const [isRecapture, setIsRecapture] = useState();
+  const [isRecapture, setIsRecapture] = useState(false);
   const [toeCode, setToeCode] = useState('');
   const [svl, setSvl] = useState();
   const [vtl, setVtl] = useState();
