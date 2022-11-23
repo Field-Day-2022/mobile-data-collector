@@ -29,7 +29,7 @@ export default function ToeCodeInput({
   const [ currentData, setCurrentData ] = useAtom(currentSessionData)
 
   
-  console.log(toeCodes)
+  // console.log(toeCodes)
 
   // console.log(preexistingToeClipCodes)
 
