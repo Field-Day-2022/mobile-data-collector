@@ -74,3 +74,15 @@ export const lizardSpeciesList = [
   'CADR',
   'COVA'
 ]
+
+export const mammalSpeciesList = [
+    'DOGE',
+    'FELI',
+    'MONK',
+]
+
+export const mammalFenceTraps = [
+    'X1',
+    'X2',
+    'X3',
+]
