@@ -57,6 +57,7 @@ export default function NewLizardEntry() {
           setToeCode={setToeCode}
           speciesCode={speciesCode}
           isRecapture={isRecapture}
+          setIsRecapture={setIsRecapture}
         />
       )}
       {}

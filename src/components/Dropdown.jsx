@@ -15,8 +15,8 @@ export default function Dropdown({
         tabIndex={0} 
         className="
           dropdown-content 
-          menu
-          p-2 
+          pl-2
+          pr-2 
           shadow
           bg-gradient-radial
           from-white
@@ -25,6 +25,7 @@ export default function Dropdown({
           text-xl
           text-asu-maroon
           overflow-y-auto
+          max-h-96
           ">
         {options.length ? options.map((entry, index) => (
           <li 
@@ -39,7 +40,7 @@ export default function Dropdown({
               : 
               ''}
             key={entry}
-          ><a>{entry}</a></li>
+          ><a className="flex flex-col justify-center text-xl p-2">{entry}</a></li>
         ))
         :
         <li 
@@ -47,7 +48,7 @@ export default function Dropdown({
           onClick={() => {
             document.activeElement.blur()
           }} 
-        ><a>None available</a></li>   
+        ><a className="flex flex-col justify-center text-xl p-2">None available</a></li>   
         }
       </ul>
     </div>
