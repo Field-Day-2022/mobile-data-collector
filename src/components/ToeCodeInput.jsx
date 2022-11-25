@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useAtom } from 'jotai'
 import { currentSessionData } from '../utils/jotai'
 import { db } from '../index'
-import { collection, getDocs, query, where } from 'firebase/firestore'
+import { collection, getDocFromCache, getDocs, getDocsFromCache, query, where, doc } from 'firebase/firestore'
 import Dropdown from './Dropdown'
 import { motion, useAnimationControls } from 'framer-motion'
 import SingleCheckbox from './SingleCheckbox'
@@ -12,7 +12,8 @@ export default function ToeCodeInput({
   setToeCode,
   speciesCode,
   isRecapture,
-  setIsRecapture
+  setIsRecapture,
+  setUpdatedToeCodes
 }) {
   const [ selected, setSelected ] = useState({
     a: false,
@@ -35,17 +36,39 @@ export default function ToeCodeInput({
 
   const errorMsgControls = useAnimationControls()
   
-  console.log(toeCodes)
+  // console.log(toeCodes)
 
-  console.log(preexistingToeClipCodes)
+  // console.log(preexistingToeClipCodes)
 
   useEffect(() => {
     const fetchToeCodes = async() => {
-      const toeCodesSnapshot = await getDocs(query(
-        collection(db, 'ToeClipCodes'),
-        where('SiteCode', '==', currentData.site)
-      ))
-      setToeCodes(toeCodesSnapshot.docs[0].data())
+      let toeCodesSnapshot
+      try {
+        toeCodesSnapshot = await getDocFromCache(doc(db, "TestToeClipCodes", currentData.site))
+        console.log("from test")
+        setToeCodes(toeCodesSnapshot.data())
+      } catch (e) {
+        console.log("from live")
+        toeCodesSnapshot = await getDocsFromCache(query(
+          collection(db, 'ToeClipCodes'),
+          where('SiteCode', '==', currentData.site)
+        ))
+        setToeCodes(toeCodesSnapshot.docs[0].data())
+        console.log(toeCodes)
+      }
+      // let toeCodesSnapshot = await getDocFromCache(doc(db, "TestToeClipCodes", currentData.site))
+      // if (toeCodesSnapshot) {
+      //   console.log("from test")
+      //   setToeCodes(toeCodesSnapshot.data())
+      // }
+      // else {
+      //   console.log("from live")
+      //   toeCodesSnapshot = await getDocsFromCache(query(
+      //     collection(db, 'ToeClipCodes'),
+      //     where('SiteCode', '==', currentData.site)
+      //   ))
+      //   setToeCodes(toeCodesSnapshot.docs[0].data())
+      // }
     }
     fetchToeCodes()
   }, [])
@@ -114,7 +137,7 @@ export default function ToeCodeInput({
     for (const toeClipCode in toeCodes[currentData.array][speciesCode]) {
       if ( toeClipCode.slice(0, toeCode.length) === (toeCode) &&
           toeCodes[currentData.array][speciesCode][toeClipCode] === 'date') {
-        console.log(toeClipCode, toeCodes[currentData.array][speciesCode][toeClipCode])
+        // console.log(toeClipCode, toeCodes[currentData.array][speciesCode][toeClipCode])
         setToeCode(toeClipCode)
         setSelected({
           a: false,
@@ -156,6 +179,13 @@ export default function ToeCodeInput({
         }
       }
     } 
+  }
+
+  const generateToeCodesObj = () => {
+    let updatedToeCodeObject = toeCodes
+    updatedToeCodeObject[currentData.array][speciesCode][toeCode] = Date.now()
+    // console.log(updatedToeCodeObject)
+    setUpdatedToeCodes(updatedToeCodeObject)
   }
 
   const handleClick = (source) => {
@@ -331,7 +361,9 @@ export default function ToeCodeInput({
                 `}
                 >
               {isValid ? 
-                <label htmlFor="my-modal-4">Close</label>
+                <label htmlFor="my-modal-4"
+                  onClick={() => generateToeCodesObj()}
+                >Close</label>
                 :
                 <p onClick={() => triggerErrorMsgAnimation(errorMsg)}>Close</p>
               }

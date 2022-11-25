@@ -11,7 +11,7 @@ export default function CollectData() {
   const [currentData, setCurrentData] = useAtom(currentSessionData)
   const [currentForm, setCurrentForm] = useAtom(currentFormName);
 
-  // setCurrentForm("New Lizard Entry")
+  // setCurrentForm("New Data")
 
   return (
     <div
