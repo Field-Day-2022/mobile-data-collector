@@ -127,7 +127,7 @@ export default function NewDataEntry() {
               <label 
                 htmlFor="my-modal-6" 
                 onClick={() => {
-                  setCurrentForm('New Data')
+                  setCurrentForm('Finish Session')
                   // TODO: send data to firestore, navigate to Home 
                 }}
                 className="btn p-2 h-min glass text-asu-maroon normal-case mb-2 font-normal text-lg">Yes, I'm done with this session</label>

@@ -23,7 +23,7 @@ export default function NewAmphibianEntry() {
   const [ hdBody, setHdBody ] = useState('')
   const [ mass,  setMass] = useState('')
   const [ sex, setSex] = useState()
-  const [ isDead, setIsDead ] = useState()
+  const [ isDead, setIsDead ] = useState(false)
   const [ comments, setComments ] = useState('')
 
   const [currentData, setCurrentData] = useAtom(currentSessionData)
