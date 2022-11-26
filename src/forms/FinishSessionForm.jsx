@@ -13,6 +13,7 @@ import {
   doc,
   getDocs,
   addDoc,
+  writeBatch,
 } from 'firebase/firestore';
 
 import FormWrapper from '../components/FormWrapper';
@@ -24,8 +25,8 @@ export const FinishSessionForm = () => {
   const [currentData, setCurrentData] = useAtom(currentSessionData);
   const [currentForm, setCurrentForm] = useAtom(currentFormName);
 
-  const [trapStatus, setTrapStatus] = useState();
-  const [comments, setComments] = useState();
+  const [trapStatus, setTrapStatus] = useState('');
+  const [comments, setComments] = useState('');
 
   const [
     answerSet,
@@ -35,12 +36,35 @@ export const FinishSessionForm = () => {
   ] = useCollectionData(collection(db, 'AnswerSet'))
 
   const uploadSessionData = async (sessionObj) => {
+    console.log(`Uploading to Test${currentData.project}Session`);
     const docRef = await addDoc(
       collection(db, `Test${currentData.project}Session`),
       sessionObj
     );
     console.log(`doc written with id ${docRef.id}`);
   };
+
+  const uploadBatchedEntryData = async (entryDataArray) => {
+    console.log(`Uploading to Test${currentData.project}Data`);
+    const batch = writeBatch(db);
+    for (const entryObject of entryDataArray) {
+      for (const key in entryObject) {
+        if (!entryObject[key]) {
+          entryObject[key] = 'N/A'
+        }
+      }
+      const timestamp = new Date(entryObject.dateTime)
+      const entryId = `${currentData.site}${entryObject.taxa}${timestamp.getTime()}`
+      batch.set(
+        doc(db, `Test${currentData.project}Data`, entryId),
+        entryObject
+      )
+    }
+    await batch.commit();
+    console.log(entryDataArray)
+  }
+
+  // TODO: consider fine tuning the data that is uploaded to eliminate N/A fields where they aren't needed
 
   const finishSession = () => {
     const date = new Date();
@@ -55,7 +79,6 @@ export const FinishSessionForm = () => {
       trapStatus: trapStatus,
       year: date.getFullYear(),
     };
-    console.log(`Uploading to ${currentData.project}Session collection (test)`);
     console.log(sessionObj);
     const dataObjTemplate = {
       aran: 'N/A',
@@ -108,21 +131,23 @@ export const FinishSessionForm = () => {
     if (currentData.amphibian) {
       for (const dataEntry of currentData.amphibian) {
         const [genus, species] = getGenusSpecies(currentData.project, "Amphibian", dataEntry.speciesCode) || ['N/A', 'N/A']
+        const entryDate = new Date(dataEntry.dateTime)
+        const year = entryDate.getFullYear()
         const obj = structuredClone(dataObjTemplate)
         obj.array = currentData.array
-        obj.dateTime = date.toLocaleString()
+        obj.dateTime = dataEntry.dateTime
         obj.dead = dataEntry.isDead
         obj.fenceTrap = dataEntry.trap
         obj.genus = genus
         obj.hdBody = dataEntry.hdBody
         obj.massG = dataEntry.massG 
-        obj.sessionDateTime = date.toLocaleString()
+        obj.sessionDateTime = currentData.sessionDateTime
         obj.sex = dataEntry.sex
         obj.site = currentData.site
         obj.species = species
         obj.speciesCode = dataEntry.speciesCode
         obj.taxa = "Amphibian"
-        obj.year = date.getFullYear()
+        obj.year = year
         obj.comments = dataEntry.comments
         dataArray.push(obj)
       }
@@ -130,9 +155,11 @@ export const FinishSessionForm = () => {
     if (currentData.lizard) {
       for (const dataEntry of currentData.lizard) {
         const [genus, species] = getGenusSpecies(currentData.project, "Lizard", dataEntry.speciesCode) || ["N/A", "N/A"]
+        const entryDate = new Date(dataEntry.dateTime)
+        const year = entryDate.getFullYear()
         const obj = structuredClone(dataObjTemplate)
         obj.array = currentData.array
-        obj.dateTime = date.toLocaleString()
+        obj.dateTime = dataEntry.dateTime
         obj.dead = dataEntry.isDead
         obj.fenceTrap = dataEntry.trap
         obj.genus = genus
@@ -141,16 +168,16 @@ export const FinishSessionForm = () => {
         obj.otlMMm = dataEntry.otl
         obj.recapture = dataEntry.isRecapture
         obj.regenTail = dataEntry.regenTail
-        obj.sessionDateTime = date.toLocaleString()
+        obj.sessionDateTime = currentData.sessionDateTime
         obj.sex = dataEntry.sex
         obj.site = currentData.site
         obj.species = species
         obj.speciesCode = dataEntry.speciesCode
         obj.svlMm = dataEntry.svl
         obj.taxa = "Lizard"
-        obj.toeClipCode = dataEntry.toeClipCode
+        obj.toeClipCode = dataEntry.toeCode
         obj.vtlMm = dataEntry.vtl
-        obj.year = date.getFullYear()
+        obj.year = year
         obj.comments = dataEntry.comments
         dataArray.push(obj)
       }
@@ -158,15 +185,17 @@ export const FinishSessionForm = () => {
     if (currentData.snake) {
       for (const dataEntry of currentData.snake) {
         const [genus, species] = getGenusSpecies(currentData.project, "Snake", dataEntry.speciesCode) || ["N/A", "N/A"]
+        const entryDate = new Date(dataEntry.dateTime)
+        const year = entryDate.getFullYear()
         const obj = structuredClone(dataObjTemplate)
         obj.array = currentData.array
         obj.comments = dataEntry.comments
-        obj.dateTime = date.toLocaleString()
+        obj.dateTime = dataEntry.dateTime
         obj.dead = dataEntry.isDead
         obj.fenceTrap = dataEntry.trap
         obj.genus = genus
         obj.massG = dataEntry.mass
-        obj.sessionDateTime = date.toLocaleString()
+        obj.sessionDateTime = currentData.sessionDateTime
         obj.sex = dataEntry.sex
         obj.site = currentData.site
         obj.species = species
@@ -174,10 +203,60 @@ export const FinishSessionForm = () => {
         obj.svlMm = dataEntry.svl
         obj.taxa = "Snake"
         obj.vtlMm = dataEntry.vtl
-        obj.year = date.getFullYear()
+        obj.year = year
+        dataArray.push(obj)
+      }
+    }
+    if (currentData.arthropod) {
+      for (const dataEntry of currentData.arthropod) {
+        const [genus, species] = getGenusSpecies(currentData.project, "Snake", dataEntry.speciesCode) || ["N/A", "N/A"]
+        const entryDate = new Date(dataEntry.dateTime)
+        const year = entryDate.getFullYear()
+        const obj = structuredClone(dataObjTemplate)
+        obj.trap = dataEntry.trap
+        obj.predator =  dataEntry.predator
+        obj.genus = genus
+        obj.species = species
+        obj.site = currentData.site
+        obj.array = currentData.array
+        obj.dateTime = dataEntry.dateTime
+        obj.sessionDateTime = currentData.sessionDateTime
+        obj.year = year
+        obj.comments = currentData.comments
+        for (const key in dataEntry.arthropodData) {
+          obj[key] = dataEntry.arthropodData[key]
+        }
+        obj.fenceTrap = dataEntry.trap
+        obj.taxa = "Arthropod"
+        dataArray.push(obj)
+      }
+    }
+    if (currentData.mammal) {
+      for (const dataEntry of currentData.mammal) {
+        const [genus, species] = getGenusSpecies(currentData.project, "Amphibian", dataEntry.speciesCode) || ['N/A', 'N/A']
+        const entryDate = new Date(dataEntry.dateTime)
+        const year = entryDate.getFullYear()
+        const obj = structuredClone(dataObjTemplate)
+        obj.array = currentData.array
+        obj.dateTime = dataEntry.dateTime
+        obj.fenceTrap = dataEntry.trap
+        obj.genus = genus
+        obj.sessionDateTime = currentData.sessionDateTime
+        obj.site = currentData.site
+        obj.species = species
+        obj.speciesCode = dataEntry.speciesCode
+        obj.taxa = "Mammal"
+        obj.year = year
+        obj.comments = dataEntry.comments
+        obj.dead = dataEntry.isDead
+        obj.massG = dataEntry.mass
+        obj.sex = dataEntry.sex
+        dataArray.push(obj)
       }
     }
     console.log(dataArray);
+    uploadSessionData(sessionObj)
+    uploadBatchedEntryData(dataArray)
   };
 
   const getGenusSpecies = (project, taxa, speciesCode) => {
@@ -193,7 +272,6 @@ export const FinishSessionForm = () => {
       }
     }
   }
-
 
   return (
     <FormWrapper>

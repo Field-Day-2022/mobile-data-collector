@@ -12,6 +12,8 @@ export default function CollectData() {
   const [currentData, setCurrentData] = useAtom(currentSessionData)
   const [currentForm, setCurrentForm] = useAtom(currentFormName);
 
+  const testModeEnabled = true;
+
   // setCurrentForm("New Data")
 
   return (
@@ -29,8 +31,12 @@ export default function CollectData() {
       bg-gradient-to-r 
       from-slate-300/75 
       rounded-lg
-      text-asu-maroon'
+      text-asu-maroon
+      '
     >
+      {testModeEnabled && <button onClick={() => {
+        setCurrentForm('New Data')
+      }}>Reset Session Data</button>}
       <h1 className='text-4xl text-asu-maroon font-bold mt-2'>
         {currentForm}
       </h1>

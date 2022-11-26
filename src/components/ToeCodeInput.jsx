@@ -45,10 +45,10 @@ export default function ToeCodeInput({
       let toeCodesSnapshot
       try {
         toeCodesSnapshot = await getDocFromCache(doc(db, "TestToeClipCodes", currentData.site))
-        console.log("from test")
+        console.log("getting toe codes from test")
         setToeCodes(toeCodesSnapshot.data())
       } catch (e) {
-        console.log("from live")
+        console.log("getting toe codes from live")
         toeCodesSnapshot = await getDocsFromCache(query(
           collection(db, 'ToeClipCodes'),
           where('SiteCode', '==', currentData.site)

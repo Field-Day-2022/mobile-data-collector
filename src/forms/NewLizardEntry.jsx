@@ -47,6 +47,7 @@ export default function NewLizardEntry() {
   }
 
   const completeCapture = () => {
+    const date = new Date()
     sendToeCodeDataToFirestore()
     updateData(
       'lizard',
@@ -63,7 +64,8 @@ export default function NewLizardEntry() {
         mass,
         sex,
         isDead,
-        comments
+        comments,
+        dateTime: date.toUTCString()
       },
       setCurrentData,
       currentData,

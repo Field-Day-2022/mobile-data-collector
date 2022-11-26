@@ -29,8 +29,10 @@ export default function NewAmphibianEntry() {
   const [currentData, setCurrentData] = useAtom(currentSessionData)
   const [currentForm, setCurrentForm] = useAtom(currentFormName);
   
+  // todo: input validation
 
   const completeCapture = () => {
+    const date = new Date()
     updateData(
       'amphibian',
       {
@@ -40,7 +42,8 @@ export default function NewAmphibianEntry() {
         mass,
         sex,
         isDead,
-        comments
+        comments,
+        dateTime: date.toUTCString()
       },
       setCurrentData,
       currentData,

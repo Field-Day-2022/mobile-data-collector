@@ -69,6 +69,7 @@ export default function NewData() {
   }
 
   const finishForm = (captureStatus) => {
+    const date = new Date()
     if (captureStatus === 'withCaptures') {
       setCurrentData({
         arthropod: [],
@@ -81,7 +82,8 @@ export default function NewData() {
         project: currentProject,
         site: currentSite,
         array: currentArray,
-        captureStatus: 'withCaptures'
+        captureStatus: 'withCaptures',
+        sessionDateTime: date.toUTCString()
       })
     } else if (captureStatus === 'withoutCaptures') {
       setCurrentData({
@@ -95,7 +97,8 @@ export default function NewData() {
         project: currentProject,
         site: currentSite,
         array: currentArray,
-        captureStatus: 'withoutCaptures'
+        captureStatus: 'withoutCaptures',
+        sessionDateTime: date.toUTCString()
       })
     }
     setCurrentForm('New Data Entry')

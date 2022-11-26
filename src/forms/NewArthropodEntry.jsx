@@ -21,17 +21,23 @@ export default function NewArthropodEntry() {
   const [trap, setTrap] = useState();
   const [predator, setPredator] = useState(false);
   const [arthropodData, setArthropodData] = useState();
+  const [comments, setComments] = useState('')
 
   const [currentData, setCurrentData] = useAtom(currentSessionData)
   const [currentForm, setCurrentForm] = useAtom(currentFormName);
 
+  // todo: input validation
+
   const completeCapture = () => {
+    const date = new Date()
     updateData(
       'arthropod',
       {
         trap,
         predator,
-        arthropodData
+        arthropodData,
+        dateTime: date.toUTCString(),
+        comments
       },
       setCurrentData,
       currentData,
@@ -65,13 +71,8 @@ export default function NewArthropodEntry() {
       <TextInput 
         prompt="Comments"
         placeholder="any thoughts?"
-        value={arthropodData?.comments ?? '' }
-        setValue={
-          value => setArthropodData({
-            ...arthropodData,
-            "comments": value
-          })
-        }
+        value={comments}
+        setValue={setComments}
       />
       <Button 
         prompt="Finished?"
