@@ -123,7 +123,58 @@ export const FinishSessionForm = () => {
         obj.speciesCode = dataEntry.speciesCode
         obj.taxa = "Amphibian"
         obj.year = date.getFullYear()
+        obj.comments = dataEntry.comments
         dataArray.push(obj)
+      }
+    }
+    if (currentData.lizard) {
+      for (const dataEntry of currentData.lizard) {
+        const [genus, species] = getGenusSpecies(currentData.project, "Lizard", dataEntry.speciesCode) || ["N/A", "N/A"]
+        const obj = structuredClone(dataObjTemplate)
+        obj.array = currentData.array
+        obj.dateTime = date.toLocaleString()
+        obj.dead = dataEntry.isDead
+        obj.fenceTrap = dataEntry.trap
+        obj.genus = genus
+        obj.hatchling = dataEntry.isHatchling
+        obj.massG = dataEntry.mass
+        obj.otlMMm = dataEntry.otl
+        obj.recapture = dataEntry.isRecapture
+        obj.regenTail = dataEntry.regenTail
+        obj.sessionDateTime = date.toLocaleString()
+        obj.sex = dataEntry.sex
+        obj.site = currentData.site
+        obj.species = species
+        obj.speciesCode = dataEntry.speciesCode
+        obj.svlMm = dataEntry.svl
+        obj.taxa = "Lizard"
+        obj.toeClipCode = dataEntry.toeClipCode
+        obj.vtlMm = dataEntry.vtl
+        obj.year = date.getFullYear()
+        obj.comments = dataEntry.comments
+        dataArray.push(obj)
+      }
+    }
+    if (currentData.snake) {
+      for (const dataEntry of currentData.snake) {
+        const [genus, species] = getGenusSpecies(currentData.project, "Snake", dataEntry.speciesCode) || ["N/A", "N/A"]
+        const obj = structuredClone(dataObjTemplate)
+        obj.array = currentData.array
+        obj.comments = dataEntry.comments
+        obj.dateTime = date.toLocaleString()
+        obj.dead = dataEntry.isDead
+        obj.fenceTrap = dataEntry.trap
+        obj.genus = genus
+        obj.massG = dataEntry.mass
+        obj.sessionDateTime = date.toLocaleString()
+        obj.sex = dataEntry.sex
+        obj.site = currentData.site
+        obj.species = species
+        obj.speciesCode = dataEntry.speciesCode
+        obj.svlMm = dataEntry.svl
+        obj.taxa = "Snake"
+        obj.vtlMm = dataEntry.vtl
+        obj.year = date.getFullYear()
       }
     }
     console.log(dataArray);
