@@ -107,7 +107,7 @@ export const FinishSessionForm = () => {
     let dataArray = [];
     if (currentData.amphibian) {
       for (const dataEntry of currentData.amphibian) {
-        const [genus, species] = getGenusSpecies(currentData.project, "Amphibian", dataEntry.speciesCode)
+        const [genus, species] = getGenusSpecies(currentData.project, "Amphibian", dataEntry.speciesCode) || ['N/A', 'N/A']
         const obj = structuredClone(dataObjTemplate)
         obj.array = currentData.array
         obj.dateTime = date.toLocaleString()
