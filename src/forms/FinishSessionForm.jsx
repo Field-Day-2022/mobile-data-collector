@@ -43,6 +43,10 @@ export const FinishSessionForm = () => {
       sessionObj
     );
     console.log(`doc written with id ${docRef.id}`);
+    setPastSessions([...pastSessions, {
+      sessionId: docRef.id,
+      sessionData: currentData
+    }])
   };
 
   const uploadBatchedEntryData = async (entryDataArray) => {
@@ -62,11 +66,8 @@ export const FinishSessionForm = () => {
       )
     }
     await batch.commit();
+    console.log('batch written successfully')
     console.log(entryDataArray)
-  }
-
-  const saveSessionDataToLocal = () => {
-    setPastSessions([...pastSessions, currentData])
   }
 
   // TODO: consider fine tuning the data that is uploaded to eliminate N/A fields where they aren't needed
@@ -262,7 +263,6 @@ export const FinishSessionForm = () => {
     console.log(dataArray);
     uploadSessionData(sessionObj)
     uploadBatchedEntryData(dataArray)
-    saveSessionDataToLocal()
     setCurrentForm('New Data')
   };
 

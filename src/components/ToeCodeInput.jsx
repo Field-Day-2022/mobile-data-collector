@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useAtom } from 'jotai'
 import { currentSessionData } from '../utils/jotai'
 import { db } from '../index'
-import { collection, getDocFromCache, getDocs, getDocsFromCache, query, where, doc } from 'firebase/firestore'
+import { collection, getDocFromCache, getDocs, getDocsFromCache, query, where, doc, getDocsFromServer } from 'firebase/firestore'
 import Dropdown from './Dropdown'
 import { motion, useAnimationControls } from 'framer-motion'
 import SingleCheckbox from './SingleCheckbox'
@@ -53,7 +53,9 @@ export default function ToeCodeInput({
           collection(db, 'ToeClipCodes'),
           where('SiteCode', '==', currentData.site)
         ))
+        // TODO: fix error where toeCodes is undefined at first
         setToeCodes(toeCodesSnapshot.docs[0].data())
+        console.log(currentData.site)
         console.log(toeCodes)
       }
       // let toeCodesSnapshot = await getDocFromCache(doc(db, "TestToeClipCodes", currentData.site))
