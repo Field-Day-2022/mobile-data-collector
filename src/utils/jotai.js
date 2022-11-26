@@ -20,3 +20,8 @@ export const currentSessionData = atomWithStorage(
 )
 
 export const currentFormName = atomWithStorage('currentFormName', 'New Data')
+
+export const pastSessionData = atomWithStorage(
+  'pastSessionData',
+  []
+)

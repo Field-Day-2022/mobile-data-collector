@@ -1,6 +1,6 @@
 import { useAtom } from 'jotai';
 import { useEffect, useState } from 'react';
-import { currentFormName, currentSessionData } from '../utils/jotai';
+import { currentFormName, currentSessionData, pastSessionData } from '../utils/jotai';
 
 import { useCollectionData } from 'react-firebase-hooks/firestore'
 import { db } from '../index';
@@ -24,6 +24,7 @@ import Button from '../components/Button';
 export const FinishSessionForm = () => {
   const [currentData, setCurrentData] = useAtom(currentSessionData);
   const [currentForm, setCurrentForm] = useAtom(currentFormName);
+  const [pastSessions, setPastSessions] = useAtom(pastSessionData);
 
   const [trapStatus, setTrapStatus] = useState('');
   const [comments, setComments] = useState('');
@@ -62,6 +63,10 @@ export const FinishSessionForm = () => {
     }
     await batch.commit();
     console.log(entryDataArray)
+  }
+
+  const saveSessionDataToLocal = () => {
+    setPastSessions([...pastSessions, currentData])
   }
 
   // TODO: consider fine tuning the data that is uploaded to eliminate N/A fields where they aren't needed
@@ -257,6 +262,8 @@ export const FinishSessionForm = () => {
     console.log(dataArray);
     uploadSessionData(sessionObj)
     uploadBatchedEntryData(dataArray)
+    saveSessionDataToLocal()
+    setCurrentForm('New Data')
   };
 
   const getGenusSpecies = (project, taxa, speciesCode) => {
