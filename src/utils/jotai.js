@@ -25,3 +25,5 @@ export const pastSessionData = atomWithStorage(
   'pastSessionData',
   []
 )
+
+export const currentPageName = atomWithStorage('currentPageName', 'Home');

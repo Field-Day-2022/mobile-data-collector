@@ -12,9 +12,9 @@ export default function CollectData() {
   const [currentData, setCurrentData] = useAtom(currentSessionData)
   const [currentForm, setCurrentForm] = useAtom(currentFormName);
 
-  const testModeEnabled = true;
+  const testModeEnabled = false;
 
-  // setCurrentForm("New Data")
+  //  ("New Data")
 
   return (
     <div

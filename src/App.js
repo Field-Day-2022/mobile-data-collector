@@ -1,12 +1,17 @@
-import { collection, query, getDocs, where } from 'firebase/firestore'
+import { collection } from 'firebase/firestore'
 import { useCollection, useCollectionData } from 'react-firebase-hooks/firestore'
-
 import CollectData from "./pages/CollectData";
-
 import { db } from './index';
-import { useEffect } from 'react';
+import { useAtom } from 'jotai';
+import { currentPageName } from './utils/jotai';
+import AppWrapper from './components/AppWrapper';
+import Home from './pages/Home';
+import PastSessionData from './pages/PastSessionData';
+import Navbar from './components/Navbar';
 
 function App() {
+
+  const [ currentPage, setCurrentPage ] = useAtom(currentPageName)
 
   const [
     answerSet,
@@ -27,37 +32,33 @@ function App() {
     testtoeCodeError
   ] = useCollection(collection(db, 'TestToeClipCodes'))
 
-  // if (answerSetSnapshot && toeCodeSnapshot) {
-  //   console.log(`Retrieved answer sets from ${answerSetSnapshot?.metadata.fromCache ? 'cache' : 'server'} and toe clip codes from ${toeCodeSnapshot?.metadata.fromCache ? 'cache' : 'server'}`)
-  //   console.log(answerSet)
-  // }
-  
-
-  if (answerSetSnapshot) console.log(`Retrieved answer set  from ${answerSetSnapshot?.metadata.fromCache ? 'cache' : 'server'}`)
+  if (answerSetSnapshot) console.log(`Retrieved answer set from ${answerSetSnapshot?.metadata.fromCache ? 'cache' : 'server'}`)
   if (toeCodeSnapshot) console.log(`Retrieved live toe codes from ${toeCodeSnapshot?.metadata.fromCache ? 'cache' : 'server'}`)
   if (testtoeCodeSnapshot) console.log(`Retrieved test toe codes from ${testtoeCodeSnapshot?.metadata.fromCache ? 'cache' : 'server'}`)
 
+  if (answerSetError || toeCodeError || testtoeCodeError) {
+    return (
+      <AppWrapper>
+        <h1>Error</h1>
+      </AppWrapper>
+    )
+  }
 
-
+  if (answerSetLoading || toeCodeLoading || testtoeCodeLoading) {
+    return (
+      <AppWrapper>
+        <h1>Loading data...</h1>
+      </AppWrapper>
+    )
+  }
+  
   return (
-    <div className="
-      font-openSans 
-      overflow-hidden 
-      absolute 
-      flex 
-      flex-col 
-      items-center 
-      text-center 
-      justify-center 
-      inset-0 
-      bg-gradient-to-tr 
-      from-asu-maroon 
-      to-asu-gold"
-    >
-      {(answerSetError || toeCodeError) && <h1>Error</h1>}
-      {(answerSetLoading || toeCodeLoading) && <h1>Loading data...</h1>}
-      {(answerSetSnapshot && toeCodeSnapshot && testtoeCodeSnapshot) && <CollectData />}
-    </div>
+    <AppWrapper>
+      <Navbar />
+      {currentPage === 'Home' && <Home />}
+      {currentPage === 'PastSessionData' && <PastSessionData />}
+      {currentPage === 'CollectData' && <CollectData />}
+    </AppWrapper>
   );
 }
 

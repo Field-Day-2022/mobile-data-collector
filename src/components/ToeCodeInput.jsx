@@ -53,7 +53,6 @@ export default function ToeCodeInput({
           collection(db, 'ToeClipCodes'),
           where('SiteCode', '==', currentData.site)
         ))
-        // TODO: fix error where toeCodes is undefined at first
         setToeCodes(toeCodesSnapshot.docs[0].data())
         // console.log('retreiving toe codes from ' + currentData.site)
         // console.log(toeCodes)
