@@ -1,3 +1,5 @@
+//now make dynamic
+
 import { useState } from 'react';
 import { useAtom } from 'jotai'
 
