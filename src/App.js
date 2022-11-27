@@ -31,6 +31,13 @@ function App() {
   //   console.log(`Retrieved answer sets from ${answerSetSnapshot?.metadata.fromCache ? 'cache' : 'server'} and toe clip codes from ${toeCodeSnapshot?.metadata.fromCache ? 'cache' : 'server'}`)
   //   console.log(answerSet)
   // }
+  
+
+  if (answerSetSnapshot) console.log(`Retrieved answer set  from ${answerSetSnapshot?.metadata.fromCache ? 'cache' : 'server'}`)
+  if (toeCodeSnapshot) console.log(`Retrieved live toe codes from ${toeCodeSnapshot?.metadata.fromCache ? 'cache' : 'server'}`)
+  if (testtoeCodeSnapshot) console.log(`Retrieved test toe codes from ${testtoeCodeSnapshot?.metadata.fromCache ? 'cache' : 'server'}`)
+
+
 
   return (
     <div className="

@@ -55,22 +55,9 @@ export default function ToeCodeInput({
         ))
         // TODO: fix error where toeCodes is undefined at first
         setToeCodes(toeCodesSnapshot.docs[0].data())
-        console.log(currentData.site)
-        console.log(toeCodes)
+        // console.log('retreiving toe codes from ' + currentData.site)
+        // console.log(toeCodes)
       }
-      // let toeCodesSnapshot = await getDocFromCache(doc(db, "TestToeClipCodes", currentData.site))
-      // if (toeCodesSnapshot) {
-      //   console.log("from test")
-      //   setToeCodes(toeCodesSnapshot.data())
-      // }
-      // else {
-      //   console.log("from live")
-      //   toeCodesSnapshot = await getDocsFromCache(query(
-      //     collection(db, 'ToeClipCodes'),
-      //     where('SiteCode', '==', currentData.site)
-      //   ))
-      //   setToeCodes(toeCodesSnapshot.docs[0].data())
-      // }
     }
     fetchToeCodes()
   }, [])
@@ -242,7 +229,7 @@ export default function ToeCodeInput({
 
   return (
     <div>
-      <label 
+      {toeCodes && <label 
         htmlFor="my-modal-4"
         className="
           btn
@@ -254,7 +241,7 @@ export default function ToeCodeInput({
           font-normal
           hover:bg-white/50
           "
-      >{toeCode ? `Toe-Clip Code: ${toeCode}` : 'Toe-Clip Code'}</label>
+      >{toeCode ? `Toe-Clip Code: ${toeCode}` : 'Toe-Clip Code'}</label>}
       <input type="checkbox" id="my-modal-4" 
         className="
           modal-toggle
