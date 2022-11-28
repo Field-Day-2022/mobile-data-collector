@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { CLEAR_CURRENT_AND_ERROR } from '../../redux/actions/session-actions';
 import { Form, Button, Col, Container, FormGroup, FormLabel, Row, Modal } from 'react-bootstrap';
 import FieldWrapper from '../../components/form-components/field-wrapper';
+import EndModal from '../../components/end-modal/end-modal';
 import { fieldHasError } from '../../utils/utils';
 import * as CONSTANTS from '../../constants';
 import _ from 'lodash';
@@ -228,24 +229,14 @@ const NewDataEntry = (props) => {
                     </Row>
                 </Container>
             </div>
-            <Modal show={showEndSessionModal}>
-                <Modal.Header>
-                    <Modal.Title>Ending a Session?</Modal.Title>
-                </Modal.Header>
-
-                <Modal.Body>
-                    <p>You are about to end a session, are you sure you want to continue?</p>
-                </Modal.Body>
-
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={() => handleCloseModal(false)}>
-                        No
-                    </Button>
-                    <Button variant="primary" onClick={() => handleCloseModal(true)}>
-                        Yes
-                    </Button>
-                </Modal.Footer>
-            </Modal>
+            <EndModal show={showEndSessionModal}
+                title="Ending a Session?"
+                bodyText="You are about to end a session, are you sure you want to continue?"
+                cancelText="No"
+                confirmText="Yes"
+                onCancel={() => handleCloseModal(false)}
+                onConfirm={() => handleCloseModal(true)}
+            />
         </div>
     );
 };
