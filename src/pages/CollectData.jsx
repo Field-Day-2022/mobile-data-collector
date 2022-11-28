@@ -15,7 +15,7 @@ export default function CollectData() {
   //  ("New Data")
 
   return (
-    <div className="w-full">
+    <div className="w-full h-full">
       {currentForm === 'New Data' && <NewData />}
       {currentForm === 'New Data Entry' && currentData && <NewDataEntry />}
       {currentForm === 'New Arthropod Entry' && <NewArthropodEntry />}
