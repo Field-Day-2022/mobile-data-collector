@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import { useAtom } from 'jotai';
 import { currentPageName, currentFormName, currentSessionData } from '../utils/jotai';
-import { useState, useRef } from 'react';
+import { useRef } from 'react';
 import { motion, useCycle } from 'framer-motion';
 
 export default function Navbar() {
