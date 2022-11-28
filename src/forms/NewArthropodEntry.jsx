@@ -27,6 +27,7 @@ export default function NewArthropodEntry() {
   const [currentForm, setCurrentForm] = useAtom(currentFormName);
 
   // todo: input validation
+  // todo: dynamic answer set loading
 
   const completeCapture = () => {
     const date = new Date()

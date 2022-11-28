@@ -38,6 +38,7 @@ export default function NewLizardEntry() {
   const [updatedToeCodes, setUpdatedToeCodes] = useState()
 
   // TODO: add input validation logic for svl, vtl, otl, and mass
+  // todo: dynamic answer set loading
 
   const [currentData, setCurrentData] = useAtom(currentSessionData);
   const [currentForm, setCurrentForm] = useAtom(currentFormName);

@@ -30,6 +30,7 @@ export default function NewAmphibianEntry() {
   const [currentForm, setCurrentForm] = useAtom(currentFormName);
   
   // todo: input validation
+  // todo: dynamic answer set loading
 
   const completeCapture = () => {
     const date = new Date()
