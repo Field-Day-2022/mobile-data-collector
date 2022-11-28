@@ -12,35 +12,10 @@ export default function CollectData() {
   const [currentData, setCurrentData] = useAtom(currentSessionData)
   const [currentForm, setCurrentForm] = useAtom(currentFormName);
 
-  const testModeEnabled = false;
-
   //  ("New Data")
 
   return (
-    <div
-      className='
-      flex 
-      flex-col 
-      overflow-visible 
-      items-center 
-      h-full
-      max-h-full
-      sm:w-11/12 
-      w-full 
-      pr-0 
-      bg-gradient-to-r 
-      from-slate-300/75 
-      rounded-lg
-      text-asu-maroon
-      '
-    >
-      {testModeEnabled && <button onClick={() => {
-        setCurrentForm('New Data')
-      }}>Reset Session Data</button>}
-      <h1 className='text-4xl text-asu-maroon font-bold mt-2'>
-        {currentForm}
-      </h1>
-      <div className='divider mb-0 pb-0 mt-0 h-1 bg-asu-gold/75' />
+    <div className="w-full">
       {currentForm === 'New Data' && <NewData />}
       {currentForm === 'New Data Entry' && currentData && <NewDataEntry />}
       {currentForm === 'New Arthropod Entry' && <NewArthropodEntry />}

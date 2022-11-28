@@ -3,15 +3,16 @@ import { useCollection, useCollectionData } from 'react-firebase-hooks/firestore
 import CollectData from "./pages/CollectData";
 import { db } from './index';
 import { useAtom } from 'jotai';
-import { currentPageName } from './utils/jotai';
-import AppWrapper from './components/AppWrapper';
+import { currentFormName, currentPageName } from './utils/jotai';
 import Home from './pages/Home';
 import PastSessionData from './pages/PastSessionData';
 import Navbar from './components/Navbar';
+import { motion } from 'framer-motion'
 
 function App() {
 
   const [ currentPage, setCurrentPage ] = useAtom(currentPageName)
+  const [ currentForm, setCurrentForm ] = useAtom(currentFormName)
 
   const [
     answerSet,
@@ -38,27 +39,54 @@ function App() {
 
   if (answerSetError || toeCodeError || testtoeCodeError) {
     return (
-      <AppWrapper>
-        <h1>Error</h1>
-      </AppWrapper>
+      <h1>Error</h1>
     )
   }
 
   if (answerSetLoading || toeCodeLoading || testtoeCodeLoading) {
     return (
-      <AppWrapper>
-        <h1>Loading data...</h1>
-      </AppWrapper>
+      <h1>Loading data...</h1>
     )
   }
   
   return (
-    <AppWrapper>
-      <Navbar />
-      {currentPage === 'Home' && <Home />}
-      {currentPage === 'PastSessionData' && <PastSessionData />}
-      {currentPage === 'CollectData' && <CollectData />}
-    </AppWrapper>
+    <motion.div className="
+      font-openSans 
+      overflow-hidden 
+      absolute 
+      flex 
+      flex-col 
+      items-center 
+      text-center 
+      justify-start 
+      inset-0 
+      bg-gradient-to-tr 
+      from-asu-maroon 
+      to-asu-gold
+      "
+    >
+      <motion.div className="
+        flex 
+        flex-col 
+        overflow-visible 
+        items-center 
+        h-full
+        max-h-full
+        w-full 
+        pr-0 
+        bg-gradient-to-r 
+        from-slate-300/25 
+        rounded-lg
+        text-asu-maroon
+        "
+      >
+        <Navbar />
+        <div className='divider mb-0 pb-0 mt-0 h-1 bg-asu-gold/75' />
+        {currentPage === 'Home' && <Home />}
+        {currentPage === 'History' && <PastSessionData />}
+        {currentPage === 'Collect Data' && <CollectData />}
+      </motion.div>
+    </motion.div>
   );
 }
 

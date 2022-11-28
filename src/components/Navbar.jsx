@@ -1,28 +1,158 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import { useAtom } from 'jotai';
-import { currentPageName, currentFormName } from '../utils/jotai';
-import { useState } from 'react';
+import { currentPageName, currentFormName, currentSessionData } from '../utils/jotai';
+import { useState, useRef } from 'react';
+import { motion, useCycle } from 'framer-motion';
 
 export default function Navbar() {
   const [ currentPage, setCurrentPage ] = useAtom(currentPageName)
-  const [ currentForm ] = useAtom(currentFormName)
-  const [ open, setOpen ] = useState()
+  const [ currentForm, setCurrentForm ] = useAtom(currentFormName)
+  const [ currentData, setCurrentData ] = useAtom(currentSessionData)
+
+  // https://codesandbox.io/s/framer-motion-side-menu-mx2rw?from-embed=&file=/src/Example.tsx:1027-1037
+  const [ isOpen, toggleOpen] =  useCycle(false, true);
+
+  const containerRef = useRef(null);
+
+  const navigationContainerVariant = {
+    open: {
+      opacity: 1,
+      left: 0,
+    },
+    closed: {
+      opacity: 0,
+      left: '-50%',
+    }
+  }
+
+  const navItemVariant = {
+    open: {
+      opacity: 1,
+      bottom: 0,
+    },
+    closed: {
+      opacity: 0,
+      bottom: '-50%',
+    }
+  }
+
+  const navUlVariant = {
+    open: {
+      transition: { staggerChildren: 0.05, delayChildren: 0.1 }
+    },
+    closed: {
+      transition: { staggerChildren: 0.05, staggerDirection: -1 }
+    }
+  }
 
   return (
-    <div className="text-asu-maroon relative w-screen flex">
-      
-      <label tabIndex={0} className="btn swap swap-rotate bg-transparent border-0">
-        <input type="checkbox" />
-        <svg className="swap-off fill-asu-maroon bg-transparent" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 512 512"><path d="M64,384H448V341.33H64Zm0-106.67H448V234.67H64ZM64,128v42.67H448V128Z"/></svg>
-        <svg className="swap-on fill-asu-maroon bg-transparent" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 512 512"><polygon points="400 145.49 366.51 112 256 222.51 145.49 112 112 145.49 222.51 256 112 366.51 145.49 400 256 289.49 366.51 400 400 366.51 289.49 256 400 145.49"/></svg>
-      </label>
+    <motion.nav className="text-asu-maroon relative w-screen flex flex-row items-center"
+      initial={false}
+      animate={isOpen ? 'open' : 'closed'}
+      ref={containerRef}
+    >
 
-      {open && <ul className='menu absolute left-0 bg-white/90 top-12 rounded-lg p-2 text-xl z-20 text-left'>
-        <li className=''>Home</li>
-        <li className='pt-5'>New Session</li>
-        <li className='pt-5'>Previous Sessions</li>
-      </ul>}
+      <motion.div className="bg-white/90 
+        rounded-tr-xl 
+        rounded-br-xl 
+        w-1/2 
+        absolute 
+        top-12 
+        z-50"
+        // initial={false}
+        // animate={isOpen ? 'open' : 'closed'}
+        variants={navigationContainerVariant}
+      >
+        <motion.ul variants={navUlVariant} initial={false} animate={isOpen ? 'open' : 'closed'}>
+          <motion.li
+            className="text-2xl p-2 border-2 border-asu-gold brightness-90 m-2"
+            variants={navItemVariant}
+            onClick={() => {
+              setCurrentPage('Home')
+              setCurrentForm('')
+              toggleOpen()
+            }}
+          >Home</motion.li>
+          <motion.li 
+            className="text-2xl p-2 border-2 border-asu-gold brightness-90 m-2"
+            variants={navItemVariant}
+            onClick={() => {
+              setCurrentPage('Collect Data')
+              if (currentData.project === '') {
+                setCurrentForm('New Data')
+              } else {
+                setCurrentForm('New Data Entry')
+              }
+              toggleOpen()
+            }}
+          >Collect Data</motion.li>
+          <motion.li 
+            className="text-2xl p-2 border-2 border-asu-gold brightness-90 m-2"
+            variants={navItemVariant}
+            onClick={() => {
+              setCurrentPage('History')
+              setCurrentForm('')
+              toggleOpen()
+            }}
+          >History</motion.li>
+          <motion.li 
+            className="text-2xl p-2 border-2 border-asu-gold brightness-90 m-2"
+            variants={navItemVariant}
+            onClick={() => {
+              setCurrentPage('About Us')
+              setCurrentForm('')
+              toggleOpen()
+            }}
+          >About Us</motion.li>
+        </motion.ul>
+      </motion.div>
 
-    </div>
+      <MenuToggle toggle={() => toggleOpen()} />
+
+      <motion.div className="text-lg breadcrumbs ml-2">
+        <ul>
+          <li>{currentPage}</li>
+          <li>{currentForm || ''}</li>
+        </ul>
+      </motion.div>
+
+    </motion.nav>
   )
 }
+
+const Path = props => (
+  <motion.path
+    fill="transparent"
+    strokeWidth="3"
+    stroke="#8C1D40"
+    strokeLinecap="round"
+    {...props}
+  />
+);
+
+const MenuToggle = ({ toggle }) => (
+  <button onClick={toggle} className="p-2">
+    <svg width="33" height="33" viewBox="0 0 23 23">
+      <Path
+        variants={{
+          closed: { d: "M 2 2.5 L 20 2.5" },
+          open: { d: "M 3 16.5 L 17 2.5" }
+        }}
+      />
+      <Path
+        d="M 2 9.423 L 20 9.423"
+        variants={{
+          closed: { opacity: 1 },
+          open: { opacity: 0 }
+        }}
+        transition={{ duration: 0.1 }}
+      />
+      <Path
+        variants={{
+          closed: { d: "M 2 16.346 L 20 16.346" },
+          open: { d: "M 3 2.5 L 17 16.346" }
+        }}
+      />
+    </svg>
+  </button>
+);

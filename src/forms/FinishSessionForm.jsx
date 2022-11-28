@@ -263,7 +263,7 @@ export const FinishSessionForm = () => {
     console.log(dataArray);
     uploadSessionData(sessionObj)
     uploadBatchedEntryData(dataArray)
-    setCurrentForm('New Data')
+    setCurrentForm('Home')
   };
 
   const getGenusSpecies = (project, taxa, speciesCode) => {
