@@ -1,9 +1,6 @@
 import { useState } from 'react';
 import { useAtom } from 'jotai'
 
-import { currentFormName, currentSessionData } from '../utils/jotai';
-import { updateData } from '../utils/functions';
-
 import NumberInput from '../components/NumberInput';
 import Dropdown from '../components/Dropdown';
 import FormWrapper from '../components/FormWrapper';
@@ -11,10 +8,13 @@ import SingleCheckbox from '../components/SingleCheckbox';
 import TextInput from '../components/TextInput';
 import Button from '../components/Button';
 
+import { currentFormName, currentSessionData } from '../utils/jotai';
+import { updateData } from '../utils/functions';
+
 import {
     mammalSpeciesList as species,
-    mammalFenceTraps as traps,
-    sexOptions, amphibianFenceTraps as fenceTraps
+    sexOptions,
+    mammalFenceTraps as fenceTraps
 } from "../utils/hardCodedData";
 
 export default function NewMammalEntry() {
