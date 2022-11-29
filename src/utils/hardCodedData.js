@@ -72,7 +72,8 @@ export const sexOptions = [
 export const lizardSpeciesList = [
   'ASTI',
   'CADR',
-  'COVA'
+  'COVA',
+  'ASSO'
 ]
 
 export const mammalSpeciesList = [

@@ -12,8 +12,10 @@ export default function FormWrapper({ children }) {
       scrollbar-thumb-asu-maroon 
       scrollbar-thumb-rounded-full 
       rounded-lg 
-      w-full 
-      h-full">
+      w-full
+      h-full
+      max-h-[calc(100%-3em)]
+      ">
         {children}
     </div>
   )

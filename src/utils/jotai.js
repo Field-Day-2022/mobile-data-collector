@@ -20,3 +20,14 @@ export const currentSessionData = atomWithStorage(
 )
 
 export const currentFormName = atomWithStorage('currentFormName', 'New Data')
+
+export const pastSessionData = atomWithStorage(
+  'pastSessionData',
+  []
+)
+
+export const currentPageName = atomWithStorage('currentPageName', 'Home');
+
+export const editingPrevious = atomWithStorage('editingPrevious', false);
+
+export const pastEntryIndex = atomWithStorage('pastEntryIndex', -1);

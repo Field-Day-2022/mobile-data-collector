@@ -23,14 +23,17 @@ export default function NewAmphibianEntry() {
   const [ hdBody, setHdBody ] = useState('')
   const [ mass,  setMass] = useState('')
   const [ sex, setSex] = useState()
-  const [ isDead, setIsDead ] = useState()
+  const [ isDead, setIsDead ] = useState(false)
   const [ comments, setComments ] = useState('')
 
   const [currentData, setCurrentData] = useAtom(currentSessionData)
   const [currentForm, setCurrentForm] = useAtom(currentFormName);
   
+  // todo: input validation
+  // todo: dynamic answer set loading
 
   const completeCapture = () => {
+    const date = new Date()
     updateData(
       'amphibian',
       {
@@ -40,7 +43,8 @@ export default function NewAmphibianEntry() {
         mass,
         sex,
         isDead,
-        comments
+        comments,
+        dateTime: date.toUTCString()
       },
       setCurrentData,
       currentData,

@@ -1,60 +1,160 @@
-import { useState } from 'react'
-import { useAtom } from 'jotai'
+import { useState } from 'react';
+import { useAtom } from 'jotai';
+import { collection, setDoc, query, where, doc, getDocs } from 'firebase/firestore'
+import { db } from '../index'
 
-import { currentFormName, currentSessionData } from '../utils/jotai'
-import { updateData } from '../utils/functions'
+
+import { currentFormName, currentSessionData } from '../utils/jotai';
+import { updateData } from '../utils/functions';
 
 import {
   lizardSpeciesList as species,
-  amphibianFenceTraps as fenceTraps
-} from '../utils/hardCodedData'
+  amphibianFenceTraps as fenceTraps,
+  sexOptions
+} from '../utils/hardCodedData';
 
-import FormWrapper from '../components/FormWrapper'
-import Dropdown from '../components/Dropdown'
-import SingleCheckbox from '../components/SingleCheckbox'
-import ToeCodeInput from '../components/ToeCodeInput'
+import FormWrapper from '../components/FormWrapper';
+import Dropdown from '../components/Dropdown';
+import SingleCheckbox from '../components/SingleCheckbox';
+import ToeCodeInput from '../components/ToeCodeInput';
+import NumberInput from '../components/NumberInput';
+import TextInput from '../components/TextInput';
+import Button from '../components/Button';
 
 export default function NewLizardEntry() {
-  const [ speciesCode, setSpeciesCode ] = useState()
-  const [ trap, setTrap ] = useState()
-  const [ isRecapture, setIsRecapture ] = useState()
-  const [ toeCode, setToeCode ] = useState('A1B2C4')
-  const [ svl, setSvl ] = useState()
-  const [ vtl, setVtl ] = useState()
-  const [ regenTail, setRegenTail ] = useState()
-  const [ otl, setOtl ] = useState()
-  const [ isHatchling, setIsHatchling ] = useState()
-  const [ mass, setMass ] = useState()
-  const [ sex, setSex ] = useState()
-  const [ isDead, setIsDead ] = useState()
-  const [ comments, setComments ] = useState()
+  const [speciesCode, setSpeciesCode] = useState();
+  const [trap, setTrap] = useState();
+  const [isRecapture, setIsRecapture] = useState(false);
+  const [toeCode, setToeCode] = useState('');
+  const [svl, setSvl] = useState('');
+  const [vtl, setVtl] = useState('');
+  const [regenTail, setRegenTail] = useState(false);
+  const [otl, setOtl] = useState('');
+  const [isHatchling, setIsHatchling] = useState(false);
+  const [mass, setMass] = useState('');
+  const [sex, setSex] = useState('');
+  const [isDead, setIsDead] = useState(false);
+  const [comments, setComments] = useState('');
+  const [updatedToeCodes, setUpdatedToeCodes] = useState()
 
-  const [currentData, setCurrentData] = useAtom(currentSessionData)
+  // TODO: add input validation logic for svl, vtl, otl, and mass
+  // todo: dynamic answer set loading
+
+  const [currentData, setCurrentData] = useAtom(currentSessionData);
   const [currentForm, setCurrentForm] = useAtom(currentFormName);
-  
+
+  const sendToeCodeDataToFirestore = async () => {
+    await setDoc(doc(db, "TestToeClipCodes", currentData.site), updatedToeCodes)
+  }
+
+  const completeCapture = () => {
+    const date = new Date()
+    sendToeCodeDataToFirestore()
+    updateData(
+      'lizard',
+      {
+        speciesCode,
+        trap,
+        isRecapture,
+        toeCode,
+        svl,
+        vtl,
+        regenTail,
+        otl,
+        isHatchling,
+        mass,
+        sex,
+        isDead,
+        comments,
+        dateTime: date.toUTCString()
+      },
+      setCurrentData,
+      currentData,
+      setCurrentForm
+    ) 
+  }
+
   return (
     <FormWrapper>
-      <Dropdown 
+      <Dropdown
         value={speciesCode}
         setValue={setSpeciesCode}
-        placeholder="Species Code"
+        placeholder='Species Code'
         options={species}
       />
-      <Dropdown 
+      <Dropdown
         value={trap}
         setValue={setTrap}
-        placeholder="Fence Trap"
+        placeholder='Fence Trap'
         options={fenceTraps}
       />
-      <SingleCheckbox 
+      <SingleCheckbox
+        prompt='Is it a recapture?'
+        value={isRecapture}
+        setValue={setIsRecapture}
+      />
+      {speciesCode && <ToeCodeInput
+          toeCode={toeCode}
+          setToeCode={setToeCode}
+          speciesCode={speciesCode}
+          isRecapture={isRecapture}
+          setIsRecapture={setIsRecapture}
+          setUpdatedToeCodes={setUpdatedToeCodes}
+      />}
+      {toeCode && <NumberInput 
+        label="SVL (mm)"
+        value={svl}
+        setValue={setSvl}
+        placeholder="0.0 mm"
+      />}
+      {svl && <NumberInput 
+        label="VTL (mm)"
+        value={vtl}
+        setValue={setVtl}
+        placeholder="0.0 mm"
+      />}
+      {vtl && <SingleCheckbox 
+        prompt="Regen tail?"
+        value={regenTail}
+        setValue={setRegenTail}
+      />}
+      {vtl && <NumberInput 
+        label="OTL (mm)"
+        value={otl}
+        setValue={setOtl}
+        placeholder="0.0 mm"
+      />}
+      {otl && <SingleCheckbox 
+        prompt="Is it a hatchling?"
+        value={isHatchling}
+        setValue={setIsHatchling}
+      />}
+      {otl && <NumberInput 
+        label="Mass (g)"
+        value={mass}
+        setValue={setMass}
+      />}
+      {mass && <Dropdown 
+        value={sex}
+        setValue={setSex}
+        placeholder="Sex"
+        options={sexOptions}
+      />}
+      {sex && <SingleCheckbox 
         prompt="Is it dead?"
         value={isDead}
         setValue={setIsDead}
-      />
-      <ToeCodeInput 
-        toeCode={toeCode}
-        setToeCode={setToeCode}
-      />
+      />}
+      {sex && <TextInput 
+        prompt="Comments"
+        placeholder="any thoughts?"
+        value={comments}
+        setValue={setComments}
+      />}
+      {sex && <Button 
+        prompt="Finished?"
+        clickHandler={completeCapture}
+      />}
     </FormWrapper>
-  )
+  );
 }
