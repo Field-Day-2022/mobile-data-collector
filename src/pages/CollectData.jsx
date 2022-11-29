@@ -1,5 +1,5 @@
 import { useAtom } from 'jotai';
-import { currentSessionData, currentFormName } from '../utils/jotai';
+import { currentSessionData, currentFormName, editingPrevious } from '../utils/jotai';
 
 import NewArthropodEntry from '../forms/NewArthropodEntry';
 import NewData from '../forms/NewData';
@@ -7,12 +7,18 @@ import NewDataEntry from '../forms/NewDataEntry';
 import NewAmphibianEntry from '../forms/NewAmphibianEntry';
 import NewLizardEntry from '../forms/NewLizardEntry';
 import { FinishSessionForm } from '../forms/FinishSessionForm';
+import { useEffect } from 'react';
 
 export default function CollectData() {
   const [currentData, setCurrentData] = useAtom(currentSessionData)
   const [currentForm, setCurrentForm] = useAtom(currentFormName);
+  const [ isEditingPrevious, setIsEditingPrevious] = useAtom(editingPrevious)
 
-  //  ("New Data")
+  useEffect(() => {
+    if (!isEditingPrevious) {
+      setCurrentForm('New Data')
+    }
+  }, [])
 
   return (
     <div className="w-full h-full">

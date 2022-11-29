@@ -36,7 +36,7 @@ export default function ToeCodeInput({
 
   const errorMsgControls = useAnimationControls()
   
-  // console.log(toeCodes)
+  console.log(toeCodes)
 
   // console.log(preexistingToeClipCodes)
 

@@ -59,8 +59,6 @@ export default function Navbar() {
         absolute 
         top-12 
         z-50"
-        // initial={false}
-        // animate={isOpen ? 'open' : 'closed'}
         variants={navigationContainerVariant}
       >
         <motion.ul variants={navUlVariant} initial={false} animate={isOpen ? 'open' : 'closed'}>
@@ -109,7 +107,7 @@ export default function Navbar() {
 
       <MenuToggle toggle={() => toggleOpen()} />
 
-      <motion.div className="text-lg breadcrumbs ml-2">
+      <motion.div className="text-lg breadcrumbs ml-2 overflow-hidden">
         <ul>
           <li>{currentPage}</li>
           <li>{currentForm || ''}</li>
@@ -131,7 +129,7 @@ const Path = props => (
 );
 
 const MenuToggle = ({ toggle }) => (
-  <button onClick={toggle} className="p-2">
+  <button onClick={toggle} className="p-2 z-50">
     <svg width="33" height="33" viewBox="0 0 23 23">
       <Path
         variants={{

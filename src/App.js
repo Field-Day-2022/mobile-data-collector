@@ -71,7 +71,6 @@ function App() {
         overflow-visible 
         items-center 
         h-full
-        max-h-full
         w-full 
         pr-0 
         bg-gradient-to-r 

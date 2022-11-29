@@ -27,3 +27,7 @@ export const pastSessionData = atomWithStorage(
 )
 
 export const currentPageName = atomWithStorage('currentPageName', 'Home');
+
+export const editingPrevious = atomWithStorage('editingPrevious', false);
+
+export const pastEntryIndex = atomWithStorage('pastEntryIndex', -1);
