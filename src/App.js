@@ -3,16 +3,22 @@ import { useCollection, useCollectionData } from 'react-firebase-hooks/firestore
 import CollectData from "./pages/CollectData";
 import { db } from './index';
 import { useAtom } from 'jotai';
-import { currentFormName, currentPageName } from './utils/jotai';
+import { 
+  currentFormName, 
+  currentPageName,
+  notificationText
+} from './utils/jotai';
 import Home from './pages/Home';
 import PastSessionData from './pages/PastSessionData';
 import Navbar from './components/Navbar';
 import { motion } from 'framer-motion'
+import Notification from './components/Notification';
 
 function App() {
 
   const [ currentPage, setCurrentPage ] = useAtom(currentPageName)
   const [ currentForm, setCurrentForm ] = useAtom(currentFormName)
+  const [ notification, setNotification ] = useAtom(notificationText)
 
   const [
     answerSet,
@@ -81,11 +87,18 @@ function App() {
         text-asu-maroon
         "
       >
+        <Notification />
         <Navbar />
         <div className='divider mb-0 pb-0 mt-0 h-1 bg-asu-gold/75' />
         {currentPage === 'Home' && <Home />}
         {currentPage === 'History' && <PastSessionData />}
         {currentPage === 'Collect Data' && <CollectData />}
+        <input 
+          onBlur={(e) => {
+            console.log(e.target.value)
+            setNotification(e.target.value)
+          }}
+        />
       </motion.div>
     </motion.div>
   );
