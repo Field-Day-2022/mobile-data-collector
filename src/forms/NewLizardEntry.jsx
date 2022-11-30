@@ -1,17 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAtom } from 'jotai';
-import { collection, setDoc, query, where, doc, getDocs } from 'firebase/firestore'
+import { collection, setDoc, query, where, doc, getDocsFromCache } from 'firebase/firestore'
 import { db } from '../index'
 
 
 import { currentFormName, currentSessionData } from '../utils/jotai';
 import { updateData } from '../utils/functions';
-
-import {
-  lizardSpeciesList as species,
-  amphibianFenceTraps as fenceTraps,
-  sexOptions
-} from '../utils/hardCodedData';
 
 import FormWrapper from '../components/FormWrapper';
 import Dropdown from '../components/Dropdown';
@@ -36,12 +30,47 @@ export default function NewLizardEntry() {
   const [isDead, setIsDead] = useState(false);
   const [comments, setComments] = useState('');
   const [updatedToeCodes, setUpdatedToeCodes] = useState()
+  const [ lizardSpeciesList, setLizardSpeciesList ] = useState([])
+  const [ fenceTraps, setFenceTraps ] = useState([])
 
   // TODO: add input validation logic for svl, vtl, otl, and mass
-  // todo: dynamic answer set loading
 
   const [currentData, setCurrentData] = useAtom(currentSessionData);
   const [currentForm, setCurrentForm] = useAtom(currentFormName);
+
+  const sexOptions = [
+    'Male',
+    'Female',
+    'Undefined'
+  ]
+
+  useEffect(() => {
+    const getAnswerFormDataFromFirestore = async () => {
+      const speciesSnapshot = await getDocsFromCache(
+        query(
+          collection(db, "AnswerSet"),
+          where("set_name", "==", `${currentData.project}LizardSpecies`)
+        )
+      )
+      let speciesCodesArray = []
+      for (const answer of speciesSnapshot.docs[0].data().answers) {
+        speciesCodesArray.push(answer.primary)
+      }
+      setLizardSpeciesList(speciesCodesArray)
+      const fenceTrapsSnapshot = await getDocsFromCache(
+        query(
+          collection(db, "AnswerSet"),
+          where("set_name", "==", "Fence Traps")
+        )
+      )
+      let fenceTrapsArray = []
+      for (const answer of fenceTrapsSnapshot.docs[0].data().answers) {
+        fenceTrapsArray.push(answer.primary)
+      }
+      setFenceTraps(fenceTrapsArray)
+    }
+    getAnswerFormDataFromFirestore()
+  }, [])
 
   const sendToeCodeDataToFirestore = async () => {
     await setDoc(doc(db, "TestToeClipCodes", currentData.site), updatedToeCodes)
@@ -80,7 +109,7 @@ export default function NewLizardEntry() {
         value={speciesCode}
         setValue={setSpeciesCode}
         placeholder='Species Code'
-        options={species}
+        options={lizardSpeciesList}
       />
       <Dropdown
         value={trap}

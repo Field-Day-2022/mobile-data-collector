@@ -16,8 +16,8 @@ export default function CollectData() {
   const [ isEditingPrevious, setIsEditingPrevious] = useAtom(editingPrevious)
 
   useEffect(() => {
-    if (!isEditingPrevious) {
-      setCurrentForm('New Data')
+    if (isEditingPrevious) {
+      setCurrentForm('New Data Entry')
     }
   }, [])
 
