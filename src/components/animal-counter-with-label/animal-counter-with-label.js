@@ -5,7 +5,7 @@ import { Container, Row, Col } from 'react-bootstrap';
 import './animal-counter-with-label.css';
 import '../../App.css';
 
-export default props => (
+export default (props) => (
     <Container>
         <Row>
             <Col className="counter-with-label form-group">

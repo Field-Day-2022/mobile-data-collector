@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, Container, Modal, Table } from 'react-bootstrap';
 import './capture-history-modal.css';
 
-export default props => (
+export default (props) => (
     <Modal show={props.show} onHide={props.onHide}>
         <Modal.Header closeButton>
             <Modal.Title>Recapture History</Modal.Title>
@@ -64,11 +64,7 @@ export default props => (
             </Container>
         </Modal.Body>
         <Modal.Footer>
-            <Button
-                className="toe-clip-close-button"
-                variant="secondary"
-                onClick={props.onHide}
-            >
+            <Button className="toe-clip-close-button" variant="secondary" onClick={props.onHide}>
                 Close
             </Button>
         </Modal.Footer>

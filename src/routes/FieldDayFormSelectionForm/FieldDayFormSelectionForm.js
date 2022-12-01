@@ -229,7 +229,8 @@ const NewDataEntry = (props) => {
                     </Row>
                 </Container>
             </div>
-            <EndModal show={showEndSessionModal}
+            <EndModal
+                show={showEndSessionModal}
                 title="Ending a Session?"
                 bodyText="You are about to end a session, are you sure you want to continue?"
                 cancelText="No"

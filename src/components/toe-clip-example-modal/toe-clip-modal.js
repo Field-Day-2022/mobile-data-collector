@@ -3,7 +3,7 @@ import { Button, Image, Modal } from 'react-bootstrap';
 
 import './toe-clip-modal.css';
 
-export default props => (
+export default (props) => (
     <Modal show={props.show} onHide={props.onHide}>
         <Modal.Header closeButton>
             <Modal.Title>Toe Clip Code</Modal.Title>
@@ -25,11 +25,7 @@ export default props => (
             />
         </Modal.Body>
         <Modal.Footer>
-            <Button
-                className="toe-clip-close-button"
-                variant="secondary"
-                onClick={props.onHide}
-            >
+            <Button className="toe-clip-close-button" variant="secondary" onClick={props.onHide}>
                 Close
             </Button>
         </Modal.Footer>

@@ -13,11 +13,7 @@ export default ({ prompt, onChange, options, disabled, defValue }) => (
                 }
                 {options.map((option) => {
                     return (
-                        <option
-                            key={option}
-                            className="list-item"
-                            selected={option === defValue}
-                        >
+                        <option key={option} className="list-item" selected={option === defValue}>
                             {option}
                         </option>
                     );

@@ -11,7 +11,7 @@ import {
     REMOVE_USED_CODE,
 } from '../../redux/actions/toe-clip-code-actions';
 
-export default props => {
+export default (props) => {
     const dispatch = useDispatch();
 
     // Redux Store

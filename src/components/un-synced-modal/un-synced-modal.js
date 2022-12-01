@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, Container, Modal, Table } from 'react-bootstrap';
 import _ from 'lodash';
 
-export default props => {
+export default (props) => {
     const { entry_json } = props.dataHistoryObject;
 
     const generateTableHeaders = (json) => {

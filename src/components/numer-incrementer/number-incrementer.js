@@ -4,7 +4,7 @@ import { Button } from 'react-bootstrap';
 import './number-incrementer.css';
 import '../../App.css';
 
-export default props => {
+export default (props) => {
     // Redux State
     const redux_field = useSelector((state) => state.Session_Info.currentSession.data);
 

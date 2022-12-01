@@ -1,8 +1,8 @@
 import React from 'react';
 import './error-message.css';
 
-export default props => (props.hasErrors ?
-    (
+export default (props) =>
+    props.hasErrors ? (
         <div>
             <p className="error-class">
                 <span className="error-text">
@@ -13,4 +13,4 @@ export default props => (props.hasErrors ?
         </div>
     ) : (
         { ...props.children }
-));
+    );

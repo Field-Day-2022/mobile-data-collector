@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Modal } from 'react-bootstrap';
 
-export default props => (
+export default (props) => (
     <Modal show={props.show}>
         <Modal.Header>
             <Modal.Title>{props.title}</Modal.Title>
