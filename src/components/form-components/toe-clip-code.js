@@ -16,7 +16,7 @@ import { ADD_USED_CODE, REMOVE_USED_CODE } from '../../redux/actions/toe-clip-co
 import ToeErrorMessage from '../error-message/toe-clip-error-message';
 import { getSession } from '../../indexeddb/DbSessionHandler';
 
-const ToeClipCodeWrapper = ({ field }) => {
+export default ({ field }) => {
     const dispatch = useDispatch();
 
     // Redux Store
@@ -293,5 +293,3 @@ const ToeClipCodeWrapper = ({ field }) => {
         </ToeErrorMessage>
     );
 };
-
-export default ToeClipCodeWrapper;

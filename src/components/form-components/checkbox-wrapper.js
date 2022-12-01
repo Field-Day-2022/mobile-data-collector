@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { showErrorMessage, disableComponent } from '../../utils/utils';
 import { UPDATE_CURRENT_FORM } from '../../redux/actions/session-actions';
 
-const CheckboxWrapper = ({ field }) => {
+export default ({ field }) => {
     const dispatch = useDispatch();
 
     // Redux Store
@@ -74,5 +74,3 @@ const CheckboxWrapper = ({ field }) => {
         </ErrorMessage>
     );
 };
-
-export default CheckboxWrapper;

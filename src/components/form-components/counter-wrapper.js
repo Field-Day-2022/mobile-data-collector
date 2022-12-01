@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { UPDATE_CURRENT_FORM } from '../../redux/actions/session-actions';
 import { disableComponent, showErrorMessage } from '../../utils/utils';
 
-const CounterWrapper = ({ field }) => {
+export default ({ field }) => {
     const dispatch = useDispatch();
 
     // Redux Store
@@ -56,5 +56,3 @@ const CounterWrapper = ({ field }) => {
         </ErrorMessage>
     );
 };
-
-export default CounterWrapper;

@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { disableComponent, showErrorMessage } from '../../utils/utils';
 import { UPDATE_CURRENT_FORM } from '../../redux/actions/session-actions';
 
-const NumberWrapper = ({ field }) => {
+export default ({ field }) => {
     const dispatch = useDispatch();
     // Redux Store
     const current_slice = useSelector((state) => state.Session_Info.currentSession);
@@ -66,5 +66,3 @@ const NumberWrapper = ({ field }) => {
         </ErrorMessage>
     );
 };
-
-export default NumberWrapper;

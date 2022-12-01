@@ -5,7 +5,7 @@ import { showErrorMessage, disableComponent } from '../../utils/utils';
 import ErrorMessage from '../error-message/error-message';
 import { UPDATE_CURRENT_FORM } from '../../redux/actions/session-actions';
 
-const ShortTextWrapper = ({ field }) => {
+export default ({ field }) => {
     const dispatch = useDispatch();
 
     // Redux Store
@@ -66,5 +66,3 @@ const ShortTextWrapper = ({ field }) => {
         </ErrorMessage>
     );
 };
-
-export default ShortTextWrapper;

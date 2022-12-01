@@ -11,7 +11,7 @@ import {
     REMOVE_USED_CODE,
 } from '../../redux/actions/toe-clip-code-actions';
 
-const TemplateVerify = (props) => {
+export default props => {
     const dispatch = useDispatch();
 
     // Redux Store
@@ -129,5 +129,3 @@ const TemplateVerify = (props) => {
         </div>
     );
 };
-
-export default TemplateVerify;

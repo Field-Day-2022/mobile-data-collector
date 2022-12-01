@@ -5,7 +5,7 @@ import { showErrorMessage, disableComponent } from '../../utils/utils';
 import ErrorMessage from '../error-message/error-message';
 import { UPDATE_CURRENT_FORM } from '../../redux/actions/session-actions';
 
-const LongTextWrapper = ({ field }) => {
+export default ({ field }) => {
     const dispatch = useDispatch();
 
     // Redux Store
@@ -64,5 +64,3 @@ const LongTextWrapper = ({ field }) => {
         </ErrorMessage>
     );
 };
-
-export default LongTextWrapper;
