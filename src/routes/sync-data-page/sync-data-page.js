@@ -14,7 +14,7 @@ import { getAnswerSets } from '../../indexeddb/DbAnswerSetHandler';
 import '../../App.css';
 import './sync-data-page.css';
 
-const SyncData = (props) => {
+export default props => {
     // Local State
     const [validated, setValidated] = useState(false);
     const [errors, setError] = useState({});
@@ -230,5 +230,3 @@ const SyncData = (props) => {
         </div>
     );
 };
-
-export default SyncData;

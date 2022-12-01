@@ -10,7 +10,7 @@ import _ from 'lodash';
 import './FieldDayFormSelectionForm.css';
 import '../../App.css';
 
-const NewDataEntry = (props) => {
+export default props => {
     const dispatch = useDispatch();
 
     //Local State
@@ -240,5 +240,3 @@ const NewDataEntry = (props) => {
         </div>
     );
 };
-
-export default NewDataEntry;

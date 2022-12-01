@@ -9,7 +9,7 @@ import * as CONSTANTS from '../../constants';
 import './home.css';
 import '../../App.css';
 
-const Home = (props) => {
+export default props => {
     // Local State
     const [showLoginModal, setShowLoginModal] = useState(true);
     const [showSyncErrorModal, setShowSyncErrorModal] = useState(false);
@@ -161,5 +161,3 @@ const Home = (props) => {
         </div>
     );
 };
-
-export default Home;
