@@ -10,7 +10,7 @@ import db from '../../indexeddb/Db';
 import { UPDATE_NEW_TOE_CLIP_CODE } from '../../redux/actions/toe-clip-code-actions';
 import * as CONSTANTS from '../../constants';
 
-const UnsyncHistory = props => {
+const UnsyncHistory = (props) => {
     const dispatch = useDispatch();
 
     // Redux

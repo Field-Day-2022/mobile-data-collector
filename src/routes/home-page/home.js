@@ -9,7 +9,7 @@ import * as CONSTANTS from '../../constants';
 import './home.css';
 import '../../App.css';
 
-export default props => {
+export default (props) => {
     // Local State
     const [showLoginModal, setShowLoginModal] = useState(true);
     const [showSyncErrorModal, setShowSyncErrorModal] = useState(false);

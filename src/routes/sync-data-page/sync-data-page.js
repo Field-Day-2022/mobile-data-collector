@@ -14,7 +14,7 @@ import { getAnswerSets } from '../../indexeddb/DbAnswerSetHandler';
 import '../../App.css';
 import './sync-data-page.css';
 
-export default props => {
+export default (props) => {
     // Local State
     const [validated, setValidated] = useState(false);
     const [errors, setError] = useState({});

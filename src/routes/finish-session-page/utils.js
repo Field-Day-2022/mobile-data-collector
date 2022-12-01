@@ -1,1 +1,1 @@
-export const submit = values => console.log('Values', values);
+export const submit = (values) => console.log('Values', values);

@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, Col, Container, Row } from 'react-bootstrap';
 import './aboutus.css';
 
-export default props => (
+export default (props) => (
     <div className="home-page-backing">
         <div className="header">
             <h1>About FieldDay</h1>
