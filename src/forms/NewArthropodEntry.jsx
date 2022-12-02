@@ -7,6 +7,7 @@ import FormWrapper from '../components/FormWrapper';
 import SingleCheckbox from '../components/SingleCheckbox';
 import TextInput from '../components/TextInput';
 import Button from '../components/Button';
+import ConfirmationModal from '../components/ConfirmationModal';
 
 import { currentFormName, currentSessionData } from '../utils/jotai';
 
@@ -22,6 +23,7 @@ export default function NewArthropodEntry() {
   const [predator, setPredator] = useState(false);
   const [arthropodData, setArthropodData] = useState();
   const [comments, setComments] = useState('')
+  const [ confirmationModalIsOpen, setConfirmationModalIsOpen ] = useState(false);
 
   const [currentData, setCurrentData] = useAtom(currentSessionData)
   const [currentForm, setCurrentForm] = useAtom(currentFormName);
@@ -37,8 +39,8 @@ export default function NewArthropodEntry() {
         trap,
         predator,
         arthropodData,
+        comments,
         dateTime: date.toUTCString(),
-        comments
       },
       setCurrentData,
       currentData,
@@ -77,8 +79,19 @@ export default function NewArthropodEntry() {
       />
       <Button 
         prompt="Finished?"
-        clickHandler={completeCapture}
+        clickHandler={() => setConfirmationModalIsOpen(true)}
       />
+      {confirmationModalIsOpen && <ConfirmationModal 
+        data={{
+          trap,
+          predator,
+          arthropodData,
+          comments,
+        }}
+        completeCapture={completeCapture}
+        setConfirmationModalIsOpen={setConfirmationModalIsOpen}
+        modalType="arthropod"
+      />}
     </FormWrapper>
   );
 }

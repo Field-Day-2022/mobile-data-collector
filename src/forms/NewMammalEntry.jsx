@@ -7,6 +7,7 @@ import FormWrapper from '../components/FormWrapper';
 import SingleCheckbox from '../components/SingleCheckbox';
 import TextInput from '../components/TextInput';
 import Button from '../components/Button';
+import ConfirmationModal from '../components/ConfirmationModal';
 
 import { currentFormName, currentSessionData } from '../utils/jotai';
 import { updateData } from '../utils/functions';
@@ -22,8 +23,9 @@ export default function NewMammalEntry() {
     const [trap, setTrap] = useState();
     const [mass,setMass] = useState('');
     const [ sex, setSex] = useState()
-    const [isDead, setIsDead] = useState()
+    const [isDead, setIsDead] = useState(false)
     const [comments, setComments] = useState('')
+  const [ confirmationModalIsOpen, setConfirmationModalIsOpen ] = useState(false);
 
     const [currentData, setCurrentData] = useAtom(currentSessionData);
     const [currentForm, setCurrentForm] = useAtom(currentFormName);
@@ -84,8 +86,21 @@ export default function NewMammalEntry() {
             />
             <Button
                 prompt="Finished?"
-                clickHandler={completeCapture}
+                clickHandler={() => setConfirmationModalIsOpen(true)}
             />
+            {confirmationModalIsOpen && <ConfirmationModal 
+                data={{
+                    speciesCode,
+                    trap,
+                    mass,
+                    sex,
+                    isDead,
+                    comments
+                }}
+                completeCapture={completeCapture}
+                setConfirmationModalIsOpen={setConfirmationModalIsOpen}
+                modalType="mammal"
+            />}
         </FormWrapper>
     )
 

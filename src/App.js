@@ -55,9 +55,9 @@ function App() {
         toeCodeSnapshot.metadata.fromCache &&
         testtoeCodeSnapshot.metadata.fromCache
       ) {
-        setNotification('Retrieved data from local')
+        setNotification('Syncing with local storage')
       } else {
-        setNotification(`Syncing data from remote`)
+        setNotification(`Syncing with remote storage`)
       }
     }
   }, [ answerSetSnapshot, toeCodeSnapshot, testtoeCodeSnapshot ])

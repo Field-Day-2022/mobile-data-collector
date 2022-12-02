@@ -14,6 +14,7 @@ import ToeCodeInput from '../components/ToeCodeInput';
 import NumberInput from '../components/NumberInput';
 import TextInput from '../components/TextInput';
 import Button from '../components/Button';
+import ConfirmationModal from '../components/ConfirmationModal';
 
 export default function NewLizardEntry() {
   const [speciesCode, setSpeciesCode] = useState();
@@ -25,13 +26,14 @@ export default function NewLizardEntry() {
   const [regenTail, setRegenTail] = useState(false);
   const [otl, setOtl] = useState('');
   const [isHatchling, setIsHatchling] = useState(false);
-  const [mass, setMass] = useState('');
+  const [massGrams, setMassGrams] = useState('');
   const [sex, setSex] = useState('');
   const [isDead, setIsDead] = useState(false);
   const [comments, setComments] = useState('');
   const [updatedToeCodes, setUpdatedToeCodes] = useState()
   const [ lizardSpeciesList, setLizardSpeciesList ] = useState([])
   const [ fenceTraps, setFenceTraps ] = useState([])
+  const [ confirmationModalIsOpen, setConfirmationModalIsOpen ] = useState(false);
 
   // TODO: add input validation logic for svl, vtl, otl, and mass
 
@@ -93,7 +95,7 @@ export default function NewLizardEntry() {
         regenTail,
         otl,
         isHatchling,
-        mass,
+        mass: massGrams,
         sex,
         isDead,
         comments,
@@ -162,10 +164,10 @@ export default function NewLizardEntry() {
       />}
       {otl && <NumberInput 
         label="Mass (g)"
-        value={mass}
-        setValue={setMass}
+        value={massGrams}
+        setValue={setMassGrams}
       />}
-      {mass && <Dropdown 
+      {massGrams && <Dropdown 
         value={sex}
         setValue={setSex}
         placeholder="Sex"
@@ -184,7 +186,27 @@ export default function NewLizardEntry() {
       />}
       {sex && <Button 
         prompt="Finished?"
-        clickHandler={completeCapture}
+        clickHandler={() => setConfirmationModalIsOpen(true)}
+      />}
+      {confirmationModalIsOpen && <ConfirmationModal 
+        data={{
+          speciesCode,
+          trap,
+          isRecapture,
+          toeCode,
+          svl,
+          vtl,
+          regenTail,
+          otl,
+          isHatchling,
+          massGrams,
+          sex,
+          isDead,
+          comments,
+        }}
+        completeCapture={completeCapture}
+        setConfirmationModalIsOpen={setConfirmationModalIsOpen}
+        modalType="lizard"
       />}
     </FormWrapper>
   );
