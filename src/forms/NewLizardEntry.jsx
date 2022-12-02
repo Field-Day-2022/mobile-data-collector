@@ -4,7 +4,7 @@ import { collection, setDoc, query, where, doc, getDocsFromCache } from 'firebas
 import { db } from '../index'
 
 
-import { currentFormName, currentSessionData } from '../utils/jotai';
+import { currentFormName, currentSessionData, notificationText } from '../utils/jotai';
 import { updateData } from '../utils/functions';
 
 import FormWrapper from '../components/FormWrapper';
@@ -37,6 +37,7 @@ export default function NewLizardEntry() {
 
   const [currentData, setCurrentData] = useAtom(currentSessionData);
   const [currentForm, setCurrentForm] = useAtom(currentFormName);
+  const [ notification, setNotification ] = useAtom(notificationText)
 
   const sexOptions = [
     'Male',
@@ -74,6 +75,7 @@ export default function NewLizardEntry() {
 
   const sendToeCodeDataToFirestore = async () => {
     await setDoc(doc(db, "TestToeClipCodes", currentData.site), updatedToeCodes)
+    setNotification('Successfully set toe clip code entry')
   }
 
   const completeCapture = () => {

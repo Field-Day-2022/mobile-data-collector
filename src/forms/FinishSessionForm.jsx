@@ -7,6 +7,7 @@ import {
   editingPrevious,
   pastEntryIndex,
   currentPageName,
+  notificationText
 } from '../utils/jotai';
 
 import { useCollectionData } from 'react-firebase-hooks/firestore';
@@ -35,6 +36,7 @@ export const FinishSessionForm = () => {
   const [ isEditingPrevious, setIsEditingPrevious] = useAtom(editingPrevious)
   const [ entryIndex, setEntryIndex ] = useAtom(pastEntryIndex)
   const [ currentPage, setCurrentPage ] = useAtom(currentPageName)
+  const [ notification, setNotification ] = useAtom(notificationText)
 
 
   const [trapStatus, setTrapStatus] = useState('');
@@ -51,6 +53,7 @@ export const FinishSessionForm = () => {
       console.log(`Updating existing entry with id ${sessionId} in Test${currentData.project}Session`);
       await setDoc(doc(db, `Test${currentData.project}Session`, sessionId), sessionObj)
       console.log('Successfully overwritten')
+      setNotification('Successfully added to session')
       setPastSessions(pastSessions => pastSessions.map(session => {
         if (session.sessionId === sessionId) {
           return {
@@ -69,6 +72,7 @@ export const FinishSessionForm = () => {
         sessionObj
       );
       console.log(`doc written with id ${docRef.id}`);
+      setNotification('Successfully added new session')
       setPastSessions([
         ...pastSessions,
         {

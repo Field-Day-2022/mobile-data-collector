@@ -22,22 +22,24 @@ export default function Notification() {
 
   useEffect(() => {
     controls.start("visible").then(() => controls.start("hidden"))
-    console.log('notification changed')
-  }, [ notification, controls ])
+  }, [ notification ])
 
   const containerVariant = {
     hidden: {
       scale: 0,
       y: '-100%',
+      opacity: 0,
       transition: {
         delay: 1.5,
         staggerChildren: .03,
-        delayChildren: 1
+        delayChildren: 1,
+        duration: .1
       }
     },
     visible: {
       scale: 1,
       y: 0,
+      opacity: 1,
       transition: {
         duration: .5,
         delayChildren: .3,
@@ -65,13 +67,14 @@ export default function Notification() {
         z-50
         p-4
         rounded-2xl
+        mt-5
       '
       variants={containerVariant}
       animate={controls}
       initial="hidden"
      >
       <motion.p>
-        {Array.from(notification).map((char, i) => {
+        {/* {Array.from(notification).map((char, i) => {
           if (char.charCodeAt(0) === 32) char = "\u00A0"
           return (
             <motion.span
@@ -82,7 +85,8 @@ export default function Notification() {
               {char}
             </motion.span>
           )
-        })}
+        })} */}
+        {notification}
       </motion.p>
     </motion.div>
   )

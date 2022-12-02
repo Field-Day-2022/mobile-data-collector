@@ -13,6 +13,7 @@ import PastSessionData from './pages/PastSessionData';
 import Navbar from './components/Navbar';
 import { motion } from 'framer-motion'
 import Notification from './components/Notification';
+import { useEffect } from 'react';
 
 function App() {
 
@@ -39,11 +40,27 @@ function App() {
     testtoeCodeError
   ] = useCollection(collection(db, 'TestToeClipCodes'))
 
+  // if (testtoeCodeSnapshot) console.log(testtoeCodeSnapshot.metadata.hasPendingWrites)
+
   // if (answerSetSnapshot) console.log(`Retrieved answer set from ${answerSetSnapshot?.metadata.fromCache ? 'cache' : 'server'}`)
   // if (toeCodeSnapshot) console.log(`Retrieved live toe codes from ${toeCodeSnapshot?.metadata.fromCache ? 'cache' : 'server'}`)
   // if (testtoeCodeSnapshot) console.log(`Retrieved test toe codes from ${testtoeCodeSnapshot?.metadata.fromCache ? 'cache' : 'server'}`)
 
   // if (answerSetSnapshot) console.log(answerSet);
+
+  useEffect(() => {
+    if (answerSetSnapshot &&  toeCodeSnapshot && testtoeCodeSnapshot) {
+      if (
+        answerSetSnapshot.metadata.fromCache &&
+        toeCodeSnapshot.metadata.fromCache &&
+        testtoeCodeSnapshot.metadata.fromCache
+      ) {
+        setNotification('Retrieved data from local')
+      } else {
+        setNotification(`Syncing data from remote`)
+      }
+    }
+  }, [ answerSetSnapshot, toeCodeSnapshot, testtoeCodeSnapshot ])
 
   if (answerSetError || toeCodeError || testtoeCodeError) {
     return (
@@ -93,12 +110,12 @@ function App() {
         {currentPage === 'Home' && <Home />}
         {currentPage === 'History' && <PastSessionData />}
         {currentPage === 'Collect Data' && <CollectData />}
-        <input 
+        {/* <input 
           onBlur={(e) => {
             console.log(e.target.value)
             setNotification(e.target.value)
           }}
-        />
+        /> */}
       </motion.div>
     </motion.div>
   );
