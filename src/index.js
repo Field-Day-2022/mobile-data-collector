@@ -4,49 +4,45 @@ import './index.css';
 import App from './App';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
-import { Provider } from 'jotai'
+import { Provider } from 'jotai';
 // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { 
-  getFirestore,
-  enableIndexedDbPersistence, 
-} from 'firebase/firestore'
+import { initializeApp } from 'firebase/app';
+import { getFirestore, enableIndexedDbPersistence } from 'firebase/firestore';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyAmjxPpYBWe1gwBvDXka9-Fk4zRuWPQw-Y",
-  authDomain: "asu-field-day.firebaseapp.com",
-  databaseURL: "https://asu-field-day-default-rtdb.firebaseio.com",
-  projectId: "asu-field-day",
-  storageBucket: "asu-field-day.appspot.com",
-  messagingSenderId: "470318492986",
-  appId: "1:470318492986:web:0e14ad60aaf2ca37fc7403",
-  measurementId: "G-3DBWYMJ1S8"
+    apiKey: 'AIzaSyAmjxPpYBWe1gwBvDXka9-Fk4zRuWPQw-Y',
+    authDomain: 'asu-field-day.firebaseapp.com',
+    databaseURL: 'https://asu-field-day-default-rtdb.firebaseio.com',
+    projectId: 'asu-field-day',
+    storageBucket: 'asu-field-day.appspot.com',
+    messagingSenderId: '470318492986',
+    appId: '1:470318492986:web:0e14ad60aaf2ca37fc7403',
+    measurementId: 'G-3DBWYMJ1S8',
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 
-enableIndexedDbPersistence(db)
-  .catch(error => {
+enableIndexedDbPersistence(db).catch((error) => {
     if (error.code === 'failed-precondition') {
-      console.error("Offline persistence only supported with 1 tab open at a time")
+        console.error('Offline persistence only supported with 1 tab open at a time');
     } else if (error.code === 'unimplemented') {
-      console.error("Browser does not support offline persistence")
+        console.error('Browser does not support offline persistence');
     }
-  })
+});
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
-    <Provider>
-      <App />
-    </Provider>
-  </React.StrictMode>
+    <React.StrictMode>
+        <Provider>
+            <App />
+        </Provider>
+    </React.StrictMode>
 );
 
 // If you want your app to work offline and load faster, you can change

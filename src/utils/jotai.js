@@ -1,10 +1,6 @@
-import { 
-  atomWithStorage
-} from 'jotai/utils'
+import { atomWithStorage } from 'jotai/utils';
 
-export const currentSessionData = atomWithStorage(
-  'currentSessionData',
-  {
+export const currentSessionData = atomWithStorage('currentSessionData', {
     captureStatus: '',
     array: '',
     project: '',
@@ -16,15 +12,11 @@ export const currentSessionData = atomWithStorage(
     lizard: [],
     mammal: [],
     snake: [],
-  }
-)
+});
 
-export const currentFormName = atomWithStorage('currentFormName', 'New Data')
+export const currentFormName = atomWithStorage('currentFormName', 'New Data');
 
-export const pastSessionData = atomWithStorage(
-  'pastSessionData',
-  []
-)
+export const pastSessionData = atomWithStorage('pastSessionData', []);
 
 export const currentPageName = atomWithStorage('currentPageName', 'Home');
 
