@@ -61,34 +61,32 @@ function App() {
     return (
         <motion.div
             className="
-      font-openSans 
-      overflow-hidden 
-      absolute 
-      flex 
-      flex-col 
-      items-center 
-      text-center 
-      justify-start 
-      inset-0 
-      bg-gradient-to-tr 
-      from-asu-maroon 
-      to-asu-gold
-      "
+                font-openSans 
+                overflow-hidden 
+                absolute 
+                flex 
+                flex-col 
+                items-center 
+                text-center 
+                justify-start 
+                inset-0 
+                bg-white
+                "
         >
             <motion.div
                 className="
-        flex 
-        flex-col 
-        overflow-visible 
-        items-center 
-        h-full
-        w-full 
-        pr-0 
-        bg-gradient-to-r 
-        from-slate-300/25 
-        rounded-lg
-        text-asu-maroon
-        "
+                    flex 
+                    flex-col 
+                    overflow-visible 
+                    items-center 
+                    h-full
+                    w-full 
+                    pr-0 
+                    bg-gradient-to-r 
+                    from-slate-300/25 
+                    rounded-lg
+                    text-black
+                    "
             >
                 <Notification />
                 <Navbar />
