@@ -2,7 +2,7 @@ export default function TextInput({ prompt, placeholder, value, setValue, onChan
     return (
         <div>
             <label className="label mb-0 pb-0">
-                <span className="label-text text-lg text-asu-maroon mb-0">{prompt}</span>
+                <span className="label-text text-lg text-black mb-0">{prompt}</span>
             </label>
             <input
                 maxLength={maxLength ?? 10}
@@ -13,7 +13,7 @@ export default function TextInput({ prompt, placeholder, value, setValue, onChan
                 }}
                 type="text"
                 placeholder={placeholder}
-                className="text-lg placeholder:text-gray-500 text-asu-maroon input bg-white/25 input-bordered input-secondary w-full max-w-xs mb-5"
+                className="text-xl placeholder:text-gray-500 text-asu-maroon input bg-white/25 input-bordered input-secondary w-full max-w-xs mb-5"
             />
         </div>
     );
