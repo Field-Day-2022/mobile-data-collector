@@ -235,8 +235,9 @@ export default function ToeCodeInput({
           capitalize
           text-xl
           text-asu-maroon
-          bg-white/25
-          border-none
+          bg-white
+          border-asu-maroon
+          border-[1px]
           font-normal
           hover:bg-white/50
           "
@@ -254,6 +255,8 @@ export default function ToeCodeInput({
             w-11/12 
             max-w-sm
             bg-white/90
+            border-asu-maroon
+            border-[1px]
             flex
             flex-col
             items-center
