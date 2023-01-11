@@ -28,9 +28,9 @@ function App() {
         collection(db, 'TestToeClipCodes')
     );
 
-    const [ lizardDataSnapshot, lizardDataLoading, lizardDataError ] = useCollection(
+    const [lizardDataSnapshot, lizardDataLoading, lizardDataError] = useCollection(
         collection(db, 'LizardData')
-    )
+    );
 
     // if (testtoeCodeSnapshot) console.log(testtoeCodeSnapshot.metadata.hasPendingWrites)
 
