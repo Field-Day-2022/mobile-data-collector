@@ -66,9 +66,7 @@ export default function NewDataEntry() {
             tabIndex={0} 
             className="btn glass m-1 text-asu-maroon text-xl capitalize font-medium"
           >Select Form</label>
-          <ul tabIndex={0} className="dropdown-content menu p-2 shadow bg-gradient-radial
-              from-white
-              to-white/50 rounded-box text-xl">
+          <ul tabIndex={0} className="dropdown-content menu p-2 shadow bg-gradient-radial from-white to-white/75 rounded-box text-xl">
             {entryTypes.map((entry, index) => (
               <li 
                 onClick={() => {

@@ -5,9 +5,9 @@ export default function NumberInput({
   placeholder 
 }) {
   return (
-    <div className='w-36'>
-      <label className="label">
-        <span className="label-text text-asu-maroon">{label}</span>
+    <div className='w-36 mb-2'>
+      <label className="label pb-0">
+        <span className="label-text text-black">{label}</span>
       </label>
       <input 
         onChange={(e) => {
@@ -19,7 +19,8 @@ export default function NumberInput({
         type="text" 
         placeholder={placeholder} 
         className="
-          placeholder:text-asu-maroon 
+          placeholder:text-gray-400
+          placeholder:font-light 
           text-asu-maroon 
           input 
           bg-white/25 
