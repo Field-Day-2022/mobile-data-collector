@@ -36,7 +36,7 @@ export default function NewSnakeEntry() {
 
     const completeCapture = () => {
         updateData(
-            'mammal',
+            'snake',
             {
                 speciesCode,
                 trap,
