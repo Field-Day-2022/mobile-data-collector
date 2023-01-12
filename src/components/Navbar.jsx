@@ -58,7 +58,7 @@ export default function Navbar() {
         w-1/2 
         absolute 
         top-12 
-        z-50"
+        z-30"
         variants={navigationContainerVariant}
       >
         <motion.ul variants={navUlVariant} initial={false} animate={isOpen ? 'open' : 'closed'}>
@@ -129,7 +129,7 @@ const Path = props => (
 );
 
 const MenuToggle = ({ toggle }) => (
-  <button onClick={toggle} className="p-2 z-50">
+  <button onClick={toggle} className="p-2 z-30">
     <svg width="33" height="33" viewBox="0 0 23 23">
       <Path
         variants={{

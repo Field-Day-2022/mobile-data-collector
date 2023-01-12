@@ -13,7 +13,7 @@ import {
     getDocsFromServer,
 } from 'firebase/firestore';
 import Dropdown from './Dropdown';
-import { motion, useAnimationControls } from 'framer-motion';
+import { motion, useAnimationControls, AnimatePresence } from 'framer-motion';
 import SingleCheckbox from './SingleCheckbox';
 
 export default function ToeCodeInput({
@@ -39,9 +39,11 @@ export default function ToeCodeInput({
     const [preexistingToeClipCodes, setPreexistingToeClipCodes] = useState([]);
     const [errorMsg, setErrorMsg] = useState();
     const [isValid, setIsValid] = useState(false);
-
     const [currentData, setCurrentData] = useAtom(currentSessionData);
+    const [ recaptureHistoryIsOpen, setRecaptureHistoryIsOpen ] = useState(false);
 
+    const recaptureHistoryControls = useAnimationControls();
+    const recaptureHistoryContainerControls = useAnimationControls();
     const errorMsgControls = useAnimationControls();
 
     // console.log(toeCodes)
@@ -93,6 +95,22 @@ export default function ToeCodeInput({
     useEffect(() => {
         checkToeCodeValidity();
     }, [toeCode, isRecapture]);
+
+    const toggleRecaptureHistoryModal = () => {
+        console.log("Toggling recapture history")
+        if (recaptureHistoryIsOpen) {
+            console.log("closing")
+            setRecaptureHistoryIsOpen(false);
+            recaptureHistoryContainerControls.start("hidden")
+            recaptureHistoryControls.start("hidden")
+        } else {
+            console.log("Opening")
+            setRecaptureHistoryIsOpen(true);
+            recaptureHistoryContainerControls.start("visible")
+            recaptureHistoryControls.start("visible")
+        }
+    }
+    
 
     const errorMsgVariant = {
         visible: {
@@ -245,35 +263,116 @@ export default function ToeCodeInput({
         }
     };
 
+
+    /* 
+    Recapture History should contain: 
+    Current Site, species, and toecode
+
+    For each entry display: 
+        - date
+        - array
+        - recapture
+        - SVL
+        - VTL
+        - Regen Tail
+        - OTL
+        - Hatchling
+        - Mass
+        - Sex
+        - Dead
+
+    */
     const findPreviousLizardEntries = async () => {
-        const lizardDataRef = collection(db, "LizardData");
-        const q = query
-        (
-            lizardDataRef, 
-            where("toeClipCode", "==", toeCode),
-            where("site", "==", currentData.site),
-        );
-        const lizardEntriesSnapshot = await getDocsFromCache(q)
-        for (const doc of lizardEntriesSnapshot.docs)
-            console.log(doc.data())
+        setRecaptureHistoryIsOpen(true);
+        // const lizardDataRef = collection(db, "LizardData");
+        // const q = query
+        // (
+        //     lizardDataRef, 
+        //     where("toeClipCode", "==", toeCode),
+        //     where("site", "==", currentData.site),
+        // );
+        // const lizardEntriesSnapshot = await getDocsFromCache(q)
+        // for (const doc of lizardEntriesSnapshot.docs)
+        //     console.log(doc.data())
     };
 
+    const recaptureHistoryContainerVariant = {
+        hidden: {
+            opacity: 0,
+        }, 
+        visible: {
+            opacity: 1,
+        }
+    }
+
+    const recaptureHistoryVariant = {
+        hidden: {
+            scale: 0,
+            y: '50%',
+        },
+        visible: {
+            scale: [0, 1],
+            y: ['60%', '0%'],
+            transition: {
+                type: "spring",
+                duration: .25,
+            }
+        }
+    }
+
     return (
-        <div>
+        <AnimatePresence>
+        <motion.div>
+            <AnimatePresence>
+            {recaptureHistoryIsOpen && <motion.div className="absolute h-screen w-screen top-0 left-0 bg-black/20 z-50"
+                variants={recaptureHistoryContainerVariant}
+                initial="hidden"
+                animate="visible"
+                exit="hidden"
+            >
+                <motion.div
+                    className="absolute h-[calc(100%-2.5rem)] w-[calc(100%-2.5rem)] shadow-2xl top-0 left-0 bg-white border-2 border-asu-maroon rounded-2xl m-5 p-1 flex flex-col items-center"
+                    variants={recaptureHistoryVariant}
+                    initial="hidden"
+                    animate="visible"
+                    exit="hidden"
+                >
+                    <h1 className="text-3xl">Recapture History</h1>
+                    <motion.div
+                        className="flex items-center space-x-2 justify-center w-full border-black border-0 justify-items-center max-w-md"
+                    >
+                        <motion.div className="flex w-16 flex-col items-center">
+                            <p className="text-sm text-black/75 italic leading-none">Site</p>
+                            <motion.div className="w-full bg-black h-[1px]"/>
+                            <p className="text-md text-black font-semibold leading-tight">{currentData.site}</p>
+                        </motion.div>
+                        <motion.div className="flex w-20 flex-col items-center">
+                            <p className="text-sm text-black/75 italic leading-none">Species</p>
+                            <motion.div className="w-full bg-black h-[1px]"/>
+                            <p className="text-md text-black font-semibold leading-tight">{speciesCode ?? 'N/A'}</p>
+                        </motion.div>
+                        <motion.div className="flex w-28 flex-col items-center">
+                            <p className="text-sm text-black/75 italic leading-none">Toe Clip Code</p>
+                            <motion.div className="w-full bg-black h-[1px]"/>
+                            <p className="text-md text-black font-semibold leading-tight">{toeCode}</p>
+                        </motion.div>
+                    </motion.div>
+
+                    
+
+                    <button className="border-2 text-xl border-asu-maroon rounded-xl w-1/2 px-4 py-1 mb-5 absolute bottom-0"
+                        onClick={() => setRecaptureHistoryIsOpen(false)}
+                    >Close</button>
+
+                </motion.div>
+            </motion.div>}
+            </AnimatePresence>
+
+
             {toeCodes && (
                 <label
                     htmlFor="my-modal-4"
-                    className="
-          btn
-          capitalize
-          text-xl
-          text-asu-maroon
-          bg-white
-          border-asu-maroon
-          border-[1px]
-          font-normal
-          hover:bg-white/50
-          "
+                    className="btn capitalize text-xl text-asu-maroon bg-white border-asu-maroon border-[1px] font-normal hover:bg-white/50"
                 >
                     {toeCode ? `Toe-Clip Code: ${toeCode}` : 'Toe-Clip Code'}
                 </label>
@@ -286,23 +385,8 @@ export default function ToeCodeInput({
           "
             />
 
-            <motion.div className="modal ">
-                <div
-                    className="
-            modal-box 
-            w-11/12 
-            max-w-sm
-            bg-white/90
-            border-asu-maroon
-            border-[1px]
-            flex
-            flex-col
-            items-center
-            min-h-screen
-            max-h-screen
-            p-1
-            "
-                >
+            <motion.div className="modal z-40">
+                <div className="modal-box  w-11/12  max-w-sm bg-white/90 border-asu-maroon border-[1px] flex flex-col items-center min-h-screen max-h-screen p-1">
                     <div className="flex flex-row">
                         <div className="flex flex-col">
                             <p className="text-sm">Toe-Clip Code:</p>
@@ -333,18 +417,7 @@ export default function ToeCodeInput({
                             />
                         ))}
                         <div
-                            className="
-              bg-asu-maroon 
-                rounded-xl
-                brightness-100
-                text-2xl 
-                capitalize 
-                text-asu-gold
-                z-10
-                active:brightness-50
-                active:scale-90
-                transition
-                "
+                            className="bg-asu-maroon rounded-xl brightness-100 text-2xl  capitalize  text-asu-gold z-10 active:brightness-50 active:scale-90 transition"
                             onClick={() => handleClick('backspace')}
                         >
                             <svg
@@ -380,21 +453,7 @@ export default function ToeCodeInput({
                             <Button prompt="Generate New" handler={() => generateNewToeCode()} />
                         )}
                         <button
-                            className={`
-                bg-asu-maroon
-                brightness-100
-                p-5
-                rounded-xl 
-                text-2xl 
-                capitalize 
-                text-asu-gold
-                z-10
-                m-1
-                active:brightness-50
-                active:scale-90
-                transition
-                select-none
-                `}
+                            className={`bg-asu-maroon brightness-100 p-5 rounded-xl  text-2xl  capitalize  text-asu-gold z-10 m-1 active:brightness-50 active:scale-90 transition select-none`}
                         >
                             {isValid ? (
                                 <label htmlFor="my-modal-4" onClick={() => generateToeCodesObj()}>
@@ -419,7 +478,8 @@ export default function ToeCodeInput({
                     </div>
                 </motion.div>
             </motion.div>
-        </div>
+        </motion.div>
+        </AnimatePresence>
     );
 }
 
@@ -428,37 +488,9 @@ function Button({ prompt, handler, isSelected }) {
         <button
             className={
                 isSelected
-                    ? `
-        bg-asu-maroon
-        brightness-50
-        p-5
-        rounded-xl 
-        text-2xl 
-        capitalize 
-        text-asu-gold
-        z-10
-        m-1
-        active:brightness-50
-        active:scale-90
-        transition
-        select-none
-        `
-                    : `
-        bg-asu-maroon
-        brightness-100
-        p-5
-        rounded-xl 
-        text-2xl 
-        capitalize 
-        text-asu-gold
-        z-10
-        m-1
-        active:brightness-50
-        active:scale-90
-        transition
-        select-none
-        `
-            }
+                    ? `bg-asu-maroon brightness-50 p-5 rounded-xl  text-2xl  capitalize  text-asu-gold z-10 m-1 active:brightness-50 active:scale-90 transition select-none`
+                    : `bg-asu-maroon brightness-100 p-5 rounded-xl  text-2xl  capitalize  text-asu-gold z-10 m-1 active:brightness-50 active:scale-90 transition select-none`
+                }
             onClick={handler}
         >
             {prompt}
