@@ -199,7 +199,7 @@ export default function ToeCodeInput({
         }
     };
 
-    console.log(siteToeCodes)
+    // console.log(siteToeCodes)
 
     const generateToeCodesObj = () => {
         let updatedToeCodeObject = siteToeCodes;
