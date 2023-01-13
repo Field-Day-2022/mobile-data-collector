@@ -177,7 +177,7 @@ export default function ToeCodeInput({
             setErrorMsg('Toe Clip Code must have an even number of characters');
         } else {
             if (isRecapture) {
-                if (preexistingToeClipCodes.includes(toeCode)) {
+                if (toeCodes.includes(toeCode)) {
                     setIsValid(true);
                 } else {
                     setErrorMsg(
@@ -186,7 +186,7 @@ export default function ToeCodeInput({
                     setIsValid(false);
                 }
             } else {
-                if (preexistingToeClipCodes.includes(toeCode)) {
+                if (toeCodes.includes(toeCode)) {
                     setErrorMsg(
                         'Toe Clip Code is already taken, choose another or check recapture box to record a recapture'
                     );
