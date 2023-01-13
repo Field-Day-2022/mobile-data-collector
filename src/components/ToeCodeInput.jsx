@@ -94,7 +94,7 @@ export default function ToeCodeInput({
                 }
             }
             setPreexistingToeClipCodes(tempArray);
-            console.log("All preexisting toe codes from this species, array, and site: ");
+            console.log(`All preexisting toe codes from this species(${speciesCode}), array(${currentData.array}), and site: ${currentData.site}`);
             console.log(preexistingToeClipCodes);
         }
     }, [speciesCode, toeCodes]);
@@ -291,7 +291,7 @@ export default function ToeCodeInput({
         );
         const lizardEntriesSnapshot = await getDocsFromCache(q)
         let tempArray = [];
-        console.log("Previous entries from selected toecode, site, array, and speciesCode")
+        console.log(`Previous entries from selected toecode(${toeCode}), site(${currentData.site}), array(${currentData.array}), and speciesCode(${speciesCode})`)
         for (const doc of lizardEntriesSnapshot.docs) {
             console.log(doc.data())
             tempArray.push(doc.data())
