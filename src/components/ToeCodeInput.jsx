@@ -127,7 +127,7 @@ export default function ToeCodeInput({
             transition: {
                 duration: 0.5,
                 type: 'spring',
-                delay: 2,
+                delay: 1,
             },
         },
     };
@@ -215,6 +215,10 @@ export default function ToeCodeInput({
     const handleClick = (source) => {
         if (source !== 'backspace' && toeCode.length !== 8) {
             if (Number(source)) {
+                if (toeCode.length === 0) {
+                    triggerErrorMsgAnimation('Error: Toe Clip Codes must begin with a letter');
+                    return;
+                }
                 if (!Number(toeCode.charAt(toeCode.length - 1))) {
                     setToeCode(`${toeCode}${source}`);
                     setSelected({
