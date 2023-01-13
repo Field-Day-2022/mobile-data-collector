@@ -41,6 +41,8 @@ export default function ToeCodeInput({
     const [isValid, setIsValid] = useState(false);
     const [currentData, setCurrentData] = useAtom(currentSessionData);
     const [ recaptureHistoryIsOpen, setRecaptureHistoryIsOpen ] = useState(false);
+    const [ historyButtonText, setHistoryButtonText ] = useState("History");
+    const [ previousLizardEntries, setPreviousLizardEntries ] = useState([])
 
     const recaptureHistoryControls = useAnimationControls();
     const recaptureHistoryContainerControls = useAnimationControls();
@@ -74,6 +76,7 @@ export default function ToeCodeInput({
 
     useEffect(() => {
         if (toeCodes) {
+            let tempArray = []
             setPreexistingToeClipCodes([]);
             for (const toeClipCode in toeCodes[currentData.array][speciesCode]) {
                 if (
@@ -82,34 +85,22 @@ export default function ToeCodeInput({
                     toeClipCode !== 'ArrayCode' &&
                     toeClipCode !== 'SiteCode'
                 ) {
-                    setPreexistingToeClipCodes((preexistingToeClipCodes) => [
-                        ...preexistingToeClipCodes,
-                        toeClipCode,
-                    ]);
+                    tempArray.push(toeClipCode);
+                    // setPreexistingToeClipCodes((preexistingToeClipCodes) => [
+                    //     ...preexistingToeClipCodes,
+                    //     toeClipCode,
+                    // ]);
                     // console.log(toeClipCode)
                 }
             }
+            setPreexistingToeClipCodes(tempArray);
+            // console.log(preexistingToeClipCodes);
         }
     }, [speciesCode, toeCodes]);
 
     useEffect(() => {
         checkToeCodeValidity();
     }, [toeCode, isRecapture]);
-
-    const toggleRecaptureHistoryModal = () => {
-        console.log("Toggling recapture history")
-        if (recaptureHistoryIsOpen) {
-            console.log("closing")
-            setRecaptureHistoryIsOpen(false);
-            recaptureHistoryContainerControls.start("hidden")
-            recaptureHistoryControls.start("hidden")
-        } else {
-            console.log("Opening")
-            setRecaptureHistoryIsOpen(true);
-            recaptureHistoryContainerControls.start("visible")
-            recaptureHistoryControls.start("visible")
-        }
-    }
     
 
     const errorMsgVariant = {
@@ -287,17 +278,25 @@ export default function ToeCodeInput({
 
     */
     const findPreviousLizardEntries = async () => {
+        setHistoryButtonText("Querying...")
+        const lizardDataRef = collection(db, "LizardData");
+        const q = query
+        (
+            lizardDataRef, 
+            where("toeClipCode", "==", toeCode),
+            where("site", "==", currentData.site),
+            where('array', '==', currentData.array),
+            where("speciesCode", "==", speciesCode),
+        );
+        const lizardEntriesSnapshot = await getDocsFromCache(q)
+        let tempArray = [];
+        for (const doc of lizardEntriesSnapshot.docs) {
+            console.log(doc.data())
+            tempArray.push(doc.data())
+        }
+        setPreviousLizardEntries(tempArray)
         setRecaptureHistoryIsOpen(true);
-        // const lizardDataRef = collection(db, "LizardData");
-        // const q = query
-        // (
-        //     lizardDataRef, 
-        //     where("toeClipCode", "==", toeCode),
-        //     where("site", "==", currentData.site),
-        // );
-        // const lizardEntriesSnapshot = await getDocsFromCache(q)
-        // for (const doc of lizardEntriesSnapshot.docs)
-        //     console.log(doc.data())
+        setHistoryButtonText("History");
     };
 
     const recaptureHistoryContainerVariant = {
@@ -323,6 +322,24 @@ export default function ToeCodeInput({
             }
         }
     }
+
+    const lizardHistoryLabelArray = [
+        "Date",
+        "Mass",
+        "SVL",
+        "OTL",
+        "VTL",
+        "Recapture",
+        "Dead",
+        "Hatchling",
+        "Regen Tail",
+        "Array",
+        "Sex",
+    ]
+
+    // console.log(previousLizardEntries.length)
+    // console.log(previousLizardEntries)
+    // console.log(previousLizardEntries[0])
 
     return (
         <AnimatePresence>
@@ -362,9 +379,63 @@ export default function ToeCodeInput({
                         </motion.div>
                     </motion.div>
 
-                    
 
-                    <button className="border-2 text-xl border-asu-maroon rounded-xl w-1/2 px-4 py-1 mb-5 absolute bottom-0"
+                    <motion.div className="flex flex-row border-2 border-black w-full h-full mb-2 rounded-xl shadow-lg"> 
+                        <table className="text-left text-sm h-full border-r-[2px] border-black table-auto border-collapse">
+                            {lizardHistoryLabelArray.map((item, index, array) => {
+                               return <tr><td className={`${index < array.length - 1 ? "border-b border-black whitespace-nowrap" : ""}`}>{item}</td></tr>
+                            })}
+                        </table>
+                        <div className="overflow-x-auto">
+                            <table className="text-center text-sm h-full border-black table-auto border-collapse">
+                                {lizardHistoryLabelArray.map((item, labelIndex, array) => {
+                                    let key = '';
+                                    if (item === "Date") key = "dateTime"
+                                    if (item === "Mass") key = "massG"
+                                    if (item === "SVL") key = "svlMm"
+                                    if (item === "OTL") key = "otlMm"
+                                    if (item === "VTL") key = "vtlMm"
+                                    if (item === "Recapture") key = "recapture"
+                                    if (item === "Dead") key = "dead"
+                                    if (item === "Hatchling") key = "hatchling"
+                                    if (item === "Regen Tail") key = "regenTail"
+                                    if (item === "Array") key = "array"
+                                    if (item === "Sex") key = "sex"
+                                    let tdArray = [];
+                                    for (let i = 0; i < previousLizardEntries.length; i++) {
+                                        let itemToDisplay = ''
+                                        if (key === "dateTime") {
+                                            const date = new Date(previousLizardEntries[i][key]).toLocaleDateString();
+                                            itemToDisplay = date;
+                                        } else {
+                                            itemToDisplay = previousLizardEntries[i][key] ?? "N/A"
+                                            if (itemToDisplay === "false") itemToDisplay = "No"
+                                            if (itemToDisplay === "true") itemToDisplay = "Yes"
+                                        }
+
+                                        
+                                        if (i < previousLizardEntries.length - 1) {
+                                            tdArray.push(
+                                                <td className={`${labelIndex < array.length - 1 ? "border-b border-r border-black" : "border-r border-black"}`}>{itemToDisplay}</td>
+                                            )
+                                        } else {
+                                            tdArray.push(
+                                                <td className={`${labelIndex < array.length - 1 ? "border-b border-black" : "border-black"}`}>{itemToDisplay}</td>
+                                            )
+                                        }
+                                    }
+                                    return (
+                                        <tr>
+                                            {tdArray}
+                                        </tr>
+                                    )
+                                })}
+                            </table>
+                        </div>
+                    </motion.div>
+
+
+                    <button className="border-2 text-xl border-asu-maroon rounded-xl w-1/2 px-4 py-1 mb-2 mt-auto"
                         onClick={() => setRecaptureHistoryIsOpen(false)}
                     >Close</button>
 
@@ -452,7 +523,9 @@ export default function ToeCodeInput({
                     </div>
                     <div className="flex flex-row items-center ">
                         {isRecapture && toeCodes ? (
-                            <Button prompt="History" handler={() => findPreviousLizardEntries()} />
+                            <Button prompt={historyButtonText} handler={() => {
+                                findPreviousLizardEntries();
+                            }} />
                         ) : (
                             <Button prompt="Generate New" handler={() => generateNewToeCode()} />
                         )}
