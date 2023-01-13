@@ -94,7 +94,8 @@ export default function ToeCodeInput({
                 }
             }
             setPreexistingToeClipCodes(tempArray);
-            // console.log(preexistingToeClipCodes);
+            console.log("All preexisting toe codes from this species, array, and site: ");
+            console.log(preexistingToeClipCodes);
         }
     }, [speciesCode, toeCodes]);
 
@@ -140,7 +141,7 @@ export default function ToeCodeInput({
                   return `${total}${current}`;
               }
           })
-        : '';
+        : 'EX: A1-B2-C3';
 
     const generateNewToeCode = () => {
         for (const toeClipCode in toeCodes[currentData.array][speciesCode]) {
@@ -290,6 +291,7 @@ export default function ToeCodeInput({
         );
         const lizardEntriesSnapshot = await getDocsFromCache(q)
         let tempArray = [];
+        console.log("Previous entries from selected toecode, site, array, and speciesCode")
         for (const doc of lizardEntriesSnapshot.docs) {
             console.log(doc.data())
             tempArray.push(doc.data())
@@ -382,12 +384,15 @@ export default function ToeCodeInput({
 
                     <motion.div className="flex flex-row border-2 border-black w-full h-full mb-2 rounded-xl shadow-lg"> 
                         <table className="text-left text-sm h-full border-r-[2px] border-black table-auto border-collapse">
+                            <thead>
                             {lizardHistoryLabelArray.map((item, index, array) => {
-                               return <tr><td className={`${index < array.length - 1 ? "border-b border-black whitespace-nowrap" : ""}`}>{item}</td></tr>
+                               return <tr key={item}><td className={`${index < array.length - 1 ? "border-b border-black whitespace-nowrap" : ""}`}>{item}</td></tr>
                             })}
+                            </thead>
                         </table>
                         <div className="overflow-x-auto">
                             <table className="text-center text-sm h-full border-black table-auto border-collapse">
+                            <tbody>
                                 {lizardHistoryLabelArray.map((item, labelIndex, array) => {
                                     let key = '';
                                     if (item === "Date") key = "dateTime"
@@ -416,20 +421,21 @@ export default function ToeCodeInput({
                                         
                                         if (i < previousLizardEntries.length - 1) {
                                             tdArray.push(
-                                                <td className={`${labelIndex < array.length - 1 ? "border-b border-r border-black" : "border-r border-black"}`}>{itemToDisplay}</td>
+                                                <td key={`${itemToDisplay}${i}`} className={`${labelIndex < array.length - 1 ? "border-b border-r border-black" : "border-r border-black"}`}>{itemToDisplay}</td>
                                             )
                                         } else {
                                             tdArray.push(
-                                                <td className={`${labelIndex < array.length - 1 ? "border-b border-black" : "border-black"}`}>{itemToDisplay}</td>
+                                                <td key={`${itemToDisplay}${i}`} className={`${labelIndex < array.length - 1 ? "border-b border-black" : "border-black"}`}>{itemToDisplay}</td>
                                             )
                                         }
                                     }
                                     return (
-                                        <tr>
+                                        <tr key={`${labelIndex}label`}>
                                             {tdArray}
                                         </tr>
                                     )
                                 })}
+                            </tbody>
                             </table>
                         </div>
                     </motion.div>
