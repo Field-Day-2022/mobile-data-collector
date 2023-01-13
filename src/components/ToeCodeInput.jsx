@@ -23,6 +23,7 @@ export default function ToeCodeInput({
     isRecapture,
     setIsRecapture,
     setUpdatedToeCodes,
+    toeCodes,
 }) {
     const [selected, setSelected] = useState({
         a: false,
@@ -35,7 +36,7 @@ export default function ToeCodeInput({
         4: false,
         5: false,
     });
-    const [toeCodes, setToeCodes] = useState();
+    // const [toeCodes, setToeCodes] = useState();
     const [preexistingToeClipCodes, setPreexistingToeClipCodes] = useState([]);
     const [errorMsg, setErrorMsg] = useState();
     const [isValid, setIsValid] = useState(false);
@@ -52,52 +53,52 @@ export default function ToeCodeInput({
 
     // console.log(preexistingToeClipCodes)
 
-    useEffect(() => {
-        const fetchToeCodes = async () => {
-            let toeCodesSnapshot;
-            try {
-                toeCodesSnapshot = await getDocFromCache(
-                    doc(db, 'TestToeClipCodes', currentData.site)
-                );
-                console.log('getting toe codes from test');
-                setToeCodes(toeCodesSnapshot.data());
-            } catch (e) {
-                console.log('getting toe codes from live');
-                toeCodesSnapshot = await getDocsFromCache(
-                    query(collection(db, 'ToeClipCodes'), where('SiteCode', '==', currentData.site))
-                );
-                setToeCodes(toeCodesSnapshot.docs[0].data());
-                // console.log('retreiving toe codes from ' + currentData.site)
-                // console.log(toeCodes)
-            }
-        };
-        fetchToeCodes();
-    }, []);
+    // useEffect(() => {
+    //     const fetchToeCodes = async () => {
+    //         let toeCodesSnapshot;
+    //         try {
+    //             toeCodesSnapshot = await getDocFromCache(
+    //                 doc(db, 'TestToeClipCodes', currentData.site)
+    //             );
+    //             console.log('getting toe codes from test');
+    //             setToeCodes(toeCodesSnapshot.data());
+    //         } catch (e) {
+    //             console.log('getting toe codes from live');
+    //             toeCodesSnapshot = await getDocsFromCache(
+    //                 query(collection(db, 'ToeClipCodes'), where('SiteCode', '==', currentData.site))
+    //             );
+    //             setToeCodes(toeCodesSnapshot.docs[0].data());
+    //             // console.log('retreiving toe codes from ' + currentData.site)
+    //             // console.log(toeCodes)
+    //         }
+    //     };
+    //     fetchToeCodes();
+    // }, []);
 
-    useEffect(() => {
-        if (toeCodes) {
-            let tempArray = []
-            setPreexistingToeClipCodes([]);
-            for (const toeClipCode in toeCodes[currentData.array][speciesCode]) {
-                if (
-                    toeCodes[currentData.array][speciesCode][toeClipCode] !== 'date' &&
-                    toeClipCode !== 'SpeciesCode' &&
-                    toeClipCode !== 'ArrayCode' &&
-                    toeClipCode !== 'SiteCode'
-                ) {
-                    tempArray.push(toeClipCode);
-                    // setPreexistingToeClipCodes((preexistingToeClipCodes) => [
-                    //     ...preexistingToeClipCodes,
-                    //     toeClipCode,
-                    // ]);
-                    // console.log(toeClipCode)
-                }
-            }
-            setPreexistingToeClipCodes(tempArray);
-            console.log(`All preexisting toe codes from this species(${speciesCode}), array(${currentData.array}), and site: ${currentData.site}`);
-            console.log(preexistingToeClipCodes);
-        }
-    }, [speciesCode, toeCodes]);
+    // useEffect(() => {
+    //     if (toeCodes) {
+    //         let tempArray = []
+    //         setPreexistingToeClipCodes([]);
+    //         for (const toeClipCode in toeCodes[currentData.array][speciesCode]) {
+    //             if (
+    //                 toeCodes[currentData.array][speciesCode][toeClipCode] !== 'date' &&
+    //                 toeClipCode !== 'SpeciesCode' &&
+    //                 toeClipCode !== 'ArrayCode' &&
+    //                 toeClipCode !== 'SiteCode'
+    //             ) {
+    //                 tempArray.push(toeClipCode);
+    //                 // setPreexistingToeClipCodes((preexistingToeClipCodes) => [
+    //                 //     ...preexistingToeClipCodes,
+    //                 //     toeClipCode,
+    //                 // ]);
+    //                 // console.log(toeClipCode)
+    //             }
+    //         }
+    //         setPreexistingToeClipCodes(tempArray);
+    //         console.log(`All preexisting toe codes from this species(${speciesCode}), array(${currentData.array}), and site(${currentData.site})`);
+    //         console.log(preexistingToeClipCodes);
+    //     }
+    // }, [toeCodes]);
 
     useEffect(() => {
         checkToeCodeValidity();

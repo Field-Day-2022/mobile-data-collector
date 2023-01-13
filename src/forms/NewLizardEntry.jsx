@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAtom } from 'jotai';
-import { collection, setDoc, query, where, doc, getDocsFromCache } from 'firebase/firestore'
+import { collection, setDoc, query, where, doc, getDocsFromCache, getDocFromCache } from 'firebase/firestore'
 import { db } from '../index'
 
 
@@ -34,6 +34,8 @@ export default function NewLizardEntry() {
   const [ lizardSpeciesList, setLizardSpeciesList ] = useState([])
   const [ fenceTraps, setFenceTraps ] = useState([])
   const [ confirmationModalIsOpen, setConfirmationModalIsOpen ] = useState(false);
+  const [ siteToeCodes, setSiteToeCodes ] = useState();
+  const [ speciesToeCodes, setSpeciesToeCodes ] = useState();
 
   // TODO: add input validation logic for svl, vtl, otl, and mass
 
@@ -73,7 +75,51 @@ export default function NewLizardEntry() {
       setFenceTraps(fenceTrapsArray)
     }
     getAnswerFormDataFromFirestore()
+    const fetchToeCodes = async () => {
+        let toeCodesSnapshot;
+        try {
+            toeCodesSnapshot = await getDocFromCache(
+                doc(db, 'TestToeClipCodes', currentData.site)
+            );
+            console.log('getting toe codes from test');
+            setSiteToeCodes(toeCodesSnapshot.data());
+        } catch (e) {
+            console.log('getting toe codes from live');
+            toeCodesSnapshot = await getDocsFromCache(
+                query(collection(db, 'ToeClipCodes'), where('SiteCode', '==', currentData.site))
+            );
+            setSiteToeCodes(toeCodesSnapshot.docs[0].data());
+            // console.log('retreiving toe codes from ' + currentData.site)
+            // console.log(toeCodes)
+        }
+    };
+    fetchToeCodes();
   }, [])
+
+  useEffect(() => {
+    if (siteToeCodes) {
+        let tempArray = []
+        setSpeciesToeCodes([]);
+        for (const toeClipCode in siteToeCodes[currentData.array][speciesCode]) {
+            if (
+                siteToeCodes[currentData.array][speciesCode][toeClipCode] !== 'date' &&
+                toeClipCode !== 'SpeciesCode' &&
+                toeClipCode !== 'ArrayCode' &&
+                toeClipCode !== 'SiteCode'
+            ) {
+                tempArray.push(toeClipCode);
+                // setPreexistingToeClipCodes((preexistingToeClipCodes) => [
+                //     ...preexistingToeClipCodes,
+                //     toeClipCode,
+                // ]);
+                // console.log(toeClipCode)
+            }
+        }
+        setSpeciesToeCodes(tempArray);
+        console.log(`All preexisting toe codes from this species(${speciesCode}), array(${currentData.array}), and site(${currentData.site})`);
+        console.log(tempArray)
+    }
+  }, [speciesCode])
 
   const sendToeCodeDataToFirestore = async () => {
     await setDoc(doc(db, "TestToeClipCodes", currentData.site), updatedToeCodes)
@@ -133,6 +179,7 @@ export default function NewLizardEntry() {
           isRecapture={isRecapture}
           setIsRecapture={setIsRecapture}
           setUpdatedToeCodes={setUpdatedToeCodes}
+          toeCodes={speciesToeCodes}
       />}
       {toeCode && <NumberInput 
         label="SVL (mm)"
