@@ -23,7 +23,8 @@ export default function ToeCodeInput({
     isRecapture,
     setIsRecapture,
     setUpdatedToeCodes,
-    toeCodes,
+    speciesToeCodes,
+    siteToeCodes,
 }) {
     const [selected, setSelected] = useState({
         a: false,
@@ -145,10 +146,10 @@ export default function ToeCodeInput({
         : 'EX: A1-B2-C3';
 
     const generateNewToeCode = () => {
-        for (const toeClipCode in toeCodes[currentData.array][speciesCode]) {
+        for (const toeClipCode in siteToeCodes[currentData.array][speciesCode]) {
             if (
                 toeClipCode.slice(0, toeCode.length) === toeCode &&
-                toeCodes[currentData.array][speciesCode][toeClipCode] === 'date'
+                siteToeCodes[currentData.array][speciesCode][toeClipCode] === 'date'
             ) {
                 // console.log(toeClipCode, toeCodes[currentData.array][speciesCode][toeClipCode])
                 setToeCode(toeClipCode);
@@ -177,7 +178,7 @@ export default function ToeCodeInput({
             setErrorMsg('Toe Clip Code must have an even number of characters');
         } else {
             if (isRecapture) {
-                if (toeCodes.includes(toeCode)) {
+                if (speciesToeCodes.includes(toeCode)) {
                     setIsValid(true);
                 } else {
                     setErrorMsg(
@@ -186,7 +187,7 @@ export default function ToeCodeInput({
                     setIsValid(false);
                 }
             } else {
-                if (toeCodes.includes(toeCode)) {
+                if (speciesToeCodes.includes(toeCode)) {
                     setErrorMsg(
                         'Toe Clip Code is already taken, choose another or check recapture box to record a recapture'
                     );
@@ -198,8 +199,10 @@ export default function ToeCodeInput({
         }
     };
 
+    console.log(siteToeCodes)
+
     const generateToeCodesObj = () => {
-        let updatedToeCodeObject = toeCodes;
+        let updatedToeCodeObject = siteToeCodes;
         updatedToeCodeObject[currentData.array][speciesCode][toeCode] = Date.now();
         // console.log(updatedToeCodeObject)
         setUpdatedToeCodes(updatedToeCodeObject);
@@ -451,7 +454,7 @@ export default function ToeCodeInput({
             </AnimatePresence>
 
 
-            {toeCodes && (
+            {speciesToeCodes && (
                 <label
                     htmlFor="my-modal-4"
                     className="btn capitalize text-xl text-asu-maroon bg-white border-asu-maroon border-[1px] font-normal hover:bg-white/50"
@@ -529,7 +532,7 @@ export default function ToeCodeInput({
                         ))}
                     </div>
                     <div className="flex flex-row items-center ">
-                        {isRecapture && toeCodes ? (
+                        {isRecapture && speciesToeCodes ? (
                             <Button prompt={historyButtonText} handler={() => {
                                 findPreviousLizardEntries();
                             }} />

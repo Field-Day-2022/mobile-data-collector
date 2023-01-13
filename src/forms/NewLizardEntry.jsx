@@ -179,7 +179,8 @@ export default function NewLizardEntry() {
           isRecapture={isRecapture}
           setIsRecapture={setIsRecapture}
           setUpdatedToeCodes={setUpdatedToeCodes}
-          toeCodes={speciesToeCodes}
+          speciesToeCodes={speciesToeCodes}
+          siteToeCodes={siteToeCodes}
       />}
       {toeCode && <NumberInput 
         label="SVL (mm)"
