@@ -1,7 +1,10 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { collection } from 'firebase/firestore';
 import { useCollection, useCollectionData } from 'react-firebase-hooks/firestore';
+import { useAuthState } from 'react-firebase-hooks/auth'
 import CollectData from './pages/CollectData';
-import { db } from './index';
+import { db, auth } from './index';
+import { GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, signOut } from 'firebase/auth';
 import { useAtom } from 'jotai';
 import { currentFormName, currentPageName, notificationText } from './utils/jotai';
 import Home from './pages/Home';
@@ -14,7 +17,9 @@ import { useEffect } from 'react';
 function App() {
     const [currentPage, setCurrentPage] = useAtom(currentPageName);
     const [currentForm, setCurrentForm] = useAtom(currentFormName);
-    const [notification, setNotification] = useAtom(notificationText);
+    const [notification, setNotification] = useAtom(notificationText);    
+
+    const [ user ] = useAuthState(auth);
 
     const [answerSet, answerSetLoading, answerSetError, answerSetSnapshot] = useCollectionData(
         collection(db, 'AnswerSet')
@@ -58,49 +63,41 @@ function App() {
         return <h1>Loading data...</h1>;
     }
 
+    // onAuthStateChanged(auth, (user) => {
+    //     if (user) {
+    //         console.log(`logged in!`)
+    //         console.log(user);
+    //     } else {
+    //         signInWithRedirect(auth, provider)
+    //             .then(result => console.log("signed in!"))
+    //             .catch(error => console.error(error))
+    //     }
+    // })
+
+
     return (
-        <motion.div
-            className="
-                font-openSans 
-                overflow-hidden 
-                absolute 
-                flex 
-                flex-col 
-                items-center 
-                text-center 
-                justify-start 
-                inset-0 
-                bg-white
-                "
-        >
-            <motion.div
-                className="
-                    flex 
-                    flex-col 
-                    overflow-visible 
-                    items-center 
-                    h-full
-                    w-full 
-                    pr-0 
-                    bg-gradient-to-r 
-                    from-slate-300/25 
-                    rounded-lg
-                    text-black
-                    "
-            >
+        <motion.div className="font-openSans  overflow-hidden  absolute  flex  flex-col  items-center  text-center  justify-start  inset-0  bg-white">
+            {user ? <motion.div className="flex flex-col overflow-visible items-center h-full w-full pr-0 bg-gradient-to-r from-slate-300/25 rounded-lg text-black">
+                <button onClick={() => signOut(auth)}>logout</button>
                 <Notification />
                 <Navbar />
                 <div className="divider mb-0 pb-0 mt-0 h-1 bg-asu-gold/75" />
                 {currentPage === 'Home' && <Home />}
                 {currentPage === 'History' && <PastSessionData />}
                 {currentPage === 'Collect Data' && <CollectData />}
-                {/* <input 
-          onBlur={(e) => {
-            console.log(e.target.value)
-            setNotification(e.target.value)
-          }}
-        /> */}
-            </motion.div>
+                </motion.div>
+            :
+            <div className='flex items-center h-screen w-full justify-center'>
+
+                <button className="text-black border-asu-maroon px-4 py-2 border-2 rounded-xl"
+                    onClick={() => {
+                        signInWithRedirect(auth, new GoogleAuthProvider())
+                            .then(() => console.log('signed in'))
+                            .catch(err => console.error(err))
+                    }}
+                >Sign in</button>
+            </div>
+            }
         </motion.div>
     );
 }
