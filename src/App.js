@@ -47,11 +47,9 @@ function App() {
 
     // if (answerSetSnapshot) console.log(answerSet);
 
-    
     useEffect(() => {
         // user && console.log(user.email.slice(-7))
-    }, [ user ])
-    
+    }, [user]);
 
     useEffect(() => {
         if (answerSetSnapshot && toeCodeSnapshot && testtoeCodeSnapshot) {
