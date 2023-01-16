@@ -74,7 +74,7 @@ export default function ToeCodeInput({
         }
       }
     }
-  }, [speciesCode, toeCodes])
+  }, [ speciesCode, toeCodes ])
 
   useEffect(() => {
     checkToeCodeValidity()

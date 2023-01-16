@@ -47,6 +47,12 @@ function App() {
 
     // if (answerSetSnapshot) console.log(answerSet);
 
+    
+    useEffect(() => {
+        // user && console.log(user.email.slice(-7))
+    }, [ user ])
+    
+
     useEffect(() => {
         if (answerSetSnapshot && toeCodeSnapshot && testtoeCodeSnapshot) {
             if (
@@ -69,43 +75,17 @@ function App() {
         return <h1>Loading data...</h1>;
     }
 
-    // onAuthStateChanged(auth, (user) => {
-    //     if (user) {
-    //         console.log(`logged in!`)
-    //         console.log(user);
-    //     } else {
-    //         signInWithRedirect(auth, provider)
-    //             .then(result => console.log("signed in!"))
-    //             .catch(error => console.error(error))
-    //     }
-    // })
-
     return (
         <motion.div className="font-openSans  overflow-hidden  absolute  flex  flex-col  items-center  text-center  justify-start  inset-0  bg-white">
-            {user ? (
-                <motion.div className="flex flex-col overflow-visible items-center h-full w-full pr-0 bg-gradient-to-r from-slate-300/25 rounded-lg text-black">
-                    <button onClick={() => signOut(auth)}>logout</button>
-                    <Notification />
-                    <Navbar />
-                    <div className="divider mb-0 pb-0 mt-0 h-1 bg-asu-gold/75" />
-                    {currentPage === 'Home' && <Home />}
-                    {currentPage === 'History' && <PastSessionData />}
-                    {currentPage === 'Collect Data' && <CollectData />}
-                </motion.div>
-            ) : (
-                <div className="flex items-center h-screen w-full justify-center">
-                    <button
-                        className="text-black border-asu-maroon px-4 py-2 border-2 rounded-xl"
-                        onClick={() => {
-                            signInWithRedirect(auth, new GoogleAuthProvider())
-                                .then(() => console.log('signed in'))
-                                .catch((err) => console.error(err));
-                        }}
-                    >
-                        Sign in
-                    </button>
-                </div>
-            )}
+            <motion.div className="flex flex-col overflow-visible items-center h-full w-full pr-0 bg-gradient-to-r from-slate-300/25 rounded-lg text-black">
+                <button onClick={() => signOut(auth)}>logout</button>
+                <Notification />
+                <Navbar />
+                <div className="divider mb-0 pb-0 mt-0 h-1 bg-asu-gold/75" />
+                {currentPage === 'Home' && <Home />}
+                {currentPage === 'History' && <PastSessionData />}
+                {currentPage === 'Collect Data' && <CollectData />}
+            </motion.div>
         </motion.div>
     );
 }
