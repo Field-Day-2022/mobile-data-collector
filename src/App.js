@@ -76,7 +76,6 @@ function App() {
     return (
         <motion.div className="font-openSans  overflow-hidden  absolute  flex  flex-col  items-center  text-center  justify-start  inset-0  bg-white">
             <motion.div className="flex flex-col overflow-visible items-center h-full w-full pr-0 bg-gradient-to-r from-slate-300/25 rounded-lg text-black">
-                <button onClick={() => signOut(auth)}>logout</button>
                 <Notification />
                 <Navbar />
                 <div className="divider mb-0 pb-0 mt-0 h-1 bg-asu-gold/75" />
