@@ -5,7 +5,7 @@ export default function TextInput({ prompt, placeholder, value, setValue, onChan
                 <span className="label-text text-lg text-black mb-0">{prompt}</span>
             </label>
             <input
-                maxLength={maxLength ?? 10}
+                maxLength={maxLength ?? 100}
                 value={value}
                 onChange={(e) => {
                     setValue && setValue(e.target.value)

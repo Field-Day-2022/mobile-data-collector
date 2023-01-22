@@ -28,6 +28,10 @@ function App() {
         collection(db, 'TestToeClipCodes')
     );
 
+    const [lizardDataSnapshot, lizardDataLoading, lizardDataError] = useCollection(
+        collection(db, 'LizardData')
+    );
+
     // if (testtoeCodeSnapshot) console.log(testtoeCodeSnapshot.metadata.hasPendingWrites)
 
     // if (answerSetSnapshot) console.log(`Retrieved answer set from ${answerSetSnapshot?.metadata.fromCache ? 'cache' : 'server'}`)
