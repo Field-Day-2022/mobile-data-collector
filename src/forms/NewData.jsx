@@ -37,21 +37,13 @@ export default function NewData() {
 
     const getSites = async (projectName) => {
         if (projectName !== currentProject) setCurrentSite('Site');
-        let sitesSnapshot = null;
-        if (projectName === 'Gateway') {
-            sitesSnapshot = await getDocsFromCache(
-                query(collection(db, 'AnswerSet'), where('set_name', '==', 'GatewaySites'))
-            );
-        } else if (projectName === 'San Pedro') {
-            sitesSnapshot = await getDocsFromCache(
-                query(collection(db, 'AnswerSet'), where('set_name', '==', 'San PedroSites'))
-            );
-        } else if (projectName === 'Virgin River') {
-            sitesSnapshot = await getDocsFromCache(
-                query(collection(db, 'AnswerSet'), where('set_name', '==', 'Virgin RiverSites'))
-            );
-        }
+
+        let sitesSnapshot = ['Gateway', 'San Pedro', 'Virgin River'].includes(projectName) ?
+        	await getDocsFromCache( query(collection(db, 'AnswerSet'), where('set_name', '==', `${projectName}Sites`))) : 
+        	null;
+
         if (sitesSnapshot) {
+        
             let tempSites = [];
             for (const site of sitesSnapshot.docs[0].data().answers) {
                 tempSites.push(site.primary);
