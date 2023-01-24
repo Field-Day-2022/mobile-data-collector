@@ -67,7 +67,7 @@ export default function Notification() {
         z-50
         p-4
         rounded-2xl
-        mt-5
+        mt-1
       '
       variants={containerVariant}
       animate={controls}

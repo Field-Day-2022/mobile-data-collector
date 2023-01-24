@@ -1,7 +1,16 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { collection } from 'firebase/firestore';
 import { useCollection, useCollectionData } from 'react-firebase-hooks/firestore';
+import { useAuthState } from 'react-firebase-hooks/auth';
 import CollectData from './pages/CollectData';
-import { db } from './index';
+import { db, auth } from './index';
+import {
+    GoogleAuthProvider,
+    onAuthStateChanged,
+    signInWithPopup,
+    signInWithRedirect,
+    signOut,
+} from 'firebase/auth';
 import { useAtom } from 'jotai';
 import { currentFormName, currentPageName, notificationText } from './utils/jotai';
 import Home from './pages/Home';
@@ -16,6 +25,8 @@ function App() {
     const [currentForm, setCurrentForm] = useAtom(currentFormName);
     const [notification, setNotification] = useAtom(notificationText);
 
+    const [user] = useAuthState(auth);
+
     const [answerSet, answerSetLoading, answerSetError, answerSetSnapshot] = useCollectionData(
         collection(db, 'AnswerSet')
     );
@@ -28,6 +39,10 @@ function App() {
         collection(db, 'TestToeClipCodes')
     );
 
+    const [lizardDataSnapshot, lizardDataLoading, lizardDataError] = useCollection(
+        collection(db, 'LizardData')
+    );
+
     // if (testtoeCodeSnapshot) console.log(testtoeCodeSnapshot.metadata.hasPendingWrites)
 
     // if (answerSetSnapshot) console.log(`Retrieved answer set from ${answerSetSnapshot?.metadata.fromCache ? 'cache' : 'server'}`)
@@ -35,6 +50,10 @@ function App() {
     // if (testtoeCodeSnapshot) console.log(`Retrieved test toe codes from ${testtoeCodeSnapshot?.metadata.fromCache ? 'cache' : 'server'}`)
 
     // if (answerSetSnapshot) console.log(answerSet);
+
+    useEffect(() => {
+        // user && console.log(user.email.slice(-7))
+    }, [user]);
 
     useEffect(() => {
         if (answerSetSnapshot && toeCodeSnapshot && testtoeCodeSnapshot) {
@@ -59,49 +78,14 @@ function App() {
     }
 
     return (
-        <motion.div
-            className="
-      font-openSans 
-      overflow-hidden 
-      absolute 
-      flex 
-      flex-col 
-      items-center 
-      text-center 
-      justify-start 
-      inset-0 
-      bg-gradient-to-tr 
-      from-asu-maroon 
-      to-asu-gold
-      "
-        >
-            <motion.div
-                className="
-        flex 
-        flex-col 
-        overflow-visible 
-        items-center 
-        h-full
-        w-full 
-        pr-0 
-        bg-gradient-to-r 
-        from-slate-300/25 
-        rounded-lg
-        text-asu-maroon
-        "
-            >
+        <motion.div className="font-openSans  overflow-hidden  absolute  flex  flex-col  items-center  text-center  justify-start  inset-0  bg-white">
+            <motion.div className="flex flex-col overflow-visible items-center h-full w-full pr-0 bg-gradient-to-r from-slate-300/25 rounded-lg text-black">
                 <Notification />
                 <Navbar />
                 <div className="divider mb-0 pb-0 mt-0 h-1 bg-asu-gold/75" />
                 {currentPage === 'Home' && <Home />}
                 {currentPage === 'History' && <PastSessionData />}
                 {currentPage === 'Collect Data' && <CollectData />}
-                {/* <input 
-          onBlur={(e) => {
-            console.log(e.target.value)
-            setNotification(e.target.value)
-          }}
-        /> */}
             </motion.div>
         </motion.div>
     );
