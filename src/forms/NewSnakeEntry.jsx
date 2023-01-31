@@ -1,7 +1,10 @@
-//Testing to fix local git
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAtom } from 'jotai'
+import {collection, setDoc, query, where, doc, getDocsFromCache } from 'firebase/firestore';
+import { db } from '../index'
+
+
 
 import NumberInput from '../components/NumberInput';
 import Dropdown from '../components/Dropdown';
@@ -32,6 +35,8 @@ export default function NewSnakeEntry() {
     const [ sex, setSex] = useState()
     const [isDead, setIsDead] = useState()
     const [comments, setComments] = useState('')
+    const [svl, setSvl] = useState('');
+    const [vtl, setVtl] = useState('');
 
     const [currentData, setCurrentData] = useAtom(currentSessionData);
     const [currentForm, setCurrentForm] = useAtom(currentFormName);
