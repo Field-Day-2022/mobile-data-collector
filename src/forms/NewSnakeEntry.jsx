@@ -37,7 +37,7 @@ export default function NewSnakeEntry() {
     const [comments, setComments] = useState('')
     const [svl, setSvl] = useState('');
     const [vtl, setVtl] = useState('');
-
+    const [ snakeSpeciesList, setSnakeSpeciesList ] = useState([])
     const [currentData, setCurrentData] = useAtom(currentSessionData);
     const [currentForm, setCurrentForm] = useAtom(currentFormName);
 
@@ -48,6 +48,8 @@ export default function NewSnakeEntry() {
                 speciesCode,
                 trap,
                 mass,
+                svl,
+                vtl,
                 sex,
                 isDead,
                 comments
@@ -57,6 +59,33 @@ export default function NewSnakeEntry() {
             setCurrentForm
         )
     }
+    useEffect(() => {
+        const getAnswerFormDataFromFirestore = async () => {
+            const speciesSnapshot = await getDocsFromCache(
+                query(
+                    collection(db, "AnswerSet"),
+                    where("set_name", "==", `${currentData.project}SnakeSpecies`)
+                )
+            )
+            let speciesCodesArray = []
+            for (const answer of speciesSnapshot.docs[0].data().answers) {
+                speciesCodesArray.push(answer.primary)
+            }
+            setSnakeSpeciesList(speciesCodesArray)
+            const fenceTrapsSnapshot = await getDocsFromCache(
+                query(
+                    collection(db, "AnswerSet"),
+                    where("set_name", "==", "Fence Traps")
+                )
+            )
+            let fenceTrapsArray = []
+            for (const answer of fenceTrapsSnapshot.docs[0].data().answers) {
+                fenceTrapsArray.push(answer.primary)
+            }
+            setFenceTraps(fenceTrapsArray)
+        }
+        getAnswerFormDataFromFirestore()
+    }, [])
 
     return (
         <FormWrapper>
