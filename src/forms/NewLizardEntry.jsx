@@ -172,7 +172,7 @@ export default function NewLizardEntry() {
         value={isRecapture}
         setValue={setIsRecapture}
       />
-      {speciesCode && <ToeCodeInput
+      <ToeCodeInput
           toeCode={toeCode}
           setToeCode={setToeCode}
           speciesCode={speciesCode}
@@ -181,63 +181,65 @@ export default function NewLizardEntry() {
           setUpdatedToeCodes={setUpdatedToeCodes}
           speciesToeCodes={speciesToeCodes}
           siteToeCodes={siteToeCodes}
-      />}
-      {toeCode && <NumberInput 
+      />
+      <NumberInput 
         label="SVL (mm)"
         value={svl}
         setValue={setSvl}
         placeholder="0.0 mm"
-      />}
-      {svl && <NumberInput 
+      />
+      <NumberInput 
         label="VTL (mm)"
         value={vtl}
         setValue={setVtl}
         placeholder="0.0 mm"
-      />}
-      {vtl && <SingleCheckbox 
+      />
+      <SingleCheckbox 
         prompt="Regen tail?"
         value={regenTail}
         setValue={setRegenTail}
-      />}
-      {vtl && <NumberInput 
+      />
+      <NumberInput 
         label="OTL (mm)"
         value={otl}
         setValue={setOtl}
         placeholder="0.0 mm"
-      />}
-      {otl && <SingleCheckbox 
+      />
+      <SingleCheckbox 
         prompt="Is it a hatchling?"
         value={isHatchling}
         setValue={setIsHatchling}
-      />}
-      {otl && <NumberInput 
+      />
+      <NumberInput 
         label="Mass (g)"
         value={massGrams}
         setValue={setMassGrams}
-      />}
-      {massGrams && <Dropdown 
+      />
+      <Dropdown 
         value={sex}
         setValue={setSex}
         placeholder="Sex"
         options={sexOptions}
-      />}
-      {sex && <SingleCheckbox 
+      />
+      <SingleCheckbox 
         prompt="Is it dead?"
         value={isDead}
         setValue={setIsDead}
-      />}
-      {sex && <TextInput 
+      />
+      <TextInput 
         prompt="Comments"
         placeholder="any thoughts?"
         value={comments}
         setValue={setComments}
-      />}
-      {sex && <Button 
+      />
+      <Button 
         prompt="Finished?"
         clickHandler={() => setConfirmationModalIsOpen(true)}
-      />}
+      />
       {confirmationModalIsOpen && <ConfirmationModal 
         data={{
+      
+      
           speciesCode,
           trap,
           isRecapture,
