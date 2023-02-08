@@ -22,12 +22,7 @@ import {
     mammalFenceTraps as fenceTraps
 } from "../utils/hardCodedData";
 
-// NOTE: this is a placeholder
-// need to add SVL & VTL - this is just a start and I don't want to add merge conflicts
 
-
-//TODO: update species codes for snakes
-//TODO: add VTL and STL
 export default function NewSnakeEntry() {
     const [ speciesCode, setSpeciesCode] = useState()
     const [trap, setTrap] = useState();
@@ -142,5 +137,5 @@ export default function NewSnakeEntry() {
             />
         </FormWrapper>
     )
-
+//TODO: run tests with Isaiah - to figure out what's going wrong
 }
