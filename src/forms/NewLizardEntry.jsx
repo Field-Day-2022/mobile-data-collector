@@ -204,6 +204,8 @@ export default function NewLizardEntry() {
         value={otl}
         setValue={setOtl}
         placeholder="0.0 mm"
+        inputVal='vtl'
+        upperBound={vtl}
       />
       <SingleCheckbox 
         prompt="Is it a hatchling?"
