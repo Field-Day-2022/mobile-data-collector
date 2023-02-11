@@ -457,7 +457,7 @@ export default function ToeCodeInput({
             {speciesToeCodes && (
                 <label
                     htmlFor="my-modal-4"
-                    className="btn capitalize text-xl text-asu-maroon bg-white border-asu-maroon border-[1px] font-normal hover:bg-white/50"
+                    className="btn capitalize text-xl text-black bg-white border-asu-maroon border-[1px] font-normal hover:bg-white/50"
                 >
                     {toeCode ? `Toe-Clip Code: ${toeCode}` : 'Toe-Clip Code'}
                 </label>
