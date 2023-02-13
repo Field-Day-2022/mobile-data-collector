@@ -24,8 +24,8 @@ import Button from '../components/Button';
 import ConfirmationModal from '../components/ConfirmationModal';
 
 export default function NewLizardEntry() {
-    const [speciesCode, setSpeciesCode] = useState();
-    const [trap, setTrap] = useState();
+    const [speciesCode, setSpeciesCode] = useState('');
+    const [trap, setTrap] = useState('');
     const [isRecapture, setIsRecapture] = useState(false);
     const [toeCode, setToeCode] = useState('');
     const [svl, setSvl] = useState('');
@@ -161,16 +161,20 @@ export default function NewLizardEntry() {
         };
         if (sex === '') tempErrors.sex = 'Required';
         if (massGrams === '') tempErrors.mass = 'Required';
+        if (speciesCode === '') tempErrors.speciesCode = 'Required';
+        if (trap === '') tempErrors.fenceTrap = 'Required';
         let errorExists = false;
         for (const key in tempErrors) {
             if (tempErrors[key] !== '') errorExists = true;
         }
         if (errorExists) {
-            setNotification('Errors in form')
+            setNotification('Errors in form');
         } else {
-            setNotification('Form is valid')
+            setNotification('Form is valid');
         }
-        setErrors(tempErrors)
+        setErrors(tempErrors);
+        console.log(tempErrors);
+        console.log([trap, speciesCode]);
     };
 
     const completeCapture = () => {
@@ -207,12 +211,14 @@ export default function NewLizardEntry() {
                 setValue={setSpeciesCode}
                 placeholder="Species Code"
                 options={lizardSpeciesList}
+                error={errors.speciesCode}
             />
             <Dropdown
                 value={trap}
                 setValue={setTrap}
                 placeholder="Fence Trap"
                 options={fenceTraps}
+                error={errors.fenceTrap}
             />
             <SingleCheckbox
                 prompt="Is it a recapture?"
@@ -231,8 +237,13 @@ export default function NewLizardEntry() {
             />
             <NumberInput label="SVL (mm)" value={svl} setValue={setSvl} placeholder="0.0 mm" />
             <NumberInput label="VTL (mm)" value={vtl} setValue={setVtl} placeholder="0.0 mm" />
-            <SingleCheckbox prompt="Regen tail?" value={regenTail} setValue={setRegenTail} />
+            <SingleCheckbox
+                prompt="Regen tail?"
+                value={regenTail}
+                setValue={setRegenTail}
+            />
             <NumberInput
+                isDisabled={regenTail}
                 label="OTL (mm)"
                 value={otl}
                 setValue={setOtl}
