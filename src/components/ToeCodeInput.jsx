@@ -15,6 +15,7 @@ import {
 import Dropdown from './Dropdown';
 import { motion, useAnimationControls, AnimatePresence } from 'framer-motion';
 import SingleCheckbox from './SingleCheckbox';
+import { notificationText } from '../utils/jotai';
 
 export default function ToeCodeInput({
     toeCode,
@@ -49,6 +50,8 @@ export default function ToeCodeInput({
     const recaptureHistoryControls = useAnimationControls();
     const recaptureHistoryContainerControls = useAnimationControls();
     const errorMsgControls = useAnimationControls();
+
+    const [ notification, setNotification ] = useAtom(notificationText);
 
     useEffect(() => {
         checkToeCodeValidity();
@@ -95,12 +98,16 @@ export default function ToeCodeInput({
         : 'EX: A1-B2-C3';
 
     const generateNewToeCode = () => {
+        if (toeCode.includes('C4') || toeCode.includes('D4')) {
+            setNotification('App does not generate toe clip codes with C4 or D4');
+        }
         for (const toeClipCode in siteToeCodes[currentData.array][speciesCode]) {
             if (
                 toeClipCode.slice(0, toeCode.length) === toeCode &&
-                siteToeCodes[currentData.array][speciesCode][toeClipCode] === 'date'
+                siteToeCodes[currentData.array][speciesCode][toeClipCode] === 'date' &&
+                !toeClipCode.includes('C4') &&
+                !toeClipCode.includes('D4')
             ) {
-                // console.log(toeClipCode, toeCodes[currentData.array][speciesCode][toeClipCode])
                 setToeCode(toeClipCode);
                 setSelected({
                     a: false,
