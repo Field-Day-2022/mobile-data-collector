@@ -1,7 +1,7 @@
 export default function FormWrapper({ children }) {
   return (
     <div className="
-      pb-2 
+      pb-24 
       text-center 
       form-control 
       items-center 
