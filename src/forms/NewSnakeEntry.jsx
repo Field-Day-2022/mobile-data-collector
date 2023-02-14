@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 
 import { useState, useEffect } from 'react';
 import { useAtom } from 'jotai'
@@ -33,6 +34,7 @@ export default function NewSnakeEntry() {
     const [svl, setSvl] = useState('');
     const [vtl, setVtl] = useState('');
     const [ snakeSpeciesList, setSnakeSpeciesList ] = useState([])
+    const [ fenceTraps, setFenceTraps ] = useState([]);
     const [currentData, setCurrentData] = useAtom(currentSessionData);
     const [currentForm, setCurrentForm] = useAtom(currentFormName);
 
