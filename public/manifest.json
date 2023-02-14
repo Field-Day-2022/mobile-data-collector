@@ -3,18 +3,18 @@
   "name": "ASU Field Day Data Collection Tool",
   "icons": [
     {
-      "src": "favicon-maroon-onlylizard.ico",
+      "src": "favicon-maroon-onlylizard-512x512.ico",
       "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/x-icon"
+      "type": "image"
     },
     {
-      "src": "favicon-maroon-onlylizard.png",
+      "src": "favicon-maroon-onlylizard-192x192.png",
       "type": "image/png",
       "sizes": "192x192",
       "purpose": "maskable"
     },
     {
-      "src": "favicon-maroon-onlylizard.png",
+      "src": "favicon-maroon-onlylizard-512x512.png",
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "any"
