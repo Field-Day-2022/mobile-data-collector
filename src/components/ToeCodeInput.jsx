@@ -563,6 +563,12 @@ export default function ToeCodeInput({
                                         </tbody>
                                     </table>
                                 </motion.div>
+                                <button
+                                    className="border-2 text-xl border-asu-maroon rounded-xl w-1/2 px-4 py-1 mb-2 mt-auto"
+                                    onClick={() => setRecaptureHistoryIsOpen(false)}
+                                >
+                                    Close
+                                </button>
                             </motion.div>
                         </motion.div>
                     )}
