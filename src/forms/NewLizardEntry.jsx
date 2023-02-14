@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useAtom } from 'jotai';
-import { collection, setDoc, query, where, doc, getDocsFromCache } from 'firebase/firestore'
+import { collection, setDoc, query, where, doc, getDocsFromCache, getDocFromCache } from 'firebase/firestore'
 import { db } from '../index'
 
 
-import { currentFormName, currentSessionData } from '../utils/jotai';
+import { currentFormName, currentSessionData, notificationText } from '../utils/jotai';
 import { updateData } from '../utils/functions';
 
 import FormWrapper from '../components/FormWrapper';
@@ -14,6 +14,7 @@ import ToeCodeInput from '../components/ToeCodeInput';
 import NumberInput from '../components/NumberInput';
 import TextInput from '../components/TextInput';
 import Button from '../components/Button';
+import ConfirmationModal from '../components/ConfirmationModal';
 
 export default function NewLizardEntry() {
   const [speciesCode, setSpeciesCode] = useState();
@@ -25,18 +26,22 @@ export default function NewLizardEntry() {
   const [regenTail, setRegenTail] = useState(false);
   const [otl, setOtl] = useState('');
   const [isHatchling, setIsHatchling] = useState(false);
-  const [mass, setMass] = useState('');
+  const [massGrams, setMassGrams] = useState('');
   const [sex, setSex] = useState('');
   const [isDead, setIsDead] = useState(false);
   const [comments, setComments] = useState('');
   const [updatedToeCodes, setUpdatedToeCodes] = useState()
   const [ lizardSpeciesList, setLizardSpeciesList ] = useState([])
   const [ fenceTraps, setFenceTraps ] = useState([])
+  const [ confirmationModalIsOpen, setConfirmationModalIsOpen ] = useState(false);
+  const [ siteToeCodes, setSiteToeCodes ] = useState();
+  const [ speciesToeCodes, setSpeciesToeCodes ] = useState();
 
   // TODO: add input validation logic for svl, vtl, otl, and mass
 
   const [currentData, setCurrentData] = useAtom(currentSessionData);
   const [currentForm, setCurrentForm] = useAtom(currentFormName);
+  const [ notification, setNotification ] = useAtom(notificationText)
 
   const sexOptions = [
     'Male',
@@ -70,10 +75,55 @@ export default function NewLizardEntry() {
       setFenceTraps(fenceTrapsArray)
     }
     getAnswerFormDataFromFirestore()
+    const fetchToeCodes = async () => {
+        let toeCodesSnapshot;
+        try {
+            toeCodesSnapshot = await getDocFromCache(
+                doc(db, 'TestToeClipCodes', currentData.site)
+            );
+            console.log('getting toe codes from test');
+            setSiteToeCodes(toeCodesSnapshot.data());
+        } catch (e) {
+            console.log('getting toe codes from live');
+            toeCodesSnapshot = await getDocsFromCache(
+                query(collection(db, 'ToeClipCodes'), where('SiteCode', '==', currentData.site))
+            );
+            setSiteToeCodes(toeCodesSnapshot.docs[0].data());
+            // console.log('retreiving toe codes from ' + currentData.site)
+            // console.log(toeCodes)
+        }
+    };
+    fetchToeCodes();
   }, [])
+
+  useEffect(() => {
+    if (siteToeCodes) {
+        let tempArray = []
+        setSpeciesToeCodes([]);
+        for (const toeClipCode in siteToeCodes[currentData.array][speciesCode]) {
+            if (
+                siteToeCodes[currentData.array][speciesCode][toeClipCode] !== 'date' &&
+                toeClipCode !== 'SpeciesCode' &&
+                toeClipCode !== 'ArrayCode' &&
+                toeClipCode !== 'SiteCode'
+            ) {
+                tempArray.push(toeClipCode);
+                // setPreexistingToeClipCodes((preexistingToeClipCodes) => [
+                //     ...preexistingToeClipCodes,
+                //     toeClipCode,
+                // ]);
+                // console.log(toeClipCode)
+            }
+        }
+        setSpeciesToeCodes(tempArray);
+        console.log(`All preexisting toe codes from this species(${speciesCode}), array(${currentData.array}), and site(${currentData.site})`);
+        console.log(tempArray)
+    }
+  }, [speciesCode])
 
   const sendToeCodeDataToFirestore = async () => {
     await setDoc(doc(db, "TestToeClipCodes", currentData.site), updatedToeCodes)
+    setNotification('Successfully set toe clip code entry')
   }
 
   const completeCapture = () => {
@@ -91,7 +141,7 @@ export default function NewLizardEntry() {
         regenTail,
         otl,
         isHatchling,
-        mass,
+        mass: massGrams,
         sex,
         isDead,
         comments,
@@ -129,6 +179,8 @@ export default function NewLizardEntry() {
           isRecapture={isRecapture}
           setIsRecapture={setIsRecapture}
           setUpdatedToeCodes={setUpdatedToeCodes}
+          speciesToeCodes={speciesToeCodes}
+          siteToeCodes={siteToeCodes}
       />}
       {toeCode && <NumberInput 
         label="SVL (mm)"
@@ -160,10 +212,10 @@ export default function NewLizardEntry() {
       />}
       {otl && <NumberInput 
         label="Mass (g)"
-        value={mass}
-        setValue={setMass}
+        value={massGrams}
+        setValue={setMassGrams}
       />}
-      {mass && <Dropdown 
+      {massGrams && <Dropdown 
         value={sex}
         setValue={setSex}
         placeholder="Sex"
@@ -182,7 +234,27 @@ export default function NewLizardEntry() {
       />}
       {sex && <Button 
         prompt="Finished?"
-        clickHandler={completeCapture}
+        clickHandler={() => setConfirmationModalIsOpen(true)}
+      />}
+      {confirmationModalIsOpen && <ConfirmationModal 
+        data={{
+          speciesCode,
+          trap,
+          isRecapture,
+          toeCode,
+          svl,
+          vtl,
+          regenTail,
+          otl,
+          isHatchling,
+          massGrams,
+          sex,
+          isDead,
+          comments,
+        }}
+        completeCapture={completeCapture}
+        setConfirmationModalIsOpen={setConfirmationModalIsOpen}
+        modalType="lizard"
       />}
     </FormWrapper>
   );

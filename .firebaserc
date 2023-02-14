@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "asu-field-day"
+  },
+  "targets": {
+    "asu-field-day": {
+      "hosting": {
+        "pwa": [
+          "asu-field-day-pwa"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

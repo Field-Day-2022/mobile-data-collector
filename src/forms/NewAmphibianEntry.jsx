@@ -16,6 +16,7 @@ import Dropdown from '../components/Dropdown';
 import SingleCheckbox from '../components/SingleCheckbox';
 import TextInput from '../components/TextInput';
 import Button from '../components/Button';
+import ConfirmationModal from '../components/ConfirmationModal';
 
 export default function NewAmphibianEntry() {
   const [ speciesCode, setSpeciesCode ] = useState()
@@ -25,6 +26,7 @@ export default function NewAmphibianEntry() {
   const [ sex, setSex] = useState()
   const [ isDead, setIsDead ] = useState(false)
   const [ comments, setComments ] = useState('')
+  const [ confirmationModalIsOpen, setConfirmationModalIsOpen ] = useState(false);
 
   const [currentData, setCurrentData] = useAtom(currentSessionData)
   const [currentForm, setCurrentForm] = useAtom(currentFormName);
@@ -97,8 +99,22 @@ export default function NewAmphibianEntry() {
       />
       <Button 
         prompt="Finished?"
-        clickHandler={completeCapture}
+        clickHandler={() => setConfirmationModalIsOpen(true)}
       />
+      {confirmationModalIsOpen && <ConfirmationModal 
+        data={{
+          speciesCode,
+          trap,
+          hdBody,
+          mass,
+          sex,
+          isDead,
+          comments,
+        }}
+        completeCapture={completeCapture}
+        setConfirmationModalIsOpen={setConfirmationModalIsOpen}
+        modalType="amphibian"
+      />}
     </FormWrapper>
   )
 }
