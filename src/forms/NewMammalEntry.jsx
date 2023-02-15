@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useAtom } from 'jotai'
+import { useAtom } from 'jotai';
 
 import NumberInput from '../components/NumberInput';
 import Dropdown from '../components/Dropdown';
@@ -15,17 +15,17 @@ import { updateData } from '../utils/functions';
 import {
     mammalSpeciesList as species,
     sexOptions,
-    mammalFenceTraps as fenceTraps
-} from "../utils/hardCodedData";
+    mammalFenceTraps as fenceTraps,
+} from '../utils/hardCodedData';
 
 export default function NewMammalEntry() {
-    const [ speciesCode, setSpeciesCode] = useState()
+    const [speciesCode, setSpeciesCode] = useState();
     const [trap, setTrap] = useState();
-    const [mass,setMass] = useState('');
-    const [ sex, setSex] = useState()
-    const [isDead, setIsDead] = useState(false)
-    const [comments, setComments] = useState('')
-  const [ confirmationModalIsOpen, setConfirmationModalIsOpen ] = useState(false);
+    const [mass, setMass] = useState('');
+    const [sex, setSex] = useState();
+    const [isDead, setIsDead] = useState(false);
+    const [comments, setComments] = useState('');
+    const [confirmationModalIsOpen, setConfirmationModalIsOpen] = useState(false);
 
     const [currentData, setCurrentData] = useAtom(currentSessionData);
     const [currentForm, setCurrentForm] = useAtom(currentFormName);
@@ -39,13 +39,13 @@ export default function NewMammalEntry() {
                 mass,
                 sex,
                 isDead,
-                comments
+                comments,
             },
             setCurrentData,
             currentData,
             setCurrentForm
-        )
-    }
+        );
+    };
 
     return (
         <FormWrapper>
@@ -61,47 +61,31 @@ export default function NewMammalEntry() {
                 placeholder="Fence Trap"
                 options={fenceTraps}
             />
-            <NumberInput
-                label="Mass (g)"
-                value={mass}
-                setValue={setMass}
-                placeholder="ex: 1.2"
-            />
-            <Dropdown
-                value={sex}
-                setValue={setSex}
-                placeholder="Sex"
-                options={sexOptions}
-            />
-            <SingleCheckbox
-                prompt="Is it dead?"
-                value={isDead}
-                setValue={setIsDead}
-            />
+            <NumberInput label="Mass (g)" value={mass} setValue={setMass} placeholder="ex: 1.2" />
+            <Dropdown value={sex} setValue={setSex} placeholder="Sex" options={sexOptions} />
+            <SingleCheckbox prompt="Is it dead?" value={isDead} setValue={setIsDead} />
             <TextInput
                 prompt="Comments"
                 placeholder="any thoughts?"
                 value={comments}
                 setValue={setComments}
             />
-            <Button
-                prompt="Finished?"
-                clickHandler={() => setConfirmationModalIsOpen(true)}
-            />
-            {confirmationModalIsOpen && <ConfirmationModal 
-                data={{
-                    speciesCode,
-                    trap,
-                    mass,
-                    sex,
-                    isDead,
-                    comments
-                }}
-                completeCapture={completeCapture}
-                setConfirmationModalIsOpen={setConfirmationModalIsOpen}
-                modalType="mammal"
-            />}
+            <Button prompt="Finished?" clickHandler={() => setConfirmationModalIsOpen(true)} />
+            {confirmationModalIsOpen && (
+                <ConfirmationModal
+                    data={{
+                        speciesCode,
+                        trap,
+                        mass,
+                        sex,
+                        isDead,
+                        comments,
+                    }}
+                    completeCapture={completeCapture}
+                    setConfirmationModalIsOpen={setConfirmationModalIsOpen}
+                    modalType="mammal"
+                />
+            )}
         </FormWrapper>
-    )
-
+    );
 }
