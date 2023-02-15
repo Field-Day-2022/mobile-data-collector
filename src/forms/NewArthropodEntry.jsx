@@ -20,11 +20,6 @@ import {
 } from 'firebase/firestore';
 import { db } from '../index';
 
-import {
-    // arthropodSpeciesList as species,
-    // arthropodFenceTraps as fenceTraps,
-} from '../utils/hardCodedData';
-
 export default function NewArthropodEntry() {
     const [trap, setTrap] = useState();
     const [predator, setPredator] = useState(false);
