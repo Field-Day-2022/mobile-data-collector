@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAtom } from 'jotai';
+
 import NumberInput from '../components/NumberInput';
 import Dropdown from '../components/Dropdown';
 import FormWrapper from '../components/FormWrapper';
@@ -7,6 +8,8 @@ import SingleCheckbox from '../components/SingleCheckbox';
 import TextInput from '../components/TextInput';
 import Button from '../components/Button';
 import ConfirmationModal from '../components/ConfirmationModal';
+import PlusMinusButtons from '../components/PlusMinusButtons';
+
 import { currentFormName, currentSessionData } from '../utils/jotai';
 import { updateData } from '../utils/functions';
 import {
@@ -83,12 +86,30 @@ export default function NewArthropodEntry() {
             />
             <SingleCheckbox prompt="Predator?" value={predator} setValue={setPredator} />
             {arthropodSpeciesList.map((item) => (
-                <NumberInput
+                <PlusMinusButtons
                     key={item}
-                    label={item}
-                    placeholder="# of critters"
-                    setValue={(value) => setArthropodData({ ...arthropodData, [item]: value })}
-                />
+                    onNumberChange={(changeAmount) =>
+                        setArthropodData((arthropodData) => {
+                            if (arthropodData[item] + changeAmount < 0) {
+                                return ({...arthropodData})
+                            } else {
+                                return ({
+                                    ...arthropodData,
+                                    [item]: arthropodData[item] + changeAmount,
+                                })
+                            }
+                            
+                        })
+                    }
+                >
+                    <NumberInput
+                        value={arthropodData && arthropodData[item]}
+                        key={item}
+                        label={item}
+                        placeholder="# of critters"
+                        setValue={(value) => setArthropodData({ ...arthropodData, [item]: value })}
+                    />
+                </PlusMinusButtons>
             ))}
             <TextInput
                 prompt="Comments"

@@ -10,6 +10,7 @@ import {
     getDocFromCache,
 } from 'firebase/firestore';
 import { db } from '../index';
+
 import { currentFormName, currentSessionData, notificationText } from '../utils/jotai';
 import { updateData } from '../utils/functions';
 import FormWrapper from '../components/FormWrapper';
@@ -22,8 +23,8 @@ import Button from '../components/Button';
 import ConfirmationModal from '../components/ConfirmationModal';
 
 export default function NewLizardEntry() {
-    const [speciesCode, setSpeciesCode] = useState();
-    const [trap, setTrap] = useState();
+    const [speciesCode, setSpeciesCode] = useState('');
+    const [trap, setTrap] = useState('');
     const [isRecapture, setIsRecapture] = useState(false);
     const [toeCode, setToeCode] = useState('');
     const [svl, setSvl] = useState('');
@@ -41,12 +42,29 @@ export default function NewLizardEntry() {
     const [confirmationModalIsOpen, setConfirmationModalIsOpen] = useState(false);
     const [siteToeCodes, setSiteToeCodes] = useState();
     const [speciesToeCodes, setSpeciesToeCodes] = useState();
+    const [errors, setErrors] = useState({
+        speciesCode: '',
+        fenceTrap: '',
+        recapture: '',
+        toeCode: '',
+        svl: '',
+        vtl: '',
+        regenTail: '',
+        otl: '',
+        hatchling: '',
+        mass: '',
+        sex: '',
+        dead: '',
+        comments: '',
+    });
+
+    // TODO: add input validation logic for svl, vtl, otl, and mass
 
     const [currentData, setCurrentData] = useAtom(currentSessionData);
     const [currentForm, setCurrentForm] = useAtom(currentFormName);
     const [notification, setNotification] = useAtom(notificationText);
 
-    const sexOptions = ['Male', 'Female', 'Undefined'];
+    const sexOptions = ['Male', 'Female', 'Unknown'];
 
     useEffect(() => {
         const getAnswerFormDataFromFirestore = async () => {
@@ -124,6 +142,40 @@ export default function NewLizardEntry() {
         setNotification('Successfully set toe clip code entry');
     };
 
+    const verifyForm = () => {
+        let tempErrors = {
+            speciesCode: '',
+            fenceTrap: '',
+            recapture: '',
+            toeCode: '',
+            svl: '',
+            vtl: '',
+            regenTail: '',
+            otl: '',
+            hatchling: '',
+            mass: '',
+            sex: '',
+            dead: '',
+            comments: '',
+        };
+        if (sex === '') tempErrors.sex = 'Required';
+        if (massGrams === '') tempErrors.mass = 'Required';
+        if (speciesCode === '') tempErrors.speciesCode = 'Required';
+        if (trap === '') tempErrors.fenceTrap = 'Required';
+        let errorExists = false;
+        for (const key in tempErrors) {
+            if (tempErrors[key] !== '') errorExists = true;
+        }
+        if (errorExists) {
+            setNotification('Errors in form');
+        } else {
+            setNotification('Form is valid');
+        }
+        setErrors(tempErrors);
+        console.log(tempErrors);
+        console.log([trap, speciesCode]);
+    };
+
     const completeCapture = () => {
         const date = new Date();
         sendToeCodeDataToFirestore();
@@ -158,65 +210,72 @@ export default function NewLizardEntry() {
                 setValue={setSpeciesCode}
                 placeholder="Species Code"
                 options={lizardSpeciesList}
+                error={errors.speciesCode}
             />
             <Dropdown
                 value={trap}
                 setValue={setTrap}
                 placeholder="Fence Trap"
                 options={fenceTraps}
+                error={errors.fenceTrap}
             />
             <SingleCheckbox
                 prompt="Is it a recapture?"
                 value={isRecapture}
                 setValue={setIsRecapture}
             />
-            {speciesCode && (
-                <ToeCodeInput
-                    toeCode={toeCode}
-                    setToeCode={setToeCode}
-                    speciesCode={speciesCode}
-                    isRecapture={isRecapture}
-                    setIsRecapture={setIsRecapture}
-                    setUpdatedToeCodes={setUpdatedToeCodes}
-                    speciesToeCodes={speciesToeCodes}
-                    siteToeCodes={siteToeCodes}
-                />
-            )}
-            {toeCode && (
-                <NumberInput label="SVL (mm)" value={svl} setValue={setSvl} placeholder="0.0 mm" />
-            )}
-            {svl && (
-                <NumberInput label="VTL (mm)" value={vtl} setValue={setVtl} placeholder="0.0 mm" />
-            )}
-            {vtl && (
-                <SingleCheckbox prompt="Regen tail?" value={regenTail} setValue={setRegenTail} />
-            )}
-            {vtl && (
-                <NumberInput label="OTL (mm)" value={otl} setValue={setOtl} placeholder="0.0 mm" />
-            )}
-            {otl && (
-                <SingleCheckbox
-                    prompt="Is it a hatchling?"
-                    value={isHatchling}
-                    setValue={setIsHatchling}
-                />
-            )}
-            {otl && <NumberInput label="Mass (g)" value={massGrams} setValue={setMassGrams} />}
-            {massGrams && (
-                <Dropdown value={sex} setValue={setSex} placeholder="Sex" options={sexOptions} />
-            )}
-            {sex && <SingleCheckbox prompt="Is it dead?" value={isDead} setValue={setIsDead} />}
-            {sex && (
-                <TextInput
-                    prompt="Comments"
-                    placeholder="any thoughts?"
-                    value={comments}
-                    setValue={setComments}
-                />
-            )}
-            {sex && (
-                <Button prompt="Finished?" clickHandler={() => setConfirmationModalIsOpen(true)} />
-            )}
+            <ToeCodeInput
+                toeCode={toeCode}
+                setToeCode={setToeCode}
+                speciesCode={speciesCode}
+                isRecapture={isRecapture}
+                setIsRecapture={setIsRecapture}
+                setUpdatedToeCodes={setUpdatedToeCodes}
+                speciesToeCodes={speciesToeCodes}
+                siteToeCodes={siteToeCodes}
+            />
+            <NumberInput label="SVL (mm)" value={svl} setValue={setSvl} placeholder="0.0 mm" />
+            <NumberInput label="VTL (mm)" value={vtl} setValue={setVtl} placeholder="0.0 mm" />
+            <SingleCheckbox
+                prompt="Regen tail?"
+                value={regenTail}
+                setValue={setRegenTail}
+            />
+            <NumberInput
+                isDisabled={regenTail}
+                label="OTL (mm)"
+                value={otl}
+                setValue={setOtl}
+                placeholder="0.0 mm"
+                inputValidation="vtl"
+                upperBound={vtl}
+            />
+            <SingleCheckbox
+                prompt="Is it a hatchling?"
+                value={isHatchling}
+                setValue={setIsHatchling}
+            />
+            <NumberInput
+                error={errors.mass}
+                label="Mass (g)"
+                value={massGrams}
+                setValue={setMassGrams}
+            />
+            <Dropdown
+                error={errors.sex}
+                value={sex}
+                setValue={setSex}
+                placeholder="Sex"
+                options={sexOptions}
+            />
+            <SingleCheckbox prompt="Is it dead?" value={isDead} setValue={setIsDead} />
+            <TextInput
+                prompt="Comments"
+                placeholder="any thoughts?"
+                value={comments}
+                setValue={setComments}
+            />
+            <Button prompt="Finished?" clickHandler={() => verifyForm()} />
             {confirmationModalIsOpen && (
                 <ConfirmationModal
                     data={{
