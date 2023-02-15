@@ -69,20 +69,41 @@ export const FinishSessionForm = () => {
             );
             setIsEditingPrevious(false);
         } else {
+            setPastSessions([
+                ...pastSessions,
+                {
+                    uploaded: false,
+                    sessionData: currentData,
+                }
+            ])
             console.log(`Uploading new entry to Test${currentData.project}Session`);
             const docRef = await addDoc(
                 collection(db, `Test${currentData.project}Session`),
                 sessionObj
+            )
+            console.log('uploading and adding session id')
+            setPastSessions((pastSessions) =>
+                pastSessions.map((session) => {
+                    if (session.sessionData.sessionDateTime === currentData.sessionDateTime) {
+                        return {
+                            uploaded: true,
+                            sessionId: docRef.id,
+                            sessionData: currentData,
+                        };
+                    } else {
+                        return session;
+                    }
+                })
             );
-            console.log(`doc written with id ${docRef.id}`);
             setNotification('Successfully added new session');
-            setPastSessions([
-                ...pastSessions,
-                {
-                    sessionId: docRef.id,
-                    sessionData: currentData,
-                },
-            ]);
+            // setPastSessions([
+            //     ...pastSessions,
+            //     {
+            //         sessionId: docRef.id,
+            //         sessionData: currentData,
+
+            //     },
+            // ]);
         }
     };
 
