@@ -53,7 +53,7 @@ export default function Navbar() {
             ref={containerRef}
         >
             {isOpen && <div 
-                className="fixed inset-0 z-40 border-0 border-green-400"
+                className="fixed inset-0 z-50 border-0 border-green-400"
                 onClick={() => toggleOpen()}
             />}
             <motion.div
@@ -139,7 +139,7 @@ const Path = (props) => (
 );
 
 const MenuToggle = ({ toggle }) => (
-    <button onClick={toggle} className="p-2 z-50">
+    <button onClick={toggle} className="p-2 z-40">
         <svg width="33" height="33" viewBox="0 0 23 23">
             <Path
                 variants={{
