@@ -1,5 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
+// TODO: confirmation modal and dynamic loading, test everything
+
 import { useState, useEffect } from 'react';
 import { useAtom } from 'jotai'
 import {collection, setDoc, query, where, doc, getDocsFromCache } from 'firebase/firestore';
@@ -100,14 +102,14 @@ export default function NewSnakeEntry() {
             />
             <NumberInput
                 label="SVL (mm)"
-                value={mass}
-                setValue={setMass}
+                value={svl}
+                setValue={setSvl}
                 placeholder="ex: 1.2"
             />
             <NumberInput
                 label="VTL (mm)"
-                value={mass}
-                setValue={setMass}
+                value={vtl}
+                setValue={setVtl}
                 placeholder="ex: 1.2"
             />
             <NumberInput
