@@ -11,14 +11,17 @@ import ConfirmationModal from '../components/ConfirmationModal';
 import PlusMinusButtons from '../components/PlusMinusButtons';
 
 import { currentFormName, currentSessionData } from '../utils/jotai';
-
 import { updateData } from '../utils/functions';
-
 import {
-    arthropodSpeciesList as species,
-    arthropodFenceTraps as fenceTraps,
-    arthropodSpeciesList,
-} from '../utils/hardCodedData';
+    collection,
+    setDoc,
+    query,
+    where,
+    doc,
+    getDocsFromCache,
+    getDocFromCache,
+} from 'firebase/firestore';
+import { db } from '../index';
 
 export default function NewArthropodEntry() {
     const [trap, setTrap] = useState();
@@ -26,20 +29,35 @@ export default function NewArthropodEntry() {
     const [arthropodData, setArthropodData] = useState();
     const [comments, setComments] = useState('');
     const [confirmationModalIsOpen, setConfirmationModalIsOpen] = useState(false);
+    const [arthropodSpeciesList, setArthropodSpeciesList] = useState([]);
+    const [fenceTraps, setFenceTraps] = useState([]);
 
     const [currentData, setCurrentData] = useAtom(currentSessionData);
     const [currentForm, setCurrentForm] = useAtom(currentFormName);
 
-    useEffect(() => {
-        let initialArthropodData = {};
-        for (const speciesItem of species) {
-            initialArthropodData[speciesItem] = 0;
-        }
-        setArthropodData(initialArthropodData)
-    }, []);
-
     // todo: input validation
-    // todo: dynamic answer set loading
+
+    useEffect(() => {
+        const getAnswerFormDataFromFirestore = async () => {
+            const speciesSnapshot = await getDocsFromCache(
+                query(
+                    collection(db, 'AnswerSet'),
+                    where('set_name', '==', 'arthropodSpeciesList')
+                )
+            )
+            setArthropodSpeciesList(speciesSnapshot.docs[0].data().arthropodSpeciesArray);
+            const fenceTrapsSnapshot = await getDocsFromCache(
+                query(collection(db, 'AnswerSet'), where('set_name', '==', 'Fence Traps'))
+            );
+            let fenceTrapsArray = [];
+            for (const answer of fenceTrapsSnapshot.docs[0].data().answers) {
+                fenceTrapsArray.push(answer.primary);
+            }
+            setFenceTraps(fenceTrapsArray);
+        }
+        getAnswerFormDataFromFirestore();
+    }, [])
+
 
     const completeCapture = () => {
         const date = new Date();
@@ -67,7 +85,7 @@ export default function NewArthropodEntry() {
                 options={fenceTraps}
             />
             <SingleCheckbox prompt="Predator?" value={predator} setValue={setPredator} />
-            {species.map((item) => (
+            {arthropodSpeciesList.map((item) => (
                 <PlusMinusButtons
                     key={item}
                     onNumberChange={(changeAmount) =>

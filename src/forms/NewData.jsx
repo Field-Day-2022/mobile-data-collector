@@ -146,24 +146,24 @@ export default function NewData() {
                     }}
                 />
             </label> */}
-            <TextInput 
+            <TextInput
                 maxLength={3}
                 prompt="Recorder"
                 placeholder="Initials"
                 value={recorder}
-                onChangeHandler={val => {
-                    if ((/^[A-Za-z]+$/.test(val) || val === '' )) {
+                onChangeHandler={(val) => {
+                    if (/^[A-Za-z]+$/.test(val) || val === '') {
                         setRecorder(val.toUpperCase());
                     }
                 }}
             />
-            <TextInput 
+            <TextInput
                 maxLength={3}
                 prompt="Handler"
                 placeholder="Initials"
                 value={handler}
-                onChangeHandler={val => {
-                    if ((/^[A-Za-z]+$/.test(val) || val === '' )) {
+                onChangeHandler={(val) => {
+                    if (/^[A-Za-z]+$/.test(val) || val === '') {
                         setHandler(val.toUpperCase());
                     }
                 }}

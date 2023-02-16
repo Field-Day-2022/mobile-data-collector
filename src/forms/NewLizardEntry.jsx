@@ -13,7 +13,6 @@ import { db } from '../index';
 
 import { currentFormName, currentSessionData, notificationText } from '../utils/jotai';
 import { updateData } from '../utils/functions';
-
 import FormWrapper from '../components/FormWrapper';
 import Dropdown from '../components/Dropdown';
 import SingleCheckbox from '../components/SingleCheckbox';
