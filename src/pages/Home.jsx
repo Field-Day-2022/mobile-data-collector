@@ -10,9 +10,6 @@ import { doc, getDoc } from 'firebase/firestore';
 export default function Home() {
     const [user, loading, error] = useAuthState(auth);
     const [pastSessions] = useAtom(pastSessionData);
-
-    console.log(pastSessions);
-
     return (
         <motion.div>
             <motion.h1 className="text-xl">Hello, {user.displayName}!</motion.h1>
@@ -34,7 +31,7 @@ export default function Home() {
                     {pastSessions.map((session) => {
                         const date = new Date(session.sessionData.sessionDateTime);
                         return (
-                            <tr>
+                            <tr key={session.sessionData.sessionDateTime} >
                                 <td className="flex justify-center">
                                     {session.uploaded ? (
                                         <svg
