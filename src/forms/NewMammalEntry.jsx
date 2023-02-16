@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAtom } from 'jotai';
 
 import NumberInput from '../components/NumberInput';
@@ -8,16 +8,23 @@ import SingleCheckbox from '../components/SingleCheckbox';
 import TextInput from '../components/TextInput';
 import Button from '../components/Button';
 import ConfirmationModal from '../components/ConfirmationModal';
-
+import {
+    collection,
+    setDoc,
+    query,
+    where,
+    doc,
+    getDocsFromCache,
+    getDocFromCache,
+} from 'firebase/firestore';
+import { db } from '../index';
 import { currentFormName, currentSessionData } from '../utils/jotai';
 import { updateData } from '../utils/functions';
 
 // TODO: dynamic answer set loading, test everything
 
 import {
-    mammalSpeciesList as species,
     sexOptions,
-    mammalFenceTraps as fenceTraps,
 } from '../utils/hardCodedData';
 
 export default function NewMammalEntry() {
@@ -28,9 +35,36 @@ export default function NewMammalEntry() {
     const [isDead, setIsDead] = useState(false);
     const [comments, setComments] = useState('');
     const [confirmationModalIsOpen, setConfirmationModalIsOpen] = useState(false);
+    const [species, setSpecies] = useState([]);
+    const [fenceTraps, setFenceTraps] = useState([1]);
 
     const [currentData, setCurrentData] = useAtom(currentSessionData);
     const [currentForm, setCurrentForm] = useAtom(currentFormName);
+
+    useEffect(() => {
+        const getAnswerFormDataFromFirestore = async () => {
+            const speciesSnapshot = await getDocsFromCache(
+                query(
+                    collection(db, 'AnswerSet'),
+                    where('set_name', '==', `${currentData.project}MammalSpecies`)
+                )
+            );
+            let speciesCodesArray = [];
+            for (const answer of speciesSnapshot.docs[0].data().answers) {
+                speciesCodesArray.push(answer.primary);
+            }
+            setSpecies(speciesCodesArray);
+            const fenceTrapsSnapshot = await getDocsFromCache(
+                query(collection(db, 'AnswerSet'), where('set_name', '==', 'Fence Traps'))
+            );
+            let fenceTrapsArray = [];
+            for (const answer of fenceTrapsSnapshot.docs[0].data().answers) {
+                fenceTrapsArray.push(answer.primary);
+            }
+            setFenceTraps(fenceTrapsArray);
+        };
+        getAnswerFormDataFromFirestore();
+    }, []);
 
     const completeCapture = () => {
         updateData(
