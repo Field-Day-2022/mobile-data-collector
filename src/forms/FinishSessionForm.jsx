@@ -139,7 +139,7 @@ export const FinishSessionForm = () => {
         const sessionObj = {
             array: currentData.array,
             commentsAboutTheArray: comments,
-            dateTime: date.toLocaleString(),
+            dateTime: date.toISOString(),
             handler: currentData.handler,
             noCaptures: currentData.captureStatus,
             recorder: currentData.recorder,
