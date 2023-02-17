@@ -199,7 +199,7 @@ export default function NewLizardEntry() {
                 sex,
                 isDead,
                 comments,
-                dateTime: date.toUTCString(),
+                dateTime: date.toISOString(),
             },
             setCurrentData,
             currentData,

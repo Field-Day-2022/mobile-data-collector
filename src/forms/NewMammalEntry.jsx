@@ -67,6 +67,7 @@ export default function NewMammalEntry() {
     }, []);
 
     const completeCapture = () => {
+        const date = new Date();
         updateData(
             'mammal',
             {
@@ -76,6 +77,7 @@ export default function NewMammalEntry() {
                 sex,
                 isDead,
                 comments,
+                dateTime: date.toISOString(),
             },
             setCurrentData,
             currentData,

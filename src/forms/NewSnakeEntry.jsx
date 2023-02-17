@@ -72,6 +72,7 @@ export default function NewSnakeEntry() {
     }, []);
 
     const completeCapture = () => {
+        const date = new Date();
         updateData(
             'snake',
             {
@@ -83,6 +84,7 @@ export default function NewSnakeEntry() {
                 sex,
                 isDead,
                 comments,
+                dateTime: date.toISOString(),
             },
             setCurrentData,
             currentData,

@@ -75,7 +75,7 @@ export default function NewArthropodEntry() {
                 predator,
                 arthropodData,
                 comments,
-                dateTime: date.toUTCString(),
+                dateTime: date.toISOString(),
             },
             setCurrentData,
             currentData,
