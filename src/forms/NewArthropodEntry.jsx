@@ -46,6 +46,11 @@ export default function NewArthropodEntry() {
                 )
             )
             setArthropodSpeciesList(speciesSnapshot.docs[0].data().arthropodSpeciesArray);
+            let tempArthropodData = {}
+            for (const arthropodSpecies of speciesSnapshot.docs[0].data().arthropodSpeciesArray) {
+                tempArthropodData[arthropodSpecies] = 0;                
+            }
+            setArthropodData(tempArthropodData)
             const fenceTrapsSnapshot = await getDocsFromCache(
                 query(collection(db, 'AnswerSet'), where('set_name', '==', 'Fence Traps'))
             );
@@ -57,6 +62,8 @@ export default function NewArthropodEntry() {
         }
         getAnswerFormDataFromFirestore();
     }, [])
+
+    console.log(arthropodData)
 
 
     const completeCapture = () => {
