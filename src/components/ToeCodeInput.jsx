@@ -4,15 +4,10 @@ import { currentSessionData } from '../utils/jotai';
 import { db } from '../index';
 import {
     collection,
-    getDocFromCache,
-    getDocs,
     getDocsFromCache,
     query,
     where,
-    doc,
-    getDocsFromServer,
 } from 'firebase/firestore';
-import Dropdown from './Dropdown';
 import { motion, useAnimationControls, AnimatePresence } from 'framer-motion';
 import SingleCheckbox from './SingleCheckbox';
 import { notificationText } from '../utils/jotai';
