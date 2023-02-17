@@ -532,7 +532,7 @@ export default function ToeCodeInput({
                                         <tbody>
                                             {previousLizardEntries.map((entry, index, array) => {
                                                 return (
-                                                    <tr>
+                                                    <tr key={index}>
                                                         {lizardHistoryLabelKeys.map((key, index, array) => {
                                                             let itemToDisplay = entry[key] ?? 'N/A';
                                                             if (key === 'dateTime') {

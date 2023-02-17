@@ -4,13 +4,12 @@ export default function Dropdown({ value, setValue, placeholder, options, toeCod
             className={
                 toeCode
                     ? 'dropdown dropdown-top flex justify-center'
-                    : error ?
-                    'dropdown flex flex-col items-center mt-2 border-2 border-red-600 rounded-xl p-2'
-                    :
-                    'dropdown flex flex-col items-center mt-2'
+                    : error
+                    ? 'dropdown flex flex-col items-center my-2 border-2 border-red-600 rounded-xl p-2'
+                    : 'dropdown flex flex-col items-center mt-2'
             }
         >
-            <p className='text-red-600 font-bold'>{error}</p>
+            <p className="text-red-600 font-bold">{error}</p>
             <label
                 tabIndex={0}
                 className={

@@ -81,7 +81,7 @@ export default function NewDataEntry() {
         </div>
         <label htmlFor="my-modal-6" className="btn glass m-1 text-asu-maroon capitalize text-xl font-normal">End Session</label>
       </div>
-      <p className="text-xl mt-2 ">{`Number of Critters Recorded:`}</p>
+      <p className="text-lg mt-2 ">{`Number of entries recorded:`}</p>
       {currentData ? 
         <div className="rounded-3xl">
           <table className="table table-compact glass rounded-3xl">

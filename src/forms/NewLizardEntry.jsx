@@ -170,6 +170,7 @@ export default function NewLizardEntry() {
             setNotification('Errors in form');
         } else {
             setNotification('Form is valid');
+            setConfirmationModalIsOpen(true);
         }
         setErrors(tempErrors);
         console.log(tempErrors);

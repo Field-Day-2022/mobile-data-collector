@@ -85,6 +85,23 @@ export default function ConfirmationModal({
             }
         }
 
+        if (modalType === 'snake') {
+            for (const dataPoint in data) {
+                if (data[dataPoint] !== undefined) {
+                    let displayText = dataPoint;
+                    if (dataPoint === 'speciesCode') displayText = 'Species Code';
+                    if (dataPoint === 'trap') displayText = 'Trap';
+                    if (dataPoint === 'svl') displayText = 'SVL (mm)';
+                    if (dataPoint === 'vtl') displayText = 'VTL (mm)';
+                    if (dataPoint === 'mass') displayText = 'Mass (g)';
+                    if (dataPoint === 'sex') displayText = 'Sex';
+                    if (dataPoint === 'isDead') displayText = 'Is it dead?';
+                    if (dataPoint === 'comments') displayText = 'Comments';
+                    outputArray.push(<p key={dataPoint}>{`${displayText}: ${data[dataPoint]}`}</p>);
+                }
+            }
+        }
+
         return outputArray;
     };
 
