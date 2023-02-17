@@ -111,9 +111,11 @@ export default function ConfirmationModal({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
         >
-            <div className="relative bg-white/95 h-5/6 w-3/4">
+            <div className="relative flex flex-col bg-white/95 h-5/6 w-3/4">
                 <p className="text-2xl mt-2 mb-2">Verify</p>
-                {displayData()}
+                <div className='overflow-y-auto mb-20'>
+                    {displayData()}
+                </div>
                 <div className="absolute bottom-0 w-full flex justify-between">
                     <button
                         className="active:scale-90 transition bg-asu-maroon text-asu-gold p-3 rounded-xl m-2 w-1/2 font-bold text-xl"

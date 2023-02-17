@@ -44,7 +44,7 @@ export default function PastSessionData() {
                     count += Number(dataEntry.arthropodData[key]);
                 }
             }
-        } else if (critter === 'amphibian' || critter === 'lizard' || critter === 'mammal') {
+        } else if (critter === 'amphibian' || critter === 'lizard' || critter === 'mammal' || critter === 'snake') {
             for (const dataEntry of pastData[openEntry].sessionData[critter]) {
                 count++;
             }
@@ -173,14 +173,12 @@ export default function PastSessionData() {
                                                             'mammal'
                                                         )}
                                                     />
-                                                    <tr>
-                                                        <td className="bg-transparent text-lg p-1 rounded-bl-3xl">
-                                                            {'Snake'}
-                                                        </td>
-                                                        <td className="bg-transparent text-lg p-1 rounded-br-3xl">
-                                                            {getNumberCrittersRecorded('snake')}
-                                                        </td>
-                                                    </tr>
+                                                    <EntryTableRow 
+                                                        entryType={'Snake'}
+                                                        entryNumber={getNumberCrittersRecorded(
+                                                            'snake'
+                                                        )}
+                                                    />
                                                 </tbody>
                                             </table>
                                         </motion.div>
@@ -202,6 +200,8 @@ export default function PastSessionData() {
                             </AnimatePresence>
                         </motion.li>
                     );
+                } else {
+                    return null;
                 }
             })}
         </motion.ul>

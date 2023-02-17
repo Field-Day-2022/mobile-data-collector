@@ -62,6 +62,7 @@ export const FinishSessionForm = () => {
                 pastSessions.map((session) => {
                     if (session.sessionId === sessionId) {
                         return {
+                            uploaded: true,
                             sessionId,
                             sessionData: currentData,
                         };
@@ -121,7 +122,12 @@ export const FinishSessionForm = () => {
                 }
             }
             const timestamp = new Date(entryObject.dateTime);
-            const entryId = `${currentData.site}${entryObject.taxa}${timestamp.getTime()}`;
+            let taxa = entryObject.taxa;
+            if (entryObject.taxa === 'N/A') {
+                taxa = 'Arthropod'
+            }
+            const entryId = `${currentData.site}${taxa}${timestamp.getTime()}`;
+            console.log(entryId)
             dataBatch.set(doc(db, collectionName, entryId), entryObject);
             if (entryObject.taxa === "Lizard")
                 lizardBatch.set(doc(db, lizardCollection, entryId), entryObject);
@@ -308,10 +314,10 @@ export const FinishSessionForm = () => {
                 obj.year = year;
                 obj.comments = currentData.comments;
                 for (const key in dataEntry.arthropodData) {
-                    obj[key] = dataEntry.arthropodData[key];
+                    obj[key] = String(dataEntry.arthropodData[key]);
                 }
                 obj.fenceTrap = dataEntry.trap;
-                obj.taxa = 'Arthropod';
+                obj.taxa = 'N/A';
                 dataArray.push(obj);
             }
         }
