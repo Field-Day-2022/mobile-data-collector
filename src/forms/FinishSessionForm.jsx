@@ -50,8 +50,8 @@ export const FinishSessionForm = () => {
         if (isEditingPrevious) {
             console.log(entryIndex);
             const sessionId = pastSessions[entryIndex].sessionId;
-            let collectionName = `Test${currentData.project}Session`;
-            if (environment === 'live') collectionName = `${currentData.project}Session`
+            let collectionName = `Test${currentData.project.replace(/\s/g, '')}Session`;
+            if (environment === 'live') collectionName = `${currentData.project.replace(/\s/g, '')}Session`
             console.log(
                 `Updating existing entry with id ${sessionId} in ${collectionName}`
             );
@@ -79,8 +79,8 @@ export const FinishSessionForm = () => {
                     sessionData: currentData,
                 }
             ])
-            let collectionName = `Test${currentData.project}Session`;
-            if (environment === 'live') collectionName = `${currentData.project}Session`
+            let collectionName = `Test${currentData.project.replace(/\s/g, '')}Session`;
+            if (environment === 'live') collectionName = `${currentData.project.replace(/\s/g, '')}Session`
             console.log(`Uploading new entry to ${collectionName}`);
             const docRef = await addDoc(
                 collection(db, collectionName),
@@ -105,10 +105,10 @@ export const FinishSessionForm = () => {
     };
 
     const uploadBatchedEntryData = async (entryDataArray) => {
-        let collectionName = `Test${currentData.project}Data`;
+        let collectionName = `Test${currentData.project.replace(/\s/g, '')}Data`;
         let lizardCollection = 'TestLizardData'
         if (environment === 'live') {
-            collectionName = `${currentData.project}Data`
+            collectionName = `${currentData.project.replace(/\s/g, '')}Data`
             lizardCollection = 'LizardData'
         }
         console.log(`Uploading to ${collectionName}`);
