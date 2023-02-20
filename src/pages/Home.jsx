@@ -30,46 +30,49 @@ export default function Home() {
                 <tbody>
                     {pastSessions.map((session) => {
                         const date = new Date(session.sessionData.sessionDateTime);
-                        return (
-                            <tr key={session.sessionData.sessionDateTime} >
-                                <td className="flex justify-center">
-                                    {session.uploaded ? (
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            strokeWidth={1.5}
-                                            stroke="currentColor"
-                                            className="w-6 h-6 stroke-green-600"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                d="M4.5 12.75l6 6 9-13.5"
-                                            />
-                                        </svg>
-                                    ) : (
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            strokeWidth={1.5}
-                                            stroke="currentColor"
-                                            className="w-6 h-6 stroke-red-600"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                d="M6 18L18 6M6 6l12 12"
-                                            />
-                                        </svg>
-                                    )}
-                                </td>
-                                <td>
-                                    {session.sessionData.site} @ {date.toLocaleTimeString()}
-                                </td>
-                            </tr>
-                        );
+                        const today = new Date();
+                        if (date.getDate() === today.getDate()) {
+                            return (
+                                <tr key={session.sessionData.sessionDateTime} >
+                                    <td className="flex justify-center">
+                                        {session.uploaded ? (
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                strokeWidth={1.5}
+                                                stroke="currentColor"
+                                                className="w-6 h-6 stroke-green-600"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    d="M4.5 12.75l6 6 9-13.5"
+                                                />
+                                            </svg>
+                                        ) : (
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                strokeWidth={1.5}
+                                                stroke="currentColor"
+                                                className="w-6 h-6 stroke-red-600"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    d="M6 18L18 6M6 6l12 12"
+                                                />
+                                            </svg>
+                                        )}
+                                    </td>
+                                    <td>
+                                        {session.sessionData.site} @ {date.toLocaleTimeString()}
+                                    </td>
+                                </tr>
+                            );
+                        }
                     })}
                 </tbody>
             </table>

@@ -46,6 +46,11 @@ export default function NewArthropodEntry() {
                 )
             )
             setArthropodSpeciesList(speciesSnapshot.docs[0].data().arthropodSpeciesArray);
+            let tempArthropodData = {}
+            for (const arthropodSpecies of speciesSnapshot.docs[0].data().arthropodSpeciesArray) {
+                tempArthropodData[arthropodSpecies.toLowerCase()] = 0;                
+            }
+            setArthropodData(tempArthropodData)
             const fenceTrapsSnapshot = await getDocsFromCache(
                 query(collection(db, 'AnswerSet'), where('set_name', '==', 'Fence Traps'))
             );
@@ -58,7 +63,6 @@ export default function NewArthropodEntry() {
         getAnswerFormDataFromFirestore();
     }, [])
 
-
     const completeCapture = () => {
         const date = new Date();
         updateData(
@@ -68,7 +72,7 @@ export default function NewArthropodEntry() {
                 predator,
                 arthropodData,
                 comments,
-                dateTime: date.toUTCString(),
+                dateTime: date.toISOString(),
             },
             setCurrentData,
             currentData,
@@ -104,8 +108,7 @@ export default function NewArthropodEntry() {
                 >
                     <NumberInput
                         value={arthropodData && arthropodData[item]}
-                        key={item}
-                        label={item}
+                        label={item.toUpperCase()}
                         placeholder="# of critters"
                         setValue={(value) => setArthropodData({ ...arthropodData, [item]: value })}
                     />

@@ -11,7 +11,7 @@ import {
 } from 'firebase/firestore';
 import { db } from '../index';
 
-import { currentFormName, currentSessionData, notificationText } from '../utils/jotai';
+import { currentFormName, currentSessionData, notificationText, appMode } from '../utils/jotai';
 import { updateData } from '../utils/functions';
 import FormWrapper from '../components/FormWrapper';
 import Dropdown from '../components/Dropdown';
@@ -63,6 +63,7 @@ export default function NewLizardEntry() {
     const [currentData, setCurrentData] = useAtom(currentSessionData);
     const [currentForm, setCurrentForm] = useAtom(currentFormName);
     const [notification, setNotification] = useAtom(notificationText);
+    const [environment, setEnvironment] = useAtom(appMode);
 
     const sexOptions = ['Male', 'Female', 'Unknown'];
 
@@ -138,8 +139,10 @@ export default function NewLizardEntry() {
     }, [speciesCode]);
 
     const sendToeCodeDataToFirestore = async () => {
-        await setDoc(doc(db, 'TestToeClipCodes', currentData.site), updatedToeCodes);
-        setNotification('Successfully set toe clip code entry');
+        let toeCodeCollection = 'TestToeClipCodes';
+        if (environment === 'live') toeCodeCollection = 'ToeClipCodes';
+        await setDoc(doc(db, toeCodeCollection, currentData.site), updatedToeCodes);
+        setNotification(`Successfully set toe clip code entry to ${toeCodeCollection}`);
     };
 
     const verifyForm = () => {
@@ -170,6 +173,7 @@ export default function NewLizardEntry() {
             setNotification('Errors in form');
         } else {
             setNotification('Form is valid');
+            setConfirmationModalIsOpen(true);
         }
         setErrors(tempErrors);
         console.log(tempErrors);
@@ -195,7 +199,7 @@ export default function NewLizardEntry() {
                 sex,
                 isDead,
                 comments,
-                dateTime: date.toUTCString(),
+                dateTime: date.toISOString(),
             },
             setCurrentData,
             currentData,
@@ -236,11 +240,7 @@ export default function NewLizardEntry() {
             />
             <NumberInput label="SVL (mm)" value={svl} setValue={setSvl} placeholder="0.0 mm" />
             <NumberInput label="VTL (mm)" value={vtl} setValue={setVtl} placeholder="0.0 mm" />
-            <SingleCheckbox
-                prompt="Regen tail?"
-                value={regenTail}
-                setValue={setRegenTail}
-            />
+            <SingleCheckbox prompt="Regen tail?" value={regenTail} setValue={setRegenTail} />
             <NumberInput
                 isDisabled={regenTail}
                 label="OTL (mm)"

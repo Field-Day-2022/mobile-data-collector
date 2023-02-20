@@ -1,6 +1,7 @@
-export default function TextInput({ prompt, placeholder, value, setValue, onChangeHandler, maxLength }) {
+export default function TextInput({ prompt, placeholder, value, setValue, onChangeHandler, maxLength, error }) {
     return (
-        <div>
+        <div className={error && 'border-2 border-red-600 rounded-xl my-1 px-2'}>
+            <p className="text-red-600 font-bold text-left">{error}</p>
             <label className="label mb-0 pb-0">
                 <span className="label-text text-lg text-black mb-0">{prompt}</span>
             </label>

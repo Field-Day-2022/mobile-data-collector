@@ -8,6 +8,7 @@ import {
     pastEntryIndex,
     currentPageName,
     notificationText,
+    appMode
 } from '../utils/jotai';
 
 import { useCollectionData } from 'react-firebase-hooks/firestore';
@@ -37,9 +38,9 @@ export const FinishSessionForm = () => {
     const [entryIndex, setEntryIndex] = useAtom(pastEntryIndex);
     const [currentPage, setCurrentPage] = useAtom(currentPageName);
     const [notification, setNotification] = useAtom(notificationText);
-
     const [trapStatus, setTrapStatus] = useState('');
     const [comments, setComments] = useState('');
+    const [environment, setEnvironment] = useAtom(appMode);
 
     const [answerSet, answerSetLoading, answerSetError, answerSetSnapshot] = useCollectionData(
         collection(db, 'AnswerSet')
@@ -49,16 +50,19 @@ export const FinishSessionForm = () => {
         if (isEditingPrevious) {
             console.log(entryIndex);
             const sessionId = pastSessions[entryIndex].sessionId;
+            let collectionName = `Test${currentData.project.replace(/\s/g, '')}Session`;
+            if (environment === 'live') collectionName = `${currentData.project.replace(/\s/g, '')}Session`
             console.log(
-                `Updating existing entry with id ${sessionId} in Test${currentData.project}Session`
+                `Updating existing entry with id ${sessionId} in ${collectionName}`
             );
-            await setDoc(doc(db, `Test${currentData.project}Session`, sessionId), sessionObj);
+            await setDoc(doc(db, collectionName, sessionId), sessionObj);
             console.log('Successfully overwritten');
             setNotification('Successfully added to session');
             setPastSessions((pastSessions) =>
                 pastSessions.map((session) => {
                     if (session.sessionId === sessionId) {
                         return {
+                            uploaded: true,
                             sessionId,
                             sessionData: currentData,
                         };
@@ -76,9 +80,11 @@ export const FinishSessionForm = () => {
                     sessionData: currentData,
                 }
             ])
-            console.log(`Uploading new entry to Test${currentData.project}Session`);
+            let collectionName = `Test${currentData.project.replace(/\s/g, '')}Session`;
+            if (environment === 'live') collectionName = `${currentData.project.replace(/\s/g, '')}Session`
+            console.log(`Uploading new entry to ${collectionName}`);
             const docRef = await addDoc(
-                collection(db, `Test${currentData.project}Session`),
+                collection(db, collectionName),
                 sessionObj
             )
             console.log('uploading and adding session id')
@@ -96,19 +102,17 @@ export const FinishSessionForm = () => {
                 })
             );
             setNotification('Successfully added new session');
-            // setPastSessions([
-            //     ...pastSessions,
-            //     {
-            //         sessionId: docRef.id,
-            //         sessionData: currentData,
-
-            //     },
-            // ]);
         }
     };
 
     const uploadBatchedEntryData = async (entryDataArray) => {
-        console.log(`Uploading to Test${currentData.project}Data`);
+        let collectionName = `Test${currentData.project.replace(/\s/g, '')}Data`;
+        let lizardCollection = 'TestLizardData'
+        if (environment === 'live') {
+            collectionName = `${currentData.project.replace(/\s/g, '')}Data`
+            lizardCollection = 'LizardData'
+        }
+        console.log(`Uploading to ${collectionName}`);
         const dataBatch = writeBatch(db);
         const lizardBatch = writeBatch(db);
         for (const entryObject of entryDataArray) {
@@ -118,10 +122,15 @@ export const FinishSessionForm = () => {
                 }
             }
             const timestamp = new Date(entryObject.dateTime);
-            const entryId = `${currentData.site}${entryObject.taxa}${timestamp.getTime()}`;
-            dataBatch.set(doc(db, `Test${currentData.project}Data`, entryId), entryObject);
+            let taxa = entryObject.taxa;
+            if (entryObject.taxa === 'N/A') {
+                taxa = 'Arthropod'
+            }
+            const entryId = `${currentData.site}${taxa}${timestamp.getTime()}`;
+            console.log(entryId)
+            dataBatch.set(doc(db, collectionName, entryId), entryObject);
             if (entryObject.taxa === "Lizard")
-                lizardBatch.set(doc(db, `TestLizardData`, entryId), entryObject);
+                lizardBatch.set(doc(db, lizardCollection, entryId), entryObject);
         }
         await dataBatch.commit();
         await lizardBatch.commit();
@@ -136,7 +145,7 @@ export const FinishSessionForm = () => {
         const sessionObj = {
             array: currentData.array,
             commentsAboutTheArray: comments,
-            dateTime: date.toLocaleString(),
+            dateTime: date.toISOString(),
             handler: currentData.handler,
             noCaptures: currentData.captureStatus,
             recorder: currentData.recorder,
@@ -305,10 +314,10 @@ export const FinishSessionForm = () => {
                 obj.year = year;
                 obj.comments = currentData.comments;
                 for (const key in dataEntry.arthropodData) {
-                    obj[key] = dataEntry.arthropodData[key];
+                    obj[key] = String(dataEntry.arthropodData[key]);
                 }
                 obj.fenceTrap = dataEntry.trap;
-                obj.taxa = 'Arthropod';
+                obj.taxa = 'N/A';
                 dataArray.push(obj);
             }
         }

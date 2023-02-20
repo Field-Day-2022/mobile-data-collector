@@ -4,15 +4,10 @@ import { currentSessionData } from '../utils/jotai';
 import { db } from '../index';
 import {
     collection,
-    getDocFromCache,
-    getDocs,
     getDocsFromCache,
     query,
     where,
-    doc,
-    getDocsFromServer,
 } from 'firebase/firestore';
-import Dropdown from './Dropdown';
 import { motion, useAnimationControls, AnimatePresence } from 'framer-motion';
 import SingleCheckbox from './SingleCheckbox';
 import { notificationText } from '../utils/jotai';
@@ -532,7 +527,7 @@ export default function ToeCodeInput({
                                         <tbody>
                                             {previousLizardEntries.map((entry, index, array) => {
                                                 return (
-                                                    <tr>
+                                                    <tr key={index}>
                                                         {lizardHistoryLabelKeys.map((key, index, array) => {
                                                             let itemToDisplay = entry[key] ?? 'N/A';
                                                             if (key === 'dateTime') {
