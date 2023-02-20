@@ -12,6 +12,7 @@ on:
       - "dev"
       - "US**"
 
+
 jobs:
   prettier:
     if: ${{ github.event.action != 'synchronize' }}
