@@ -3,8 +3,9 @@ import { useEffect, useState } from 'react';
 import { db } from '../index';
 
 import { useAtom } from 'jotai';
-import { currentFormName, currentSessionData } from '../utils/jotai';
+import { currentFormName, currentSessionData, notificationText } from '../utils/jotai';
 import TextInput from '../components/TextInput';
+import { error } from 'daisyui/src/colors/colorNames';
 
 export default function NewData() {
     const [currentProject, setCurrentProject] = useState('Project');
@@ -12,9 +13,16 @@ export default function NewData() {
     const [currentArray, setCurrentArray] = useState('Array');
     const [recorder, setRecorder] = useState('');
     const [handler, setHandler] = useState('');
+    const [errors, setErrors] = useState({
+        recorder: '',
+        handler: '',
+    });
+    const [sites, setSites] = useState();
+    const [arrays, setArrays] = useState();
 
     const [currentData, setCurrentData] = useAtom(currentSessionData);
     const [currentForm, setCurrentForm] = useAtom(currentFormName);
+    const [notification, setNotification] = useAtom(notificationText);
 
     useEffect(() => {
         setCurrentData({
@@ -31,9 +39,6 @@ export default function NewData() {
             snake: [],
         });
     }, []);
-
-    const [sites, setSites] = useState();
-    const [arrays, setArrays] = useState();
 
     const getSites = async (projectName) => {
         if (projectName !== currentProject) setCurrentSite('Site');
@@ -77,6 +82,26 @@ export default function NewData() {
     };
 
     const finishForm = (captureStatus) => {
+        let tempErrors = {
+            recorder: '',
+            handler: '',
+        };
+        if (handler.length < 2) tempErrors.handler = 'Must be 2-3 letters';
+        if (recorder.length < 2) tempErrors.recorder = 'Must be 2-3 letters';
+        let errorExists = false;
+        for (const key in tempErrors) {
+            if (tempErrors[key] !== '') errorExists = true;
+        }
+        if (errorExists) {
+            console.log(handler.length)
+            console.log(tempErrors)
+            setErrors(tempErrors);
+            setNotification('Errors present');
+            return;
+        } else {
+            setErrors(tempErrors);
+        }
+
         const date = new Date();
         if (captureStatus === 'withCaptures') {
             setCurrentData({
@@ -129,60 +154,30 @@ export default function NewData() {
       w-full 
       h-full"
         >
-            {/* <label className="input-group input-group-vertical justify-center m-1 w-28">
-                <span className="bg-white/50 border-2 border-gray-500 text-xl text-asu-maroon justify-center">
-                    Recorder
-                </span>
-                <input
-                    maxLength="3"
-                    type="text"
-                    placeholder="Initials"
-                    className="text-center input glass text-xl text-asu-maroon placeholder:text-black/50 tracking-widest placeholder:tracking-wide"
-                    value={recorder}
-                    onChange={(e) => {
-                        if (/^[A-Za-z]+$/.test(e.target.value) || e.target.value === '') {
-                            setRecorder(e.target.value.toUpperCase());
-                        }
-                    }}
-                />
-            </label> */}
-            <TextInput 
+            <TextInput
                 maxLength={3}
                 prompt="Recorder"
                 placeholder="Initials"
                 value={recorder}
-                onChangeHandler={val => {
-                    if ((/^[A-Za-z]+$/.test(val) || val === '' )) {
+                onChangeHandler={(val) => {
+                    if (/^[A-Za-z]+$/.test(val) || val === '') {
                         setRecorder(val.toUpperCase());
                     }
                 }}
+                error={errors.recorder}
             />
-            <TextInput 
+            <TextInput
                 maxLength={3}
                 prompt="Handler"
                 placeholder="Initials"
                 value={handler}
-                onChangeHandler={val => {
-                    if ((/^[A-Za-z]+$/.test(val) || val === '' )) {
+                onChangeHandler={(val) => {
+                    if (/^[A-Za-z]+$/.test(val) || val === '') {
                         setHandler(val.toUpperCase());
                     }
                 }}
+                error={errors.handler}
             />
-            {/* <label className="input-group input-group-vertical justify-center m-1 w-28">
-                <span className="glass text-xl text-asu-maroon justify-center">Handler</span>
-                <input
-                    maxLength="3"
-                    type="text"
-                    placeholder="Initials"
-                    className="text-center input glass text-xl text-asu-maroon placeholder:text-black/50 tracking-widest placeholder:tracking-wide w-full"
-                    value={handler}
-                    onChange={(e) => {
-                        if (/^[A-Za-z]+$/.test(e.target.value) || e.target.value === '') {
-                            setHandler(e.target.value.toUpperCase());
-                        }
-                    }}
-                />
-            </label> */}
             <div className="dropdown flex justify-center items-center">
                 <label
                     tabIndex={0}

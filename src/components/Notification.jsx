@@ -21,7 +21,9 @@ export default function Notification() {
   // }, [])
 
   useEffect(() => {
-    controls.start("visible").then(() => controls.start("hidden"))
+    if (notification !== '') {
+        controls.start("visible").then(() => controls.start("hidden")).then(() => setNotification(''))
+    }
   }, [ notification ])
 
   const containerVariant = {
@@ -33,7 +35,7 @@ export default function Notification() {
         delay: 1.5,
         staggerChildren: .03,
         delayChildren: 1,
-        duration: .1
+        duration: .5
       }
     },
     visible: {

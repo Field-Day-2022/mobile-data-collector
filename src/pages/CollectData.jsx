@@ -9,6 +9,7 @@ import NewLizardEntry from '../forms/NewLizardEntry';
 import NewMammalEntry from '../forms/NewMammalEntry'
 import { FinishSessionForm } from '../forms/FinishSessionForm';
 import { useEffect } from 'react';
+import NewSnakeEntry from '../forms/NewSnakeEntry';
 
 export default function CollectData() {
   const [currentData, setCurrentData] = useAtom(currentSessionData)
@@ -29,6 +30,7 @@ export default function CollectData() {
       {currentForm === 'New Amphibian Entry' && <NewAmphibianEntry />}
       {currentForm === 'New Lizard Entry' && <NewLizardEntry />}
       {currentForm === 'New Mammal Entry' && <NewMammalEntry />}
+      {currentForm === 'New Snake Entry' && <NewSnakeEntry />}
       {currentForm === 'Finish Session'  && <FinishSessionForm />}
     </div>
   );
