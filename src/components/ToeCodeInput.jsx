@@ -12,6 +12,18 @@ import { motion, useAnimationControls, AnimatePresence } from 'framer-motion';
 import SingleCheckbox from './SingleCheckbox';
 import { notificationText } from '../utils/jotai';
 
+var defaultSelected = () => ({
+    a: false,
+    b: false,
+    c: false,
+    d: false,
+    1: false,
+    2: false,
+    3: false,
+    4: false,
+    5: false,
+});
+
 export default function ToeCodeInput({
     toeCode,
     setToeCode,
@@ -22,17 +34,7 @@ export default function ToeCodeInput({
     speciesToeCodes,
     siteToeCodes,
 }) {
-    const [selected, setSelected] = useState({
-        a: false,
-        b: false,
-        c: false,
-        d: false,
-        1: false,
-        2: false,
-        3: false,
-        4: false,
-        5: false,
-    });
+    const [selected, setSelected] = useState(defaultSelected());
     // const [toeCodes, setToeCodes] = useState();
     const [preexistingToeClipCodes, setPreexistingToeClipCodes] = useState([]);
     const [errorMsg, setErrorMsg] = useState();
@@ -103,17 +105,7 @@ export default function ToeCodeInput({
                 !toeClipCode.includes('D4')
             ) {
                 setToeCode(toeClipCode);
-                setSelected({
-                    a: false,
-                    b: false,
-                    c: false,
-                    d: false,
-                    1: false,
-                    2: false,
-                    3: false,
-                    4: false,
-                    5: false,
-                });
+                setSelected(defaultSelected());
                 return;
             }
         }
@@ -167,17 +159,7 @@ export default function ToeCodeInput({
                 }
                 if (!Number(toeCode.charAt(toeCode.length - 1))) {
                     setToeCode(`${toeCode}${source}`);
-                    setSelected({
-                        a: false,
-                        b: false,
-                        c: false,
-                        d: false,
-                        1: false,
-                        2: false,
-                        3: false,
-                        4: false,
-                        5: false,
-                    });
+                    setSelected(defaultSelected());
                 }
             } else {
                 if (Number(toeCode.charAt(toeCode.length - 1)) || toeCode.length === 0) {
@@ -196,17 +178,7 @@ export default function ToeCodeInput({
             }
         } else if (source === 'backspace') {
             setToeCode(toeCode.substring(0, toeCode.length - 1));
-            setSelected({
-                a: false,
-                b: false,
-                c: false,
-                d: false,
-                1: false,
-                2: false,
-                3: false,
-                4: false,
-                5: false,
-            });
+            setSelected(defaultSelected());
             if (!Number(toeCode.charAt(toeCode.length - 2)) && toeCode.charAt(toeCode.length - 2)) {
                 setSelected({ ...selected, [toeCode.charAt(toeCode.length - 2)]: true });
             }
