@@ -670,9 +670,7 @@ function Button({ prompt, handler, isSelected }) {
     return (
         <button
             className={
-                isSelected
-                    ? `bg-asu-maroon brightness-50 p-5 rounded-xl  text-2xl  capitalize  text-asu-gold z-10 m-1 active:brightness-50 active:scale-90 transition select-none`
-                    : `bg-asu-maroon brightness-100 p-5 rounded-xl  text-2xl  capitalize  text-asu-gold z-10 m-1 active:brightness-50 active:scale-90 transition select-none`
+                `bg-asu-maroon brightness-${isSelected ? 50 : 100}  p-5 rounded-xl  text-2xl  capitalize  text-asu-gold z-10 m-1 active:brightness-50 active:scale-90 transition select-none`
             }
             onClick={handler}
         >
