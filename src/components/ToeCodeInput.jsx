@@ -12,17 +12,14 @@ import { motion, useAnimationControls, AnimatePresence } from 'framer-motion';
 import SingleCheckbox from './SingleCheckbox';
 import { notificationText } from '../utils/jotai';
 
-var defaultSelected = () => ({
-    a: false,
-    b: false,
-    c: false,
-    d: false,
-    1: false,
-    2: false,
-    3: false,
-    4: false,
-    5: false,
-});
+const letters = ['A', 'B', 'C', 'D'];
+const numbers = [1, 2, 3, 4, 5];
+const defaultSelected = () => 
+    (letters.concat(numbers))
+        .reduce(
+            (map,key) => !(map[typeof(key) == "string" ? key.toLowerCase() : key] = false) && map,
+            {}
+        )
 
 export default function ToeCodeInput({
     toeCode,
@@ -79,9 +76,6 @@ export default function ToeCodeInput({
         await errorMsgControls.start('visible');
         await errorMsgControls.start('hidden');
     };
-
-    const letters = ['A', 'B', 'C', 'D'];
-    const numbers = [1, 2, 3, 4, 5];
 
     const formattedToeCodes = toeCode
         ? toeCode.split('').reduce((total, current, index, array) => {
