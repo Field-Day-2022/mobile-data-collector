@@ -12,8 +12,8 @@ import { motion, useAnimationControls, AnimatePresence } from 'framer-motion';
 import SingleCheckbox from './SingleCheckbox';
 import { notificationText } from '../utils/jotai';
 
-const letters = ['A', 'B', 'C', 'D'];
-const numbers = [1, 2, 3, 4, 5];
+const letters = new Array(4).fill(null).map((_,n) => String.fromCharCode('A'.charCodeAt(0) + n))
+const numbers = new Array(5).fill(null).map((_,n) => 1+n);
 const defaultSelected = () => 
     (letters.concat(numbers))
         .reduce(
