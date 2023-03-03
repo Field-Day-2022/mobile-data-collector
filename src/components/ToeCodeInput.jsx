@@ -114,23 +114,20 @@ export default function ToeCodeInput({
             setErrorMsg('Toe Clip Code must have an even number of characters');
         } else {
             if (isRecapture) {
-                if (speciesToeCodes.includes(toeCode)) {
-                    setIsValid(true);
-                } else {
+                if (!speciesToeCodes.includes(toeCode)) {
                     setErrorMsg(
                         'Toe Clip Code is not previously recorded, please uncheck the recapture box to record a new entry'
                     );
                     setIsValid(false);
                 }
+                setIsValid(speciesToeCodes.includes(toeCode));
             } else {
                 if (speciesToeCodes.includes(toeCode)) {
                     setErrorMsg(
                         'Toe Clip Code is already taken, choose another or check recapture box to record a recapture'
                     );
-                    setIsValid(false);
-                } else {
-                    setIsValid(true);
                 }
+                setIsValid(!speciesToeCodes.includes(toeCode));
             }
         }
     };
