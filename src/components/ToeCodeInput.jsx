@@ -168,7 +168,7 @@ export default function ToeCodeInput({
                 }
             }
         } else if (source === 'backspace') {
-            setToeCode(toeCode.substring(0, toeCode.length - 1));
+            setToeCode(toeCode.slice(0, -1));
             setSelected(defaultSelected());
             if (!Number(toeCode.charAt(toeCode.length - 2)) && toeCode.charAt(toeCode.length - 2)) {
                 setSelected({ ...selected, [toeCode.charAt(toeCode.length - 2)]: true });
@@ -497,12 +497,7 @@ export default function ToeCodeInput({
                                                                 const date = new Date(entry[key]).toLocaleDateString();
                                                                 itemToDisplay = date;
                                                             } 
-                                                            if (itemToDisplay  === 'false') {
-                                                                itemToDisplay = 'No';
-                                                            }
-                                                            if (itemToDisplay === 'true') {
-                                                                itemToDisplay = 'Yes';
-                                                            }
+                                                            itemToDisplay = ({'false': 'No', 'true':'Yes'})[itemToDisplay] ?? itemToDisplay;
                                                             return (
                                                                 <td 
                                                                     key={`${itemToDisplay}${index}`} 
