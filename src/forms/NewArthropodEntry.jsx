@@ -40,17 +40,16 @@ export default function NewArthropodEntry() {
     useEffect(() => {
         const getAnswerFormDataFromFirestore = async () => {
             const speciesSnapshot = await getDocsFromCache(
-                query(
-                    collection(db, 'AnswerSet'),
-                    where('set_name', '==', 'arthropodSpeciesList')
-                )
-            )
-            setArthropodSpeciesList(speciesSnapshot.docs[0].data().arthropodSpeciesArray);
-            let tempArthropodData = {}
-            for (const arthropodSpecies of speciesSnapshot.docs[0].data().arthropodSpeciesArray) {
-                tempArthropodData[arthropodSpecies.toLowerCase()] = 0;                
+                query(collection(db, 'AnswerSet'), where('set_name', '==', 'ArthropodSpecies'))
+            );
+            let tempArthropodSpeciesArray = [];
+            let tempArthropodData = {};
+            for (const arthropodSpecies of speciesSnapshot.docs[0].data().answers) {
+                tempArthropodSpeciesArray.push(arthropodSpecies.primary.toLowerCase());
+                tempArthropodData[arthropodSpecies.primary.toLowerCase()] = 0;
             }
-            setArthropodData(tempArthropodData)
+            setArthropodSpeciesList(tempArthropodSpeciesArray);
+            setArthropodData(tempArthropodData);
             const fenceTrapsSnapshot = await getDocsFromCache(
                 query(collection(db, 'AnswerSet'), where('set_name', '==', 'Fence Traps'))
             );
@@ -59,9 +58,9 @@ export default function NewArthropodEntry() {
                 fenceTrapsArray.push(answer.primary);
             }
             setFenceTraps(fenceTrapsArray);
-        }
+        };
         getAnswerFormDataFromFirestore();
-    }, [])
+    }, []);
 
     const completeCapture = () => {
         const date = new Date();
@@ -94,15 +93,14 @@ export default function NewArthropodEntry() {
                     key={item}
                     onNumberChange={(changeAmount) =>
                         setArthropodData((arthropodData) => {
-                            if (arthropodData[item] + changeAmount < 0) {
-                                return ({...arthropodData})
+                            if (Number(arthropodData[item]) + changeAmount < 0) {
+                                return { ...arthropodData };
                             } else {
-                                return ({
+                                return {
                                     ...arthropodData,
-                                    [item]: arthropodData[item] + changeAmount,
-                                })
+                                    [item]: Number(arthropodData[item]) + changeAmount,
+                                };
                             }
-                            
                         })
                     }
                 >
