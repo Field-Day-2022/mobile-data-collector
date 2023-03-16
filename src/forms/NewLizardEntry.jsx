@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from 'react';
-import { useAtom } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import {
     collection,
     setDoc,
@@ -12,7 +12,14 @@ import {
 } from 'firebase/firestore';
 import { db } from '../index';
 
-import { currentFormName, currentSessionData, notificationText, appMode } from '../utils/jotai';
+import { 
+    currentFormName, 
+    currentSessionData, 
+    notificationText, 
+    appMode,
+    toeCodeLoadedAtom,
+    lizardDataLoadedAtom,
+} from '../utils/jotai';
 import { updateData } from '../utils/functions';
 import FormWrapper from '../components/FormWrapper';
 import Dropdown from '../components/Dropdown';
@@ -22,6 +29,7 @@ import NumberInput from '../components/NumberInput';
 import TextInput from '../components/TextInput';
 import Button from '../components/Button';
 import ConfirmationModal from '../components/ConfirmationModal';
+import { ScaleLoader } from 'react-spinners';
 
 export default function NewLizardEntry() {
     const [speciesCode, setSpeciesCode] = useState('');
@@ -65,6 +73,8 @@ export default function NewLizardEntry() {
     const [currentForm, setCurrentForm] = useAtom(currentFormName);
     const [notification, setNotification] = useAtom(notificationText);
     const [environment, setEnvironment] = useAtom(appMode);
+    const toeCodeLoaded = useAtomValue(toeCodeLoadedAtom);
+    const lizardDataLoaded = useAtomValue(lizardDataLoadedAtom);
 
     const sexOptions = ['Male', 'Female', 'Unknown'];
 
@@ -215,9 +225,10 @@ export default function NewLizardEntry() {
             setCurrentForm
         );
     };
-
+    
     return (
-        <FormWrapper>
+        ((toeCodeLoaded && lizardDataLoaded)) ?
+            <FormWrapper>
             <Dropdown
                 value={speciesCode}
                 setValue={setSpeciesCode}
@@ -308,5 +319,17 @@ export default function NewLizardEntry() {
                 />
             )}
         </FormWrapper>
+        :
+        <div>
+            <ScaleLoader
+                loading={true}
+                color={'#8C1D40'}
+                width={8}
+                radius={15}
+                height={40}
+            />
+            <p className="mt-10 text-black text-xl">Loading lizard data...</p>
+        </div>
+        
     );
 }

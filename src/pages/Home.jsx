@@ -23,15 +23,6 @@ export default function Home() {
     const setCurrentSession = useSetAtom(currentSessionData);
     const setIsEditingPrevious = useSetAtom(editingPrevious);
     const setPastEntryIndex = useSetAtom(pastEntryIndex);
-    
-    const printDate = () => {
-        const now = new Date();
-        return `${now.getDate()}${now.getMonth()}${now.getFullYear()}`
-    }
-
-    useEffect(() => {
-        console.log(printDate());
-    }, [])
 
     return (
         <motion.div>

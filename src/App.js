@@ -46,9 +46,9 @@ function App() {
     );
 
     useEffect(() => {
-        setLizardDataLoaded(lizardDataLoading);
-        if (environment === 'test') setToeCodeLoaded(testtoeCodeLoading);
-        else if (environment === 'live') setToeCodeLoaded(toeCodeLoading);
+        setLizardDataLoaded(!lizardDataLoading);
+        if (environment === 'test') setToeCodeLoaded(!testtoeCodeLoading);
+        else if (environment === 'live') setToeCodeLoaded(!toeCodeLoading);
     }, [toeCodeLoading, testtoeCodeLoading, lizardDataLoading]);
 
     return (
