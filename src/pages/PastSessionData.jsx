@@ -31,10 +31,16 @@ export default function PastSessionData() {
     };
 
     const deleteSessionsBeforeToday = () => {
-        // go through all previous session in jotai and if
-        // a session's date is less than today, delete it
-        // use a temp array and replace with new array
-    }
+        const now = new Date();
+        const nowDateCode = `${now.getDate()}${now.getMonth()}${now.getFullYear()}`;
+        setPastData(
+            pastData.filter((value) => {
+                const sessionDate = new Date(value.sessionData.sessionDateTime);
+                const sessionDateCode = `${sessionDate.getDate()}${sessionDate.getMonth()}${sessionDate.getFullYear()}`;
+                return (nowDateCode === sessionDateCode);
+            })
+        );
+    };
 
     useEffect(() => {
         setIsOpen(new Array(pastData.length).fill(false));
@@ -51,7 +57,12 @@ export default function PastSessionData() {
                     count += Number(dataEntry.arthropodData[key]);
                 }
             }
-        } else if (critter === 'amphibian' || critter === 'lizard' || critter === 'mammal' || critter === 'snake') {
+        } else if (
+            critter === 'amphibian' ||
+            critter === 'lizard' ||
+            critter === 'mammal' ||
+            critter === 'snake'
+        ) {
             for (const dataEntry of pastData[openEntry].sessionData[critter]) {
                 count++;
             }
@@ -69,7 +80,7 @@ export default function PastSessionData() {
         show: {
             opacity: 1,
             transition: {
-                staggerChildren: .1,
+                staggerChildren: 0.1,
             },
         },
     };
@@ -180,7 +191,7 @@ export default function PastSessionData() {
                                                             'mammal'
                                                         )}
                                                     />
-                                                    <EntryTableRow 
+                                                    <EntryTableRow
                                                         entryType={'Snake'}
                                                         entryNumber={getNumberCrittersRecorded(
                                                             'snake'

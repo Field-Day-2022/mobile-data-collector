@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, db } from '../index';
 import { signOut } from 'firebase/auth';
@@ -23,6 +24,15 @@ export default function Home() {
     const setIsEditingPrevious = useSetAtom(editingPrevious);
     const setPastEntryIndex = useSetAtom(pastEntryIndex);
     
+    const printDate = () => {
+        const now = new Date();
+        return `${now.getDate()}${now.getMonth()}${now.getFullYear()}`
+    }
+
+    useEffect(() => {
+        console.log(printDate());
+    }, [])
+
     return (
         <motion.div>
             <motion.h1 className="text-xl">Hello, {user.displayName}!</motion.h1>
