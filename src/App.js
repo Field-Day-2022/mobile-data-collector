@@ -6,13 +6,13 @@ import { useCollection, useCollectionData } from 'react-firebase-hooks/firestore
 import CollectData from './pages/CollectData';
 import { db } from './index';
 import { useAtom } from 'jotai';
-import { 
-    currentFormName, 
-    currentPageName, 
+import {
+    currentFormName,
+    currentPageName,
     notificationText,
     toeCodeLoadedAtom,
     lizardDataLoadedAtom,
-    appMode
+    appMode,
 } from './utils/jotai';
 import Home from './pages/Home';
 import PastSessionData from './pages/PastSessionData';
@@ -47,9 +47,9 @@ function App() {
 
     useEffect(() => {
         setLizardDataLoaded(lizardDataLoading);
-        if (environment === 'test') setToeCodeLoaded(testtoeCodeLoading)
+        if (environment === 'test') setToeCodeLoaded(testtoeCodeLoading);
         else if (environment === 'live') setToeCodeLoaded(toeCodeLoading);
-    }, [toeCodeLoading, testtoeCodeLoading, lizardDataLoading])
+    }, [toeCodeLoading, testtoeCodeLoading, lizardDataLoading]);
 
     return (
         <motion.div className="font-openSans  overflow-hidden  absolute  flex  flex-col  items-center  text-center  justify-start  inset-0  bg-white">
