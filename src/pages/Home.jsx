@@ -2,14 +2,27 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, db } from '../index';
 import { signOut } from 'firebase/auth';
 import { motion } from 'framer-motion';
-import { useAtom } from 'jotai';
-import { pastSessionData } from '../utils/jotai';
-import { useEffect, useState } from 'react';
+import { useAtom, useSetAtom } from 'jotai';
+import { 
+    pastSessionData, 
+    appMode, 
+    notificationText,
+    currentSessionData,
+    editingPrevious,
+    pastEntryIndex
+} from '../utils/jotai';
 import { doc, getDoc } from 'firebase/firestore';
+import Dropdown from '../components/Dropdown';
 
 export default function Home() {
     const [user, loading, error] = useAuthState(auth);
     const [pastSessions] = useAtom(pastSessionData);
+    const [environment, setEnvironment] = useAtom(appMode);
+    const setNotification = useSetAtom(notificationText);
+    const setCurrentSession = useSetAtom(currentSessionData);
+    const setIsEditingPrevious = useSetAtom(editingPrevious);
+    const setPastEntryIndex = useSetAtom(pastEntryIndex);
+    
     return (
         <motion.div>
             <motion.h1 className="text-xl">Hello, {user.displayName}!</motion.h1>
@@ -19,6 +32,30 @@ export default function Home() {
             >
                 Logout
             </button>
+            <Dropdown 
+                placeholder={"App mode"}
+                value={environment}
+                setValue={setEnvironment}
+                options={["test", "live"]}
+                clickHandler={entry => {
+                    setNotification(`App is now in ${entry} mode`)
+                    setCurrentSession({
+                        captureStatus: '',
+                        array: '',
+                        project: '',
+                        site: '',
+                        handler: '',
+                        recorder: '',
+                        arthropod: [],
+                        amphibian: [],
+                        lizard: [],
+                        mammal: [],
+                        snake: [],
+                    })
+                    setIsEditingPrevious(false);
+                    setPastEntryIndex(-1);
+                }}
+            />
             <p className="text-xl mt-4 font-bold underline mb-2">Daily summary:</p>
             <table className="rounded-xl table-auto border-collapse w-full">
                 <thead>
@@ -72,7 +109,7 @@ export default function Home() {
                                     </td>
                                 </tr>
                             );
-                        }
+                        } else return null;
                     })}
                 </tbody>
             </table>

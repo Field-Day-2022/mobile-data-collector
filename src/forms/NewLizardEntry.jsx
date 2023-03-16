@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from 'react';
 import { useAtom } from 'jotai';
 import {
@@ -92,20 +93,33 @@ export default function NewLizardEntry() {
         getAnswerFormDataFromFirestore();
         const fetchToeCodes = async () => {
             let toeCodesSnapshot;
-            try {
-                toeCodesSnapshot = await getDocFromCache(
-                    doc(db, 'TestToeClipCodes', currentData.site)
-                );
-                console.log('getting toe codes from test');
-                setSiteToeCodes(toeCodesSnapshot.data());
-            } catch (e) {
-                console.log('getting toe codes from live');
+            if (environment === 'test') {
+                console.log('retrieving toe codes in test mode...');
+                try {
+                    toeCodesSnapshot = await getDocFromCache(
+                        doc(db, 'TestToeClipCodes', currentData.site)
+                    );
+                    console.log('test toe codes for this site/array/species combination already exists, retrieving...');
+                    setSiteToeCodes(toeCodesSnapshot.data());
+                } catch (e) {
+                    console.log('test toe codes for this site/array/species combination does not already exist, pulling from live');
+                    toeCodesSnapshot = await getDocsFromCache(
+                        query(
+                            collection(db, 'ToeClipCodes'), 
+                            where('SiteCode', '==', currentData.site)
+                        )
+                    );
+                    setSiteToeCodes(toeCodesSnapshot.docs[0].data());
+                }
+            } else if (environment === 'live') {
+                console.log('retrieving toe codes in live mode...');
                 toeCodesSnapshot = await getDocsFromCache(
-                    query(collection(db, 'ToeClipCodes'), where('SiteCode', '==', currentData.site))
+                    query(
+                        collection(db, 'ToeClipCodes'),
+                        where('SiteCode', '==', currentData.site)
+                    )
                 );
                 setSiteToeCodes(toeCodesSnapshot.docs[0].data());
-                // console.log('retreiving toe codes from ' + currentData.site)
-                // console.log(toeCodes)
             }
         };
         fetchToeCodes();
@@ -123,11 +137,6 @@ export default function NewLizardEntry() {
                     toeClipCode !== 'SiteCode'
                 ) {
                     tempArray.push(toeClipCode);
-                    // setPreexistingToeClipCodes((preexistingToeClipCodes) => [
-                    //     ...preexistingToeClipCodes,
-                    //     toeClipCode,
-                    // ]);
-                    // console.log(toeClipCode)
                 }
             }
             setSpeciesToeCodes(tempArray);

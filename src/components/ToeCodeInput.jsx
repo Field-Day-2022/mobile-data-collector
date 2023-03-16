@@ -50,6 +50,7 @@ export default function ToeCodeInput({
 
     useEffect(() => {
         checkToeCodeValidity();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [toeCode, isRecapture]);
 
     const errorMsgVariant = {

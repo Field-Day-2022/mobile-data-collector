@@ -30,8 +30,15 @@ export default function PastSessionData() {
         },
     };
 
+    const deleteSessionsBeforeToday = () => {
+        // go through all previous session in jotai and if
+        // a session's date is less than today, delete it
+        // use a temp array and replace with new array
+    }
+
     useEffect(() => {
         setIsOpen(new Array(pastData.length).fill(false));
+        deleteSessionsBeforeToday();
     }, []);
 
     // console.log(isOpen)

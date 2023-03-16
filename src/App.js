@@ -1,10 +1,19 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect } from 'react';
 import { collection } from 'firebase/firestore';
 import { useCollection, useCollectionData } from 'react-firebase-hooks/firestore';
 import CollectData from './pages/CollectData';
 import { db } from './index';
 import { useAtom } from 'jotai';
-import { currentFormName, currentPageName, notificationText } from './utils/jotai';
+import { 
+    currentFormName, 
+    currentPageName, 
+    notificationText,
+    toeCodeLoadedAtom,
+    lizardDataLoadedAtom,
+    appMode
+} from './utils/jotai';
 import Home from './pages/Home';
 import PastSessionData from './pages/PastSessionData';
 import Navbar from './components/Navbar';
@@ -16,6 +25,9 @@ function App() {
     const [currentPage, setCurrentPage] = useAtom(currentPageName);
     const [currentForm, setCurrentForm] = useAtom(currentFormName);
     const [notification, setNotification] = useAtom(notificationText);
+    const [toeCodeLoaded, setToeCodeLoaded] = useAtom(toeCodeLoadedAtom);
+    const [lizardDataLoaded, setLizardDataLoaded] = useAtom(lizardDataLoadedAtom);
+    const [environment, setEnvironment] = useAtom(appMode);
 
     const [answerSet, answerSetLoading, answerSetError, answerSetSnapshot] = useCollectionData(
         collection(db, 'AnswerSet')
@@ -33,10 +45,16 @@ function App() {
         collection(db, 'LizardData')
     );
 
+    useEffect(() => {
+        setLizardDataLoaded(lizardDataLoading);
+        if (environment === 'test') setToeCodeLoaded(testtoeCodeLoading)
+        else if (environment === 'live') setToeCodeLoaded(toeCodeLoading);
+    }, [toeCodeLoading, testtoeCodeLoading, lizardDataLoading])
+
     return (
         <motion.div className="font-openSans  overflow-hidden  absolute  flex  flex-col  items-center  text-center  justify-start  inset-0  bg-white">
             <AnimatePresence mode="wait">
-                {answerSetLoading || toeCodeLoading || testtoeCodeLoading || lizardDataLoading ? (
+                {answerSetLoading ? (
                     <motion.div
                         className="inset-0 h-screen flex flex-col items-center justify-around"
                         animate={{ opacity: 1 }}
