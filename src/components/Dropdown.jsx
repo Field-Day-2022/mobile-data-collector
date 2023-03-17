@@ -55,7 +55,7 @@ export default function Dropdown
                             onClick={() => {
                                 document.activeElement.blur();
                                 setValue(entry);
-                                clickHandler(entry);
+                                clickHandler && clickHandler(entry);
                             }}
                             className={
                                 index < options.length - 1 ? 'border-b-2 border-black/25' : ''
