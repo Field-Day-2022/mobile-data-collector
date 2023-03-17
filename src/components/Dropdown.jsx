@@ -1,4 +1,13 @@
-export default function Dropdown({ value, setValue, placeholder, options, toeCode, error }) {
+export default function Dropdown
+({ 
+    value, 
+    setValue, 
+    placeholder, 
+    options, 
+    toeCode, 
+    error,
+    clickHandler, 
+}) {
     return (
         <div
             className={
@@ -46,6 +55,7 @@ export default function Dropdown({ value, setValue, placeholder, options, toeCod
                             onClick={() => {
                                 document.activeElement.blur();
                                 setValue(entry);
+                                clickHandler(entry);
                             }}
                             className={
                                 index < options.length - 1 ? 'border-b-2 border-black/25' : ''

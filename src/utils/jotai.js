@@ -1,4 +1,5 @@
 import { atomWithStorage } from 'jotai/utils';
+import { atom } from 'jotai';
 
 export const currentSessionData = atomWithStorage('currentSessionData', {
     captureStatus: '',
@@ -27,3 +28,7 @@ export const pastEntryIndex = atomWithStorage('pastEntryIndex', -1);
 export const notificationText = atomWithStorage('notificationText', 'text');
 
 export const appMode = atomWithStorage('appMode', 'test');
+
+export const toeCodeLoadedAtom = atom(false);
+
+export const lizardDataLoadedAtom = atom(false);

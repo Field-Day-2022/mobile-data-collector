@@ -1,5 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from 'react';
-import { useAtom } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import {
     collection,
     setDoc,
@@ -11,7 +12,14 @@ import {
 } from 'firebase/firestore';
 import { db } from '../index';
 
-import { currentFormName, currentSessionData, notificationText, appMode } from '../utils/jotai';
+import { 
+    currentFormName, 
+    currentSessionData, 
+    notificationText, 
+    appMode,
+    toeCodeLoadedAtom,
+    lizardDataLoadedAtom,
+} from '../utils/jotai';
 import { updateData } from '../utils/functions';
 import FormWrapper from '../components/FormWrapper';
 import Dropdown from '../components/Dropdown';
@@ -21,6 +29,7 @@ import NumberInput from '../components/NumberInput';
 import TextInput from '../components/TextInput';
 import Button from '../components/Button';
 import ConfirmationModal from '../components/ConfirmationModal';
+import { ScaleLoader } from 'react-spinners';
 
 export default function NewLizardEntry() {
     const [speciesCode, setSpeciesCode] = useState('');
@@ -64,6 +73,8 @@ export default function NewLizardEntry() {
     const [currentForm, setCurrentForm] = useAtom(currentFormName);
     const [notification, setNotification] = useAtom(notificationText);
     const [environment, setEnvironment] = useAtom(appMode);
+    const toeCodeLoaded = useAtomValue(toeCodeLoadedAtom);
+    const lizardDataLoaded = useAtomValue(lizardDataLoadedAtom);
 
     const sexOptions = ['Male', 'Female', 'Unknown'];
 
@@ -92,20 +103,33 @@ export default function NewLizardEntry() {
         getAnswerFormDataFromFirestore();
         const fetchToeCodes = async () => {
             let toeCodesSnapshot;
-            try {
-                toeCodesSnapshot = await getDocFromCache(
-                    doc(db, 'TestToeClipCodes', currentData.site)
-                );
-                console.log('getting toe codes from test');
-                setSiteToeCodes(toeCodesSnapshot.data());
-            } catch (e) {
-                console.log('getting toe codes from live');
+            if (environment === 'test') {
+                console.log('retrieving toe codes in test mode...');
+                try {
+                    toeCodesSnapshot = await getDocFromCache(
+                        doc(db, 'TestToeClipCodes', currentData.site)
+                    );
+                    console.log('test toe codes for this site/array/species combination already exists, retrieving...');
+                    setSiteToeCodes(toeCodesSnapshot.data());
+                } catch (e) {
+                    console.log('test toe codes for this site/array/species combination does not already exist, pulling from live');
+                    toeCodesSnapshot = await getDocsFromCache(
+                        query(
+                            collection(db, 'ToeClipCodes'), 
+                            where('SiteCode', '==', currentData.site)
+                        )
+                    );
+                    setSiteToeCodes(toeCodesSnapshot.docs[0].data());
+                }
+            } else if (environment === 'live') {
+                console.log('retrieving toe codes in live mode...');
                 toeCodesSnapshot = await getDocsFromCache(
-                    query(collection(db, 'ToeClipCodes'), where('SiteCode', '==', currentData.site))
+                    query(
+                        collection(db, 'ToeClipCodes'),
+                        where('SiteCode', '==', currentData.site)
+                    )
                 );
                 setSiteToeCodes(toeCodesSnapshot.docs[0].data());
-                // console.log('retreiving toe codes from ' + currentData.site)
-                // console.log(toeCodes)
             }
         };
         fetchToeCodes();
@@ -123,11 +147,6 @@ export default function NewLizardEntry() {
                     toeClipCode !== 'SiteCode'
                 ) {
                     tempArray.push(toeClipCode);
-                    // setPreexistingToeClipCodes((preexistingToeClipCodes) => [
-                    //     ...preexistingToeClipCodes,
-                    //     toeClipCode,
-                    // ]);
-                    // console.log(toeClipCode)
                 }
             }
             setSpeciesToeCodes(tempArray);
@@ -206,9 +225,10 @@ export default function NewLizardEntry() {
             setCurrentForm
         );
     };
-
+    
     return (
-        <FormWrapper>
+        ((toeCodeLoaded && lizardDataLoaded)) ?
+            <FormWrapper>
             <Dropdown
                 value={speciesCode}
                 setValue={setSpeciesCode}
@@ -299,5 +319,17 @@ export default function NewLizardEntry() {
                 />
             )}
         </FormWrapper>
+        :
+        <div>
+            <ScaleLoader
+                loading={true}
+                color={'#8C1D40'}
+                width={8}
+                radius={15}
+                height={40}
+            />
+            <p className="mt-10 text-black text-xl">Loading lizard data...</p>
+        </div>
+        
     );
 }
