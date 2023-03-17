@@ -70,6 +70,8 @@ export default function Notification() {
         p-4
         rounded-2xl
         mt-1
+        border-[1px]
+        border-asu-maroon
       '
       variants={containerVariant}
       animate={controls}
