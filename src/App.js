@@ -51,6 +51,36 @@ function App() {
         else if (environment === 'live') setToeCodeLoaded(!toeCodeLoading);
     }, [toeCodeLoading, testtoeCodeLoading, lizardDataLoading]);
 
+    useEffect(() => {
+        answerSetSnapshot && console.log(`answer set loaded from ${answerSetSnapshot.metadata.fromCache ? 'cache' : 'server'}`);
+    }, [ answerSetSnapshot ])
+
+    useEffect(() => {
+        toeCodeSnapshot && console.log(`toe codes loaded from ${toeCodeSnapshot.metadata.fromCache ? 'cache' : 'server'}`);
+    }, [ toeCodeSnapshot ])
+
+    useEffect(() => {
+        testtoeCodeSnapshot && console.log(`test toe codes loaded from ${testtoeCodeSnapshot.metadata.fromCache ? 'cache' : 'server'}`);
+    }, [ testtoeCodeSnapshot ])
+
+    useEffect(() => {
+        lizardDataSnapshot && console.log(`lizard data loaded from ${lizardDataSnapshot.metadata.fromCache ? 'cache' : 'server'}`);
+    }, [ lizardDataSnapshot ])
+
+    useEffect(() => {
+        if (
+            answerSetSnapshot &&
+            toeCodeSnapshot &&
+            testtoeCodeSnapshot &&
+            lizardDataSnapshot
+        ) {
+            setNotification(`Answer set: ${answerSetSnapshot.metadata.fromCache ? 'cache' : 'server'},
+            Toe code: ${toeCodeSnapshot.metadata.fromCache ? 'cache' : 'server'},
+            Test toe codes: ${testtoeCodeSnapshot.metadata.fromCache ? 'cache' : 'server'},
+            Lizard Data: ${lizardDataSnapshot.metadata.fromCache ? 'cache' : 'server'}`)
+        }
+    }, [ answerSetSnapshot, toeCodeSnapshot, testtoeCodeSnapshot, lizardDataSnapshot])
+    
     return (
         <motion.div className="font-openSans  overflow-hidden  absolute  flex  flex-col  items-center  text-center  justify-start  inset-0  bg-white">
             <AnimatePresence mode="wait">
