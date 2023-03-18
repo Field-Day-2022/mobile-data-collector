@@ -262,7 +262,7 @@ export default function NewLizardEntry() {
             <NumberInput label="VTL (mm)" value={vtl} setValue={setVtl} placeholder="0.0 mm" />
             <SingleCheckbox prompt="Regen tail?" value={regenTail} setValue={setRegenTail} />
             <NumberInput
-                isDisabled={regenTail}
+                isDisabled={!regenTail}
                 label="OTL (mm)"
                 value={otl}
                 setValue={setOtl}
