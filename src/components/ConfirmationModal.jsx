@@ -59,11 +59,13 @@ export default function ConfirmationModal({
                         );
                     } else if (dataPoint === 'arthropodData') {
                         for (const arthropodEntry in data.arthropodData) {
-                            outputArray.push(
-                                <p key={arthropodEntry}>
-                                    {`${arthropodEntry}: ${data.arthropodData[arthropodEntry]}`}
-                                </p>
-                            );
+                            if (Number(data.arthropodData[arthropodEntry]) > 0) {
+                                outputArray.push(
+                                    <p key={arthropodEntry}>
+                                        {`${arthropodEntry.toUpperCase()}: ${data.arthropodData[arthropodEntry]}`}
+                                    </p>
+                                );
+                            }
                         }
                     }
                 }
