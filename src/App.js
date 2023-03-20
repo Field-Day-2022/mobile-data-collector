@@ -1,8 +1,27 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect } from 'react';
-import { addDoc, collection, setDoc, doc, getDocsFromCache, query, limit, orderBy, getDocsFromServer, where, onSnapshot, writeBatch } from 'firebase/firestore';
-import { useCollection, useCollectionData, useCollectionOnce, useDocument, useDocumentData } from 'react-firebase-hooks/firestore';
+import {
+    addDoc,
+    collection,
+    setDoc,
+    doc,
+    getDocsFromCache,
+    query,
+    limit,
+    orderBy,
+    getDocsFromServer,
+    where,
+    onSnapshot,
+    writeBatch,
+} from 'firebase/firestore';
+import {
+    useCollection,
+    useCollectionData,
+    useCollectionOnce,
+    useDocument,
+    useDocumentData,
+} from 'react-firebase-hooks/firestore';
 import CollectData from './pages/CollectData';
 import { db } from './index';
 import { useAtom } from 'jotai';
@@ -51,30 +70,30 @@ function App() {
         onSnapshot(doc(db, 'Metadata', 'LizardData'), (snapshot) => {
             // console.log(snapshot.data())
             if (snapshot.data().lastEditTime !== lastEditTime) {
-                console.log(`fetching lizard data from ${new Date(lastEditTime).toDateString()} to ${new Date(snapshot.data().lastEditTime).toDateString()}`)
+                console.log(
+                    `fetching lizard data from ${new Date(
+                        lastEditTime
+                    ).toDateString()} to ${new Date(snapshot.data().lastEditTime).toDateString()}`
+                );
                 setLizardDataLoaded(false);
                 checkForServerData(lastEditTime, snapshot.data().lastEditTime);
-                setLastEditTime(snapshot.data().lastEditTime)
+                setLastEditTime(snapshot.data().lastEditTime);
             }
-        })
-    }, [])
+        });
+    }, []);
 
     const latestLizardEntryInCacheTime = async () => {
         try {
             const lizardDataCache = await getDocsFromCache(
-                query(
-                    collection(db, 'LizardData'),
-                    orderBy('dateTime', 'desc'),
-                    limit(1)
-                )
-            )
-            console.log(lizardDataCache)
-            const lizardEntryTime = new Date(lizardDataCache.docs[0].data().dateTime)
+                query(collection(db, 'LizardData'), orderBy('dateTime', 'desc'), limit(1))
+            );
+            console.log(lizardDataCache);
+            const lizardEntryTime = new Date(lizardDataCache.docs[0].data().dateTime);
             return lizardEntryTime.getTime();
         } catch (e) {
             return 0; // get all lizard data
         }
-    }
+    };
 
     const downloadLatestLizardDataFromServer = async (currentLizardEntryTime) => {
         const latestDateInCache = new Date(currentLizardEntryTime);
@@ -84,21 +103,20 @@ function App() {
                 // TODO: change lizard data dateTime to epoch time so that this operation works (make sure it works in the webUI table sorting as well)
                 where('dateTime', '>=', latestDateInCache)
             )
-        )
-        console.log(incomingLizardData)
-    }
+        );
+        console.log(incomingLizardData);
+    };
 
     const checkForServerData = async (latestClientTime, latestServerTime) => {
         console.log(`comparing ${latestClientTime} and ${latestServerTime}`);
-        if (await latestLizardEntryInCacheTime() < latestServerTime) {
+        if ((await latestLizardEntryInCacheTime()) < latestServerTime) {
             await downloadLatestLizardDataFromServer(latestClientTime);
             setLizardDataLoaded(true);
         }
-    }
+    };
 
     // useEffect(() => {
 
-    
     //     if (lizardDataMetadata) {
     //         console.log(lizardDataMetadata)
     //         checkForServerData();
@@ -116,15 +134,26 @@ function App() {
         while (true) {
             const batch = writeBatch(db);
             for (let j = 0; j < 500; j++) {
-                const lastEdit = new Date(lizardColl.docs[documentCounter].data().dateTime).getTime();
-                batch.set(doc(db, 'TestLizardData', `${lizardColl.docs[documentCounter].data().site}${lizardColl.docs[documentCounter].data().taxa}${new Date(lizardColl.docs[documentCounter].data().dateTime).getTime()}`), {
-                    ...lizardColl.docs[documentCounter].data(),
-                    lastEdit: lastEdit || '',
-                })
+                const lastEdit = new Date(
+                    lizardColl.docs[documentCounter].data().dateTime
+                ).getTime();
+                batch.set(
+                    doc(
+                        db,
+                        'TestLizardData',
+                        `${lizardColl.docs[documentCounter].data().site}${
+                            lizardColl.docs[documentCounter].data().taxa
+                        }${new Date(lizardColl.docs[documentCounter].data().dateTime).getTime()}`
+                    ),
+                    {
+                        ...lizardColl.docs[documentCounter].data(),
+                        lastEdit: lastEdit || '',
+                    }
+                );
                 if (documentCounter === 7756) {
                     leaveLoop = true;
                     break;
-                }  else {
+                } else {
                     documentCounter++;
                 }
             }
@@ -137,18 +166,18 @@ function App() {
         //     await batchArray[i].commit();
         //     console.log(`finished with batch ${i}`)
         // }
-        console.log("complete")
-    }
+        console.log('complete');
+    };
 
     useEffect(() => {
         if (lizardDataSnapshot) changeLizardDataTimesToEpochTime();
-    }, [lizardDataSnapshot])
+    }, [lizardDataSnapshot]);
 
     useEffect(() => {
         // setLizardDataLoaded(!lizardDataLoading);
         if (environment === 'test') setToeCodeLoaded(!testtoeCodeLoading);
         else if (environment === 'live') setToeCodeLoaded(!toeCodeLoading);
-    }, [toeCodeLoading, testtoeCodeLoading ]);
+    }, [toeCodeLoading, testtoeCodeLoading]);
 
     // useEffect(() => {
     //     answerSetSnapshot &&
