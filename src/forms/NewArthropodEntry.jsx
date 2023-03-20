@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useAtom } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 
 import NumberInput from '../components/NumberInput';
 import Dropdown from '../components/Dropdown';
@@ -10,8 +10,8 @@ import Button from '../components/Button';
 import ConfirmationModal from '../components/ConfirmationModal';
 import PlusMinusButtons from '../components/PlusMinusButtons';
 
-import { currentFormName, currentSessionData } from '../utils/jotai';
-import { updateData } from '../utils/functions';
+import { currentFormName, currentSessionData, editingPrevious } from '../utils/jotai';
+import { updateData, updatePreexistingArthropodData } from '../utils/functions';
 import {
     collection,
     setDoc,
@@ -34,6 +34,7 @@ export default function NewArthropodEntry() {
 
     const [currentData, setCurrentData] = useAtom(currentSessionData);
     const [currentForm, setCurrentForm] = useAtom(currentFormName);
+    const isEditingPrevious = useAtomValue(editingPrevious);
 
     // todo: input validation
 
@@ -64,19 +65,34 @@ export default function NewArthropodEntry() {
 
     const completeCapture = () => {
         const date = new Date();
-        updateData(
-            'arthropod',
-            {
-                trap,
-                predator,
-                arthropodData,
-                comments,
-                dateTime: date.toISOString(),
-            },
-            setCurrentData,
-            currentData,
-            setCurrentForm
-        );
+        if (isEditingPrevious) {
+            updatePreexistingArthropodData(
+                {
+                    trap,
+                    predator,
+                    arthropodData,
+                    comments,
+                    dateTime: date.toISOString(),
+                },
+                setCurrentData,
+                currentData,
+                setCurrentForm
+            );
+        } else {
+            updateData(
+                'arthropod',
+                {
+                    trap,
+                    predator,
+                    arthropodData,
+                    comments,
+                    dateTime: date.toISOString(),
+                },
+                setCurrentData,
+                currentData,
+                setCurrentForm
+            );
+        }
     };
 
     return (

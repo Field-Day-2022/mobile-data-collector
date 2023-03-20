@@ -18,6 +18,28 @@ export const updateData = (species, incomingData, setCurrentData, currentData, s
     setCurrentForm('New Data Entry');
 };
 
+export const updatePreexistingArthropodData = 
+(
+    incomingData, 
+    setCurrentData, 
+    currentData, 
+    setCurrentForm
+) => {
+    let tempArthropod = currentData.arthropod;
+    for (const arthropodEntry of tempArthropod) {
+        if (arthropodEntry.trap === incomingData.trap) {
+            for (const arthropodSpecies in arthropodEntry.arthropodData) {
+                arthropodEntry.arthropodData[arthropodSpecies] += incomingData.arthropodData[arthropodSpecies];
+            }
+        }
+    }
+    setCurrentData({
+        ...currentData,
+        arthropod: tempArthropod,
+    });
+    setCurrentForm('New Data Entry');
+}
+
 export const numReadsFirstTimeUser = async () => {
     const collectionArray = ['GatewayData', 'SanPedroData', 'VirginRiverData'];
     let netCount = 0;
