@@ -66,6 +66,7 @@ export default function NewLizardEntry() {
         dead: '',
         comments: '',
     });
+    const [currentToeClipCodesSnapshot, setCurrentToeClipCodesSnapshot] = useState();
 
     // TODO: add input validation logic for svl, vtl, otl, and mass
 
@@ -106,11 +107,18 @@ export default function NewLizardEntry() {
             if (environment === 'test') {
                 console.log('retrieving toe codes in test mode...');
                 try {
-                    toeCodesSnapshot = await getDocFromCache(
-                        doc(db, 'TestToeClipCodes', currentData.site)
+                    toeCodesSnapshot = await getDocsFromCache(
+                        query(
+                            collection(db, 'TestToeClipCodes'),
+                            where('SiteCode', '==', currentData.site)
+                        )
                     );
-                    console.log('test toe codes for this site/array/species combination already exists, retrieving...');
-                    setSiteToeCodes(toeCodesSnapshot.data());
+                    if (toeCodesSnapshot.empty()) throw Error;
+                    else {
+                        console.log('test toe codes for this site/array/species combination already exists, retrieving...');
+                        console.log(toeCodesSnapshot.docs[0]);
+                        setSiteToeCodes(toeCodesSnapshot.docs[0].data());
+                    }
                 } catch (e) {
                     console.log('test toe codes for this site/array/species combination does not already exist, pulling from live');
                     toeCodesSnapshot = await getDocsFromCache(
@@ -131,6 +139,7 @@ export default function NewLizardEntry() {
                 );
                 setSiteToeCodes(toeCodesSnapshot.docs[0].data());
             }
+            setCurrentToeClipCodesSnapshot(toeCodesSnapshot.docs[0]);
         };
         fetchToeCodes();
     }, []);
@@ -160,7 +169,7 @@ export default function NewLizardEntry() {
     const sendToeCodeDataToFirestore = async () => {
         let toeCodeCollection = 'TestToeClipCodes';
         if (environment === 'live') toeCodeCollection = 'ToeClipCodes';
-        await setDoc(doc(db, toeCodeCollection, currentData.site), updatedToeCodes);
+        await setDoc(doc(db, toeCodeCollection, currentToeClipCodesSnapshot.id), updatedToeCodes);
         setNotification(`Successfully set toe clip code entry to ${toeCodeCollection}`);
     };
 
