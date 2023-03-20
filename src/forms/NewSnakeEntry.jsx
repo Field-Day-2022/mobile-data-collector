@@ -41,6 +41,7 @@ export default function NewSnakeEntry() {
         sex: '',
         comments: '',
     });
+    const [noCapture, setNoCapture] = useState(false);
 
     const [currentData, setCurrentData] = useAtom(currentSessionData);
     const [currentForm, setCurrentForm] = useAtom(currentFormName);
@@ -71,6 +72,30 @@ export default function NewSnakeEntry() {
         getAnswerFormDataFromFirestore();
     }, []);
 
+    const setFormDataToNoCapture = () => {
+        setSex('N/A');
+        setMass('N/A');
+        setVtl('N/A');
+        setSvl('N/A');
+        setIsDead('N/A');
+    }
+
+    const setFormDataToBlank = () => {
+        setSex('');
+        setMass('');
+        setVtl('');
+        setSvl('');
+        setIsDead('');
+    }
+
+    useEffect(() => {
+        if (noCapture) {
+            setFormDataToNoCapture();
+        } else {
+            setFormDataToBlank();
+        }
+    }, [noCapture])
+
     const completeCapture = () => {
         const date = new Date();
         updateData(
@@ -85,6 +110,7 @@ export default function NewSnakeEntry() {
                 isDead,
                 comments,
                 dateTime: date.toISOString(),
+                noCapture,
             },
             setCurrentData,
             currentData,
@@ -123,6 +149,11 @@ export default function NewSnakeEntry() {
 
     return (
         <FormWrapper>
+            <SingleCheckbox 
+                prompt="No snakes to record?"
+                value={noCapture}
+                setValue={setNoCapture}
+            />
             <Dropdown
                 value={speciesCode}
                 setValue={setSpeciesCode}
@@ -165,7 +196,7 @@ export default function NewSnakeEntry() {
                 placeholder="Sex"
                 options={sexOptions}
             />
-            <SingleCheckbox prompt="Is it dead?" value={isDead} setValue={setIsDead} />
+            {!noCapture && <SingleCheckbox prompt="Is it dead?" value={isDead} setValue={setIsDead} />}
             <TextInput
                 prompt="Comments"
                 placeholder="any thoughts?"

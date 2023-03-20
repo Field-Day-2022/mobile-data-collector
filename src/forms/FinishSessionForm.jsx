@@ -200,6 +200,7 @@ export const FinishSessionForm = () => {
             unki: 'N/A',
             vtlMm: 'N/A',
             year: 'N/A',
+            noCapture: 'N/A',
         };
         let dataArray = [];
         if (currentData.amphibian) {
@@ -290,6 +291,7 @@ export const FinishSessionForm = () => {
                 obj.taxa = 'Snake';
                 obj.vtlMm = dataEntry.vtl;
                 obj.year = year;
+                obj.noCapture = dataEntry.noCapture;
                 dataArray.push(obj);
             }
         }
