@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect } from 'react';
-import { collection } from 'firebase/firestore';
-import { useCollection, useCollectionData } from 'react-firebase-hooks/firestore';
+import { addDoc, collection, setDoc, doc, getDocsFromCache, query, limit, orderBy, getDocsFromServer, where, onSnapshot, writeBatch } from 'firebase/firestore';
+import { useCollection, useCollectionData, useCollectionOnce, useDocument, useDocumentData } from 'react-firebase-hooks/firestore';
 import CollectData from './pages/CollectData';
 import { db } from './index';
 import { useAtom } from 'jotai';
@@ -13,6 +13,7 @@ import {
     toeCodeLoadedAtom,
     lizardDataLoadedAtom,
     appMode,
+    lizardLastEditTime,
 } from './utils/jotai';
 import Home from './pages/Home';
 import PastSessionData from './pages/PastSessionData';
@@ -28,6 +29,7 @@ function App() {
     const [toeCodeLoaded, setToeCodeLoaded] = useAtom(toeCodeLoadedAtom);
     const [lizardDataLoaded, setLizardDataLoaded] = useAtom(lizardDataLoadedAtom);
     const [environment, setEnvironment] = useAtom(appMode);
+    const [lastEditTime, setLastEditTime] = useAtom(lizardLastEditTime);
 
     const [answerSet, answerSetLoading, answerSetError, answerSetSnapshot] = useCollectionData(
         collection(db, 'AnswerSet')
@@ -46,55 +48,159 @@ function App() {
     );
 
     useEffect(() => {
-        setLizardDataLoaded(!lizardDataLoading);
+        onSnapshot(doc(db, 'Metadata', 'LizardData'), (snapshot) => {
+            // console.log(snapshot.data())
+            if (snapshot.data().lastEditTime !== lastEditTime) {
+                console.log(`fetching lizard data from ${new Date(lastEditTime).toDateString()} to ${new Date(snapshot.data().lastEditTime).toDateString()}`)
+                setLizardDataLoaded(false);
+                checkForServerData(lastEditTime, snapshot.data().lastEditTime);
+                setLastEditTime(snapshot.data().lastEditTime)
+            }
+        })
+    }, [])
+
+    const latestLizardEntryInCacheTime = async () => {
+        try {
+            const lizardDataCache = await getDocsFromCache(
+                query(
+                    collection(db, 'LizardData'),
+                    orderBy('dateTime', 'desc'),
+                    limit(1)
+                )
+            )
+            console.log(lizardDataCache)
+            const lizardEntryTime = new Date(lizardDataCache.docs[0].data().dateTime)
+            return lizardEntryTime.getTime();
+        } catch (e) {
+            return 0; // get all lizard data
+        }
+    }
+
+    const downloadLatestLizardDataFromServer = async (currentLizardEntryTime) => {
+        const latestDateInCache = new Date(currentLizardEntryTime);
+        const incomingLizardData = await getDocsFromServer(
+            query(
+                collection(db, 'LizardData'),
+                // TODO: change lizard data dateTime to epoch time so that this operation works (make sure it works in the webUI table sorting as well)
+                where('dateTime', '>=', latestDateInCache)
+            )
+        )
+        console.log(incomingLizardData)
+    }
+
+    const checkForServerData = async (latestClientTime, latestServerTime) => {
+        console.log(`comparing ${latestClientTime} and ${latestServerTime}`);
+        if (await latestLizardEntryInCacheTime() < latestServerTime) {
+            await downloadLatestLizardDataFromServer(latestClientTime);
+            setLizardDataLoaded(true);
+        }
+    }
+
+    // useEffect(() => {
+
+    
+    //     if (lizardDataMetadata) {
+    //         console.log(lizardDataMetadata)
+    //         checkForServerData();
+    //     }
+
+    // }, [ lizardDataMetadata ])
+
+    const changeLizardDataTimesToEpochTime = async () => {
+        console.log('initiating...');
+        const lizardColl = await getDocsFromCache(collection(db, 'LizardData'));
+        // const batchArray = [];
+        // const lizardColl = { size: 7000 }
+        let documentCounter = 0;
+        let leaveLoop = false;
+        while (true) {
+            const batch = writeBatch(db);
+            for (let j = 0; j < 500; j++) {
+                const lastEdit = new Date(lizardColl.docs[documentCounter].data().dateTime).getTime();
+                batch.set(doc(db, 'TestLizardData', `${lizardColl.docs[documentCounter].data().site}${lizardColl.docs[documentCounter].data().taxa}${new Date(lizardColl.docs[documentCounter].data().dateTime).getTime()}`), {
+                    ...lizardColl.docs[documentCounter].data(),
+                    lastEdit: lastEdit || '',
+                })
+                if (documentCounter === 7756) {
+                    leaveLoop = true;
+                    break;
+                }  else {
+                    documentCounter++;
+                }
+            }
+            console.log(`writing batch to doc number ${documentCounter}`);
+            await batch.commit();
+            if (leaveLoop) break;
+        }
+        // for (let i = 0; i < batchArray.length; i++) {
+        //     console.log(`uploading batch ${i}`);
+        //     await batchArray[i].commit();
+        //     console.log(`finished with batch ${i}`)
+        // }
+        console.log("complete")
+    }
+
+    useEffect(() => {
+        if (lizardDataSnapshot) changeLizardDataTimesToEpochTime();
+    }, [lizardDataSnapshot])
+
+    useEffect(() => {
+        // setLizardDataLoaded(!lizardDataLoading);
         if (environment === 'test') setToeCodeLoaded(!testtoeCodeLoading);
         else if (environment === 'live') setToeCodeLoaded(!toeCodeLoading);
-    }, [toeCodeLoading, testtoeCodeLoading, lizardDataLoading]);
+    }, [toeCodeLoading, testtoeCodeLoading ]);
 
-    useEffect(() => {
-        answerSetSnapshot &&
-            console.log(
-                `answer set loaded from ${
-                    answerSetSnapshot.metadata.fromCache ? 'cache' : 'server'
-                }`
-            );
-    }, [answerSetSnapshot]);
+    // useEffect(() => {
+    //     answerSetSnapshot &&
+    //         console.log(
+    //             `answer set loaded from ${
+    //                 answerSetSnapshot.metadata.fromCache ? 'cache' : 'server'
+    //             }`
+    //         );
+    // }, [answerSetSnapshot]);
 
-    useEffect(() => {
-        toeCodeSnapshot &&
-            console.log(
-                `toe codes loaded from ${toeCodeSnapshot.metadata.fromCache ? 'cache' : 'server'}`
-            );
-    }, [toeCodeSnapshot]);
+    // useEffect(() => {
+    //     toeCodeSnapshot &&
+    //         console.log(
+    //             `toe codes loaded from ${toeCodeSnapshot.metadata.fromCache ? 'cache' : 'server'}`
+    //         );
+    // }, [toeCodeSnapshot]);
 
-    useEffect(() => {
-        testtoeCodeSnapshot &&
-            console.log(
-                `test toe codes loaded from ${
-                    testtoeCodeSnapshot.metadata.fromCache ? 'cache' : 'server'
-                }`
-            );
-    }, [testtoeCodeSnapshot]);
+    // useEffect(() => {
+    //     testtoeCodeSnapshot &&
+    //         console.log(
+    //             `test toe codes loaded from ${
+    //                 testtoeCodeSnapshot.metadata.fromCache ? 'cache' : 'server'
+    //             }`
+    //         );
+    //     if (testtoeCodeSnapshot) {
+    //         // console.log(testtoeCodeSnapshot)
+    //         testtoeCodeSnapshot.docs.forEach(document => {
+    //             // console.log(document.data())
+    //             // console.log(document.metadata)
+    //         })
+    //     }
+    // }, [testtoeCodeSnapshot]);
 
-    useEffect(() => {
-        lizardDataSnapshot &&
-            console.log(
-                `lizard data loaded from ${
-                    lizardDataSnapshot.metadata.fromCache ? 'cache' : 'server'
-                }`
-            );
-    }, [lizardDataSnapshot]);
+    // useEffect(() => {
+    //     lizardDataSnapshot &&
+    //         console.log(
+    //             `lizard data loaded from ${
+    //                 lizardDataSnapshot.metadata.fromCache ? 'cache' : 'server'
+    //             }`
+    //         );
+    // }, [lizardDataSnapshot]);
 
-    useEffect(() => {
-        if (answerSetSnapshot && toeCodeSnapshot && testtoeCodeSnapshot && lizardDataSnapshot) {
-            setNotification(`Answer set: ${
-                answerSetSnapshot.metadata.fromCache ? 'cache' : 'server'
-            },
-            Toe code: ${toeCodeSnapshot.metadata.fromCache ? 'cache' : 'server'},
-            Test toe codes: ${testtoeCodeSnapshot.metadata.fromCache ? 'cache' : 'server'},
-            Lizard Data: ${lizardDataSnapshot.metadata.fromCache ? 'cache' : 'server'}`);
-        }
-    }, [answerSetSnapshot, toeCodeSnapshot, testtoeCodeSnapshot, lizardDataSnapshot]);
+    // useEffect(() => {
+    //     if (answerSetSnapshot && toeCodeSnapshot && testtoeCodeSnapshot && lizardDataSnapshot) {
+    //         setNotification(`Answer set: ${
+    //             answerSetSnapshot.metadata.fromCache ? 'cache' : 'server'
+    //         },
+    //         Toe code: ${toeCodeSnapshot.metadata.fromCache ? 'cache' : 'server'},
+    //         Test toe codes: ${testtoeCodeSnapshot.metadata.fromCache ? 'cache' : 'server'},
+    //         Lizard Data: ${lizardDataSnapshot.metadata.fromCache ? 'cache' : 'server'}`);
+    //     }
+    // }, [answerSetSnapshot, toeCodeSnapshot, testtoeCodeSnapshot, lizardDataSnapshot]);
 
     return (
         <motion.div className="font-openSans  overflow-hidden  absolute  flex  flex-col  items-center  text-center  justify-start  inset-0  bg-white">

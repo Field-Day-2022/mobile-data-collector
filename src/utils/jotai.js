@@ -32,3 +32,5 @@ export const appMode = atomWithStorage('appMode', 'test');
 export const toeCodeLoadedAtom = atom(false);
 
 export const lizardDataLoadedAtom = atom(false);
+
+export const lizardLastEditTime = atomWithStorage('lizardLastEditTime', 0);
