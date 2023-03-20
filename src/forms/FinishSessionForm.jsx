@@ -201,6 +201,7 @@ export const FinishSessionForm = () => {
             vtlMm: 'N/A',
             year: 'N/A',
             noCapture: 'N/A',
+            lastEdit: 'N/A',
         };
         let dataArray = [];
         if (currentData.amphibian) {
@@ -215,6 +216,7 @@ export const FinishSessionForm = () => {
                 const obj = structuredClone(dataObjTemplate);
                 obj.array = currentData.array;
                 obj.dateTime = dataEntry.dateTime;
+                obj.lastEdit = entryDate.getTime();
                 obj.dead = dataEntry.isDead;
                 obj.fenceTrap = dataEntry.trap;
                 obj.genus = genus;
@@ -243,6 +245,7 @@ export const FinishSessionForm = () => {
                 const obj = structuredClone(dataObjTemplate);
                 obj.array = currentData.array;
                 obj.dateTime = dataEntry.dateTime;
+                obj.lastEdit = entryDate.getTime();
                 obj.dead = dataEntry.isDead;
                 obj.fenceTrap = dataEntry.trap;
                 obj.genus = genus;
@@ -278,6 +281,7 @@ export const FinishSessionForm = () => {
                 obj.array = currentData.array;
                 obj.comments = dataEntry.comments;
                 obj.dateTime = dataEntry.dateTime;
+                obj.lastEdit = entryDate.getTime();
                 obj.dead = dataEntry.isDead;
                 obj.fenceTrap = dataEntry.trap;
                 obj.genus = genus;
@@ -312,6 +316,7 @@ export const FinishSessionForm = () => {
                 obj.site = currentData.site;
                 obj.array = currentData.array;
                 obj.dateTime = dataEntry.dateTime;
+                obj.lastEdit = entryDate.getTime();
                 obj.sessionDateTime = currentData.sessionDateTime;
                 obj.year = year;
                 obj.comments = currentData.comments;
@@ -335,6 +340,7 @@ export const FinishSessionForm = () => {
                 const obj = structuredClone(dataObjTemplate);
                 obj.array = currentData.array;
                 obj.dateTime = dataEntry.dateTime;
+                obj.lastEdit = entryDate.getTime();
                 obj.fenceTrap = dataEntry.trap;
                 obj.genus = genus;
                 obj.sessionDateTime = currentData.sessionDateTime;
