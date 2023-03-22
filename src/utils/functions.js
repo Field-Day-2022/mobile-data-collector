@@ -7,6 +7,10 @@ import {
     writeBatch,
     doc,
     getDocs,
+    getDocsFromCache,
+    getDocsFromServer,
+    orderBy,
+    limit,
 } from 'firebase/firestore';
 import { db } from '../index';
 
@@ -104,4 +108,56 @@ export const populateLizardCollection = async () => {
             numOps = 0;
         }
     }
+};
+
+export const changeLizardDataTimesToEpochTime = async () => {
+    console.log('initiating...');
+    const lizardColl = await getDocsFromCache(collection(db, 'LizardData'));
+    let documentCounter = 0;
+    let leaveLoop = false;
+    while (true) {
+        const batch = writeBatch(db);
+        for (let j = 0; j < 500; j++) {
+            const lastEdit = new Date(lizardColl.docs[documentCounter].data().dateTime).getTime();
+            batch.set(
+                doc(
+                    db,
+                    'TestLizardData',
+                    `${lizardColl.docs[documentCounter].data().site}${lizardColl.docs[documentCounter].data().taxa}${new Date(lizardColl.docs[documentCounter].data().dateTime).getTime()}`
+                ),
+                {
+                    ...lizardColl.docs[documentCounter].data(),
+                    lastEdit: lastEdit || '',
+                }
+            );
+            if (documentCounter === 7756) {
+                leaveLoop = true;
+                break;
+            } else {
+                documentCounter++;
+            }
+        }
+        console.log(`writing batch to doc number ${documentCounter}`);
+        await batch.commit();
+        if (leaveLoop) break;
+    }
+    console.log('complete');
+};
+
+export const checkForServerData = async (latestClientTime, latestServerTime, setLizardDataLoaded) => {
+    console.log(`comparing ${latestClientTime} and ${latestServerTime}`);
+    if (latestClientTime < latestServerTime) {
+        await downloadLatestLizardDataFromServer(latestClientTime);
+        setLizardDataLoaded(true);
+    }
+};
+
+export const downloadLatestLizardDataFromServer = async (latestClientTime) => {
+    const incomingLizardData = await getDocsFromServer(
+        query(
+            collection(db, 'LizardData'),
+            where('dateTime', '>=', latestClientTime)
+        )
+    );
+    console.log(incomingLizardData);
 };
