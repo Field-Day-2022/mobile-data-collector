@@ -123,7 +123,9 @@ export const changeLizardDataTimesToEpochTime = async () => {
                 doc(
                     db,
                     'TestLizardData',
-                    `${lizardColl.docs[documentCounter].data().site}${lizardColl.docs[documentCounter].data().taxa}${new Date(lizardColl.docs[documentCounter].data().dateTime).getTime()}`
+                    `${lizardColl.docs[documentCounter].data().site}${
+                        lizardColl.docs[documentCounter].data().taxa
+                    }${new Date(lizardColl.docs[documentCounter].data().dateTime).getTime()}`
                 ),
                 {
                     ...lizardColl.docs[documentCounter].data(),
@@ -144,7 +146,11 @@ export const changeLizardDataTimesToEpochTime = async () => {
     console.log('complete');
 };
 
-export const checkForServerData = async (latestClientTime, latestServerTime, setLizardDataLoaded) => {
+export const checkForServerData = async (
+    latestClientTime,
+    latestServerTime,
+    setLizardDataLoaded
+) => {
     console.log(`comparing ${latestClientTime} and ${latestServerTime}`);
     if (latestClientTime < latestServerTime) {
         await downloadLatestLizardDataFromServer(latestClientTime);
@@ -154,10 +160,7 @@ export const checkForServerData = async (latestClientTime, latestServerTime, set
 
 export const downloadLatestLizardDataFromServer = async (latestClientTime) => {
     const incomingLizardData = await getDocsFromServer(
-        query(
-            collection(db, 'LizardData'),
-            where('dateTime', '>=', latestClientTime)
-        )
+        query(collection(db, 'LizardData'), where('dateTime', '>=', latestClientTime))
     );
     console.log(incomingLizardData);
 };
