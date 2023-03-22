@@ -11,6 +11,7 @@ import {
     getDocsFromServer,
     orderBy,
     limit,
+    setDoc,
 } from 'firebase/firestore';
 import { db } from '../index';
 
@@ -163,4 +164,150 @@ export const downloadLatestLizardDataFromServer = async (latestClientTime) => {
         query(collection(db, 'LizardData'), where('dateTime', '>=', latestClientTime))
     );
     console.log(incomingLizardData);
+};
+
+export const getAnswerFormDataFromFirestore = async (currentData, setLizardSpeciesList, setFenceTraps) => {
+    const speciesSnapshot = await getDocsFromCache(
+        query(
+            collection(db, 'AnswerSet'),
+            where('set_name', '==', `${currentData.project}LizardSpecies`)
+        )
+    );
+    let speciesCodesArray = [];
+    for (const answer of speciesSnapshot.docs[0].data().answers) {
+        speciesCodesArray.push(answer.primary);
+    }
+    setLizardSpeciesList(speciesCodesArray);
+    const fenceTrapsSnapshot = await getDocsFromCache(
+        query(collection(db, 'AnswerSet'), where('set_name', '==', 'Fence Traps'))
+    );
+    let fenceTrapsArray = [];
+    for (const answer of fenceTrapsSnapshot.docs[0].data().answers) {
+        fenceTrapsArray.push(answer.primary);
+    }
+    setFenceTraps(fenceTrapsArray);
+};
+
+export const fetchToeCodes = async (currentData, environment, setSiteToeCodes, setCurrentToeClipCodesSnapshot) => {
+    let toeCodesSnapshot;
+    if (environment === 'test') {
+        console.log('retrieving toe codes in test mode...');
+        try {
+            toeCodesSnapshot = await getDocsFromCache(
+                query(
+                    collection(db, 'TestToeClipCodes'),
+                    where('SiteCode', '==', currentData.site)
+                )
+            );
+            if (toeCodesSnapshot.empty()) throw Error;
+            else {
+                console.log('test toe codes for this site/array/species combination already exists, retrieving...');
+                console.log(toeCodesSnapshot.docs[0]);
+                setSiteToeCodes(toeCodesSnapshot.docs[0].data());
+            }
+        } catch (e) {
+            console.log('test toe codes for this site/array/species combination does not already exist, pulling from live');
+            toeCodesSnapshot = await getDocsFromCache(
+                query(
+                    collection(db, 'ToeClipCodes'), 
+                    where('SiteCode', '==', currentData.site)
+                )
+            );
+            setSiteToeCodes(toeCodesSnapshot.docs[0].data());
+        }
+    } else if (environment === 'live') {
+        console.log('retrieving toe codes in live mode...');
+        toeCodesSnapshot = await getDocsFromCache(
+            query(
+                collection(db, 'ToeClipCodes'),
+                where('SiteCode', '==', currentData.site)
+            )
+        );
+        setSiteToeCodes(toeCodesSnapshot.docs[0].data());
+    }
+    setCurrentToeClipCodesSnapshot(toeCodesSnapshot.docs[0]);
+};
+
+export const sendToeCodeDataToFirestore = async (
+    environment, 
+    currentToeClipCodesSnapshot,
+    updatedToeCodes,
+    setNotification
+) => {
+    let toeCodeCollection = 'TestToeClipCodes';
+    if (environment === 'live') toeCodeCollection = 'ToeClipCodes';
+    await setDoc(doc(db, toeCodeCollection, currentToeClipCodesSnapshot.id), updatedToeCodes);
+    setNotification(`Successfully set toe clip code entry to ${toeCodeCollection}`);
+};
+
+export const verifyLizardForm = (
+    sex,
+    massGrams,
+    speciesCode,
+    trap,
+    setNotification,
+    setConfirmationModalIsOpen,
+    setErrors
+) => {
+    let tempErrors = {
+        speciesCode: '',
+        fenceTrap: '',
+        recapture: '',
+        toeCode: '',
+        svl: '',
+        vtl: '',
+        regenTail: '',
+        otl: '',
+        hatchling: '',
+        mass: '',
+        sex: '',
+        dead: '',
+        comments: '',
+    };
+    if (sex === '') tempErrors.sex = 'Required';
+    if (massGrams === '') tempErrors.mass = 'Required';
+    if (speciesCode === '') tempErrors.speciesCode = 'Required';
+    if (trap === '') tempErrors.fenceTrap = 'Required';
+    let errorExists = false;
+    for (const key in tempErrors) {
+        if (tempErrors[key] !== '') errorExists = true;
+    }
+    if (errorExists) {
+        setNotification('Errors in form');
+    } else {
+        setNotification('Form is valid');
+        setConfirmationModalIsOpen(true);
+    }
+    setErrors(tempErrors);
+    console.log(tempErrors);
+    console.log([trap, speciesCode]);
+};
+
+export const completeLizardCapture = (
+    environment,
+    currentToeClipCodesSnapshot,
+    updatedToeCodes,
+    setNotification,
+    setCurrentData,
+    currentData,
+    setCurrentForm,
+    lizardData,
+) => {
+    const date = new Date();
+    sendToeCodeDataToFirestore(
+        environment,
+        currentToeClipCodesSnapshot,
+        updatedToeCodes,
+        setNotification,
+    );
+    updateData(
+        'lizard',
+        {
+            ...lizardData,
+            dateTime: date.toISOString(),
+        },
+        setCurrentData,
+        currentData,
+        setCurrentForm
+    );
 };
