@@ -235,12 +235,7 @@ export const verifyLizardForm = (
     console.log([trap, speciesCode]);
 };
 
-export const completeLizardCapture = (
-    setCurrentData,
-    currentData,
-    setCurrentForm,
-    lizardData
-) => {
+export const completeLizardCapture = (setCurrentData, currentData, setCurrentForm, lizardData) => {
     const date = new Date();
     updateData(
         'lizard',
