@@ -24,7 +24,7 @@ export default function NumberInput({
                         if (e.target.value >= 0 && !isNaN(e.target.value) && decimal.length <= 1) {
                             if (
                                 inputValidation === 'vtl' &&
-                                Number(e.target.value) < Number(upperBound)
+                                Number(e.target.value) <= Number(upperBound)
                             ) {
                                 setValue(e.target.value);
                             } else if (inputValidation === undefined) {
@@ -35,7 +35,7 @@ export default function NumberInput({
                         if (e.target.value >= 0 && !isNaN(e.target.value)) {
                             if (
                                 inputValidation === 'vtl' &&
-                                Number(e.target.value) < Number(upperBound)
+                                Number(e.target.value) <= Number(upperBound)
                             ) {
                                 setValue(e.target.value);
                             } else if (inputValidation === undefined) {

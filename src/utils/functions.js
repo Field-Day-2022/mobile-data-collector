@@ -7,6 +7,11 @@ import {
     writeBatch,
     doc,
     getDocs,
+    getDocsFromCache,
+    getDocsFromServer,
+    orderBy,
+    limit,
+    setDoc,
 } from 'firebase/firestore';
 import { db } from '../index';
 
@@ -14,6 +19,28 @@ export const updateData = (species, incomingData, setCurrentData, currentData, s
     setCurrentData({
         ...currentData,
         [species]: [...currentData[species], incomingData],
+    });
+    setCurrentForm('New Data Entry');
+};
+
+export const updatePreexistingArthropodData = (
+    incomingData,
+    setCurrentData,
+    currentData,
+    setCurrentForm
+) => {
+    let tempArthropod = currentData.arthropod;
+    for (const arthropodEntry of tempArthropod) {
+        if (arthropodEntry.trap === incomingData.trap) {
+            for (const arthropodSpecies in arthropodEntry.arthropodData) {
+                arthropodEntry.arthropodData[arthropodSpecies] +=
+                    incomingData.arthropodData[arthropodSpecies];
+            }
+        }
+    }
+    setCurrentData({
+        ...currentData,
+        arthropod: tempArthropod,
     });
     setCurrentForm('New Data Entry');
 };
@@ -82,4 +109,142 @@ export const populateLizardCollection = async () => {
             numOps = 0;
         }
     }
+};
+
+export const changeLizardDataTimesToEpochTime = async () => {
+    console.log('initiating...');
+    const lizardColl = await getDocsFromCache(collection(db, 'LizardData'));
+    let documentCounter = 0;
+    let leaveLoop = false;
+    while (true) {
+        const batch = writeBatch(db);
+        for (let j = 0; j < 500; j++) {
+            const lastEdit = new Date(lizardColl.docs[documentCounter].data().dateTime).getTime();
+            batch.set(
+                doc(
+                    db,
+                    'TestLizardData',
+                    `${lizardColl.docs[documentCounter].data().site}${
+                        lizardColl.docs[documentCounter].data().taxa
+                    }${new Date(lizardColl.docs[documentCounter].data().dateTime).getTime()}`
+                ),
+                {
+                    ...lizardColl.docs[documentCounter].data(),
+                    lastEdit: lastEdit || '',
+                }
+            );
+            if (documentCounter === 7756) {
+                leaveLoop = true;
+                break;
+            } else {
+                documentCounter++;
+            }
+        }
+        console.log(`writing batch to doc number ${documentCounter}`);
+        await batch.commit();
+        if (leaveLoop) break;
+    }
+    console.log('complete');
+};
+
+export const checkForServerData = async (
+    latestClientTime,
+    latestServerTime,
+    setLizardDataLoaded
+) => {
+    console.log(`comparing ${latestClientTime} and ${latestServerTime}`);
+    if (latestClientTime < latestServerTime) {
+        await downloadLatestLizardDataFromServer(latestClientTime);
+        setLizardDataLoaded(true);
+    }
+};
+
+export const downloadLatestLizardDataFromServer = async (latestClientTime) => {
+    const incomingLizardData = await getDocsFromServer(
+        query(collection(db, 'LizardData'), where('dateTime', '>=', latestClientTime))
+    );
+    console.log(incomingLizardData);
+};
+
+export const getAnswerFormDataFromFirestore = async (
+    currentData,
+    setLizardSpeciesList,
+    setFenceTraps
+) => {
+    const speciesSnapshot = await getDocsFromCache(
+        query(
+            collection(db, 'AnswerSet'),
+            where('set_name', '==', `${currentData.project}LizardSpecies`)
+        )
+    );
+    let speciesCodesArray = [];
+    for (const answer of speciesSnapshot.docs[0].data().answers) {
+        speciesCodesArray.push(answer.primary);
+    }
+    setLizardSpeciesList(speciesCodesArray);
+    const fenceTrapsSnapshot = await getDocsFromCache(
+        query(collection(db, 'AnswerSet'), where('set_name', '==', 'Fence Traps'))
+    );
+    let fenceTrapsArray = [];
+    for (const answer of fenceTrapsSnapshot.docs[0].data().answers) {
+        fenceTrapsArray.push(answer.primary);
+    }
+    setFenceTraps(fenceTrapsArray);
+};
+
+export const verifyLizardForm = (
+    sex,
+    massGrams,
+    speciesCode,
+    trap,
+    setNotification,
+    setConfirmationModalIsOpen,
+    setErrors
+) => {
+    let tempErrors = {
+        speciesCode: '',
+        fenceTrap: '',
+        recapture: '',
+        toeCode: '',
+        svl: '',
+        vtl: '',
+        regenTail: '',
+        otl: '',
+        hatchling: '',
+        mass: '',
+        sex: '',
+        dead: '',
+        comments: '',
+    };
+    if (sex === '') tempErrors.sex = 'Required';
+    if (massGrams === '') tempErrors.mass = 'Required';
+    if (speciesCode === '') tempErrors.speciesCode = 'Required';
+    if (trap === '') tempErrors.fenceTrap = 'Required';
+    let errorExists = false;
+    for (const key in tempErrors) {
+        if (tempErrors[key] !== '') errorExists = true;
+    }
+    if (errorExists) {
+        setNotification('Errors in form');
+    } else {
+        setNotification('Form is valid');
+        setConfirmationModalIsOpen(true);
+    }
+    setErrors(tempErrors);
+    console.log(tempErrors);
+    console.log([trap, speciesCode]);
+};
+
+export const completeLizardCapture = (setCurrentData, currentData, setCurrentForm, lizardData) => {
+    const date = new Date();
+    updateData(
+        'lizard',
+        {
+            ...lizardData,
+            dateTime: date.toISOString(),
+        },
+        setCurrentData,
+        currentData,
+        setCurrentForm
+    );
 };
