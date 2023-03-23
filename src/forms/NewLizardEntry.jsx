@@ -20,7 +20,6 @@ import ConfirmationModal from '../components/ConfirmationModal';
 import { ScaleLoader } from 'react-spinners';
 import { 
     getAnswerFormDataFromFirestore, 
-    fetchToeCodes, 
     verifyLizardForm,
     completeLizardCapture,
 } from '../utils/functions'
@@ -39,12 +38,9 @@ export default function NewLizardEntry() {
     const [sex, setSex] = useState('');
     const [isDead, setIsDead] = useState(false);
     const [comments, setComments] = useState('');
-    const [updatedToeCodes, setUpdatedToeCodes] = useState();
     const [lizardSpeciesList, setLizardSpeciesList] = useState([]);
     const [fenceTraps, setFenceTraps] = useState([]);
     const [confirmationModalIsOpen, setConfirmationModalIsOpen] = useState(false);
-    const [siteToeCodes, setSiteToeCodes] = useState();
-    const [speciesToeCodes, setSpeciesToeCodes] = useState();
     const [errors, setErrors] = useState({
         speciesCode: '',
         fenceTrap: '',
@@ -60,52 +56,19 @@ export default function NewLizardEntry() {
         dead: '',
         comments: '',
     });
-    const [currentToeClipCodesSnapshot, setCurrentToeClipCodesSnapshot] = useState();
     const [currentData, setCurrentData] = useAtom(currentSessionData);
     const setCurrentForm = useSetAtom(currentFormName);
     const setNotification = useSetAtom(notificationText);
-    const environment = useAtomValue(appMode);
-    const toeCodeLoaded = useAtomValue(toeCodeLoadedAtom);
     const lizardDataLoaded = useAtomValue(lizardDataLoadedAtom);
 
     const sexOptions = ['Male', 'Female', 'Unknown'];
 
-    // just to give an idea of the dynamic shape (even though this isn't typescript)
-    // interface SiteToeCodes {
-    //     sites: Array<{
-    //         [speciesCode]: string,
-    //     }>
-    // }
-
     useEffect(() => {
         getAnswerFormDataFromFirestore(currentData, setLizardSpeciesList, setFenceTraps);
-        fetchToeCodes(currentData, environment, setSiteToeCodes, setCurrentToeClipCodesSnapshot);
     }, []);
-
-    useEffect(() => {
-        if (siteToeCodes) {
-            let tempArray = [];
-            setSpeciesToeCodes([]);
-            for (const toeClipCode in siteToeCodes[currentData.array][speciesCode]) {
-                if (
-                    siteToeCodes[currentData.array][speciesCode][toeClipCode] !== 'date' &&
-                    toeClipCode !== 'SpeciesCode' &&
-                    toeClipCode !== 'ArrayCode' &&
-                    toeClipCode !== 'SiteCode'
-                ) {
-                    tempArray.push(toeClipCode);
-                }
-            }
-            setSpeciesToeCodes(tempArray);
-            console.log(
-                `All preexisting toe codes from this species(${speciesCode}), array(${currentData.array}), and site(${currentData.site})`
-            );
-            console.log(tempArray);
-        }
-    }, [speciesCode]);
     
     return (
-        ((toeCodeLoaded && lizardDataLoaded)) ?
+        ((lizardDataLoaded)) ?
             <FormWrapper>
             <Dropdown
                 value={speciesCode}
@@ -132,9 +95,6 @@ export default function NewLizardEntry() {
                 speciesCode={speciesCode}
                 isRecapture={isRecapture}
                 setIsRecapture={setIsRecapture}
-                setUpdatedToeCodes={setUpdatedToeCodes}
-                speciesToeCodes={speciesToeCodes}
-                siteToeCodes={siteToeCodes}
             />
             <NumberInput label="SVL (mm)" value={svl} setValue={setSvl} placeholder="0.0 mm" />
             <NumberInput label="VTL (mm)" value={vtl} setValue={setVtl} placeholder="0.0 mm" />
@@ -202,10 +162,6 @@ export default function NewLizardEntry() {
                         comments,
                     }}
                     completeCapture={completeLizardCapture(
-                        environment,
-                        currentToeClipCodesSnapshot,
-                        updatedToeCodes,
-                        setNotification,
                         setCurrentData,
                         currentData,
                         setCurrentForm,

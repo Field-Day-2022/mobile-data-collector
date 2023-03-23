@@ -188,46 +188,6 @@ export const getAnswerFormDataFromFirestore = async (currentData, setLizardSpeci
     setFenceTraps(fenceTrapsArray);
 };
 
-export const fetchToeCodes = async (currentData, environment, setSiteToeCodes, setCurrentToeClipCodesSnapshot) => {
-    let toeCodesSnapshot;
-    if (environment === 'test') {
-        console.log('retrieving toe codes in test mode...');
-        try {
-            toeCodesSnapshot = await getDocsFromCache(
-                query(
-                    collection(db, 'TestToeClipCodes'),
-                    where('SiteCode', '==', currentData.site)
-                )
-            );
-            if (toeCodesSnapshot.empty()) throw Error;
-            else {
-                console.log('test toe codes for this site/array/species combination already exists, retrieving...');
-                console.log(toeCodesSnapshot.docs[0]);
-                setSiteToeCodes(toeCodesSnapshot.docs[0].data());
-            }
-        } catch (e) {
-            console.log('test toe codes for this site/array/species combination does not already exist, pulling from live');
-            toeCodesSnapshot = await getDocsFromCache(
-                query(
-                    collection(db, 'ToeClipCodes'), 
-                    where('SiteCode', '==', currentData.site)
-                )
-            );
-            setSiteToeCodes(toeCodesSnapshot.docs[0].data());
-        }
-    } else if (environment === 'live') {
-        console.log('retrieving toe codes in live mode...');
-        toeCodesSnapshot = await getDocsFromCache(
-            query(
-                collection(db, 'ToeClipCodes'),
-                where('SiteCode', '==', currentData.site)
-            )
-        );
-        setSiteToeCodes(toeCodesSnapshot.docs[0].data());
-    }
-    setCurrentToeClipCodesSnapshot(toeCodesSnapshot.docs[0]);
-};
-
 export const sendToeCodeDataToFirestore = async (
     environment, 
     currentToeClipCodesSnapshot,
@@ -284,22 +244,12 @@ export const verifyLizardForm = (
 };
 
 export const completeLizardCapture = (
-    environment,
-    currentToeClipCodesSnapshot,
-    updatedToeCodes,
-    setNotification,
     setCurrentData,
     currentData,
     setCurrentForm,
     lizardData,
 ) => {
     const date = new Date();
-    sendToeCodeDataToFirestore(
-        environment,
-        currentToeClipCodesSnapshot,
-        updatedToeCodes,
-        setNotification,
-    );
     updateData(
         'lizard',
         {

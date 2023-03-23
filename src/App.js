@@ -38,6 +38,8 @@ function App() {
                 setLizardDataLoaded(false);
                 checkForServerData(lastEditTime, snapshot.data().lastEditTime, setLizardDataLoaded);
                 setLastEditTime(snapshot.data().lastEditTime);
+            } else {
+                setLizardDataLoaded(true);
             }
         });
 

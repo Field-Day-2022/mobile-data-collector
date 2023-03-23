@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useAtom } from 'jotai';
-import { currentSessionData } from '../utils/jotai';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
+import { appMode, currentSessionData, notificationText } from '../utils/jotai';
 import { db } from '../index';
 import {
     collection,
@@ -10,7 +10,6 @@ import {
 } from 'firebase/firestore';
 import { motion, useAnimationControls, AnimatePresence } from 'framer-motion';
 import SingleCheckbox from './SingleCheckbox';
-import { notificationText } from '../utils/jotai';
 
 export default function ToeCodeInput({
     toeCode,
@@ -18,9 +17,6 @@ export default function ToeCodeInput({
     speciesCode,
     isRecapture,
     setIsRecapture,
-    setUpdatedToeCodes,
-    speciesToeCodes,
-    siteToeCodes,
 }) {
     const [selected, setSelected] = useState({
         a: false,
@@ -33,20 +29,19 @@ export default function ToeCodeInput({
         4: false,
         5: false,
     });
-    // const [toeCodes, setToeCodes] = useState();
-    const [preexistingToeClipCodes, setPreexistingToeClipCodes] = useState([]);
     const [errorMsg, setErrorMsg] = useState();
     const [isValid, setIsValid] = useState(false);
-    const [currentData, setCurrentData] = useAtom(currentSessionData);
+    const currentData = useAtomValue(currentSessionData);
     const [recaptureHistoryIsOpen, setRecaptureHistoryIsOpen] = useState(false);
     const [historyButtonText, setHistoryButtonText] = useState('History');
     const [previousLizardEntries, setPreviousLizardEntries] = useState([]);
 
-    const recaptureHistoryControls = useAnimationControls();
-    const recaptureHistoryContainerControls = useAnimationControls();
+    // const recaptureHistoryControls = useAnimationControls();
+    // const recaptureHistoryContainerControls = useAnimationControls();
     const errorMsgControls = useAnimationControls();
 
-    const [notification, setNotification] = useAtom(notificationText);
+    const [environment] = useAtomValue(appMode)
+    const setNotification = useSetAtom(notificationText);
 
     useEffect(() => {
         checkToeCodeValidity();
@@ -92,18 +87,32 @@ export default function ToeCodeInput({
           })
         : 'EX: A1-B2-C3';
 
-    const generateNewToeCode = () => {
+    const generateNewToeCode = async () => {
         if (toeCode.includes('C4') || toeCode.includes('D4')) {
             setNotification('App does not generate toe clip codes with C4 or D4');
         }
-        for (const toeClipCode in siteToeCodes[currentData.array][speciesCode]) {
+        const collectionName = environment === 'test' ? 'TestLizardData' : 'LizardData';
+        const lizardSnapshot = await getDocsFromCache(query(
+            collection(db, collectionName),
+            where('site', '==', currentData.site),
+            where('array', '==', currentData.array),
+            where('speciesCode', '==', speciesCode)
+        ));
+        const toeCodesArray = [];
+        lizardSnapshot.docs.forEach(document => {
+            toeCodesArray.push(document.data().toeClipCode)
+        })
+        const toeCodesTemplateSnapshot = await getDocsFromCache(query(
+            collection(db, 'AnswerSet'),
+            where('set_name', '==', 'toe clip codes')
+        ));
+        for (const templateToeCode of toeCodesTemplateSnapshot.docs[0].data().answers) {
             if (
-                toeClipCode.slice(0, toeCode.length) === toeCode &&
-                siteToeCodes[currentData.array][speciesCode][toeClipCode] === 'date' &&
-                !toeClipCode.includes('C4') &&
-                !toeClipCode.includes('D4')
+                !toeCodesArray.includes(templateToeCode.primary) && 
+                !templateToeCode.primary.includes('C4') &&
+                !templateToeCode.primary.includes('D4')
             ) {
-                setToeCode(toeClipCode);
+                setToeCode(templateToeCode.primary);
                 setSelected({
                     a: false,
                     b: false,
@@ -120,7 +129,7 @@ export default function ToeCodeInput({
         }
     };
 
-    const checkToeCodeValidity = () => {
+    const checkToeCodeValidity = async () => {
         if (toeCode.length < 2) {
             setIsValid(false);
             setErrorMsg('Toe Clip Code needs to be at least 2 characters long');
@@ -128,8 +137,16 @@ export default function ToeCodeInput({
             setIsValid(false);
             setErrorMsg('Toe Clip Code must have an even number of characters');
         } else {
+            const collectionName = environment === 'test' ? 'TestLizardData' : 'LizardData';
+            const lizardSnapshot = await getDocsFromCache(query(
+                collection(db, collectionName),
+                where('toeClipCode', '==', toeCode),
+                where('site', '==', currentData.site),
+                where('array', '==', currentData.array),
+                where('speciesCode', '==', speciesCode)
+            ));
             if (isRecapture) {
-                if (speciesToeCodes.includes(toeCode)) {
+                if (lizardSnapshot.size > 0) {
                     setIsValid(true);
                 } else {
                     setErrorMsg(
@@ -138,7 +155,7 @@ export default function ToeCodeInput({
                     setIsValid(false);
                 }
             } else {
-                if (speciesToeCodes.includes(toeCode)) {
+                if (lizardSnapshot.size > 0) {
                     setErrorMsg(
                         'Toe Clip Code is already taken, choose another or check recapture box to record a recapture'
                     );
@@ -148,15 +165,6 @@ export default function ToeCodeInput({
                 }
             }
         }
-    };
-
-    // console.log(siteToeCodes)
-
-    const generateToeCodesObj = () => {
-        let updatedToeCodeObject = siteToeCodes;
-        updatedToeCodeObject[currentData.array][speciesCode][toeCode] = Date.now();
-        // console.log(updatedToeCodeObject)
-        setUpdatedToeCodes(updatedToeCodeObject);
     };
 
     const handleClick = (source) => {
@@ -214,24 +222,6 @@ export default function ToeCodeInput({
         }
     };
 
-    /* 
-    Recapture History should contain: 
-    Current Site, species, and toecode
-
-    For each entry display: 
-        - date
-        - array
-        - recapture
-        - SVL
-        - VTL
-        - Regen Tail
-        - OTL
-        - Hatchling
-        - Mass
-        - Sex
-        - Dead
-
-    */
     const findPreviousLizardEntries = async () => {
         setHistoryButtonText('Querying...');
         const lizardDataRef = collection(db, 'LizardData');
@@ -244,9 +234,6 @@ export default function ToeCodeInput({
         );
         const lizardEntriesSnapshot = await getDocsFromCache(q);
         let tempArray = [];
-        console.log(
-            `Previous entries from selected toecode(${toeCode}), site(${currentData.site}), array(${currentData.array}), and speciesCode(${speciesCode})`
-        );
         for (const doc of lizardEntriesSnapshot.docs) {
             console.log(doc.data());
             tempArray.push(doc.data());
@@ -311,10 +298,6 @@ export default function ToeCodeInput({
         'array',
         'sex',
     ]
-
-    // console.log(previousLizardEntries.length)
-    // console.log(previousLizardEntries)
-    // console.log(previousLizardEntries[0])
 
     return (
         <AnimatePresence>
@@ -570,14 +553,14 @@ export default function ToeCodeInput({
                     )}
                 </AnimatePresence>
 
-                {speciesToeCodes && (
+                
                     <label
                         htmlFor="my-modal-4"
                         className="btn capitalize text-xl text-black bg-white border-asu-maroon border-[1px] font-normal hover:bg-white/50"
                     >
                         {toeCode ? `Toe-Clip Code: ${toeCode}` : 'Toe-Clip Code'}
                     </label>
-                )}
+                
                 <input
                     type="checkbox"
                     id="my-modal-4"
@@ -648,7 +631,7 @@ export default function ToeCodeInput({
                             ))}
                         </div>
                         <div className="flex flex-row items-center ">
-                            {isRecapture && speciesToeCodes ? (
+                            {isRecapture ? (
                                 <Button
                                     prompt={historyButtonText}
                                     handler={() => {
@@ -667,7 +650,6 @@ export default function ToeCodeInput({
                                 {isValid ? (
                                     <label
                                         htmlFor="my-modal-4"
-                                        onClick={() => generateToeCodesObj()}
                                     >
                                         Close
                                     </label>
