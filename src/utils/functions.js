@@ -166,7 +166,11 @@ export const downloadLatestLizardDataFromServer = async (latestClientTime) => {
     console.log(incomingLizardData);
 };
 
-export const getAnswerFormDataFromFirestore = async (currentData, setLizardSpeciesList, setFenceTraps) => {
+export const getAnswerFormDataFromFirestore = async (
+    currentData,
+    setLizardSpeciesList,
+    setFenceTraps
+) => {
     const speciesSnapshot = await getDocsFromCache(
         query(
             collection(db, 'AnswerSet'),
@@ -186,18 +190,6 @@ export const getAnswerFormDataFromFirestore = async (currentData, setLizardSpeci
         fenceTrapsArray.push(answer.primary);
     }
     setFenceTraps(fenceTrapsArray);
-};
-
-export const sendToeCodeDataToFirestore = async (
-    environment, 
-    currentToeClipCodesSnapshot,
-    updatedToeCodes,
-    setNotification
-) => {
-    let toeCodeCollection = 'TestToeClipCodes';
-    if (environment === 'live') toeCodeCollection = 'ToeClipCodes';
-    await setDoc(doc(db, toeCodeCollection, currentToeClipCodesSnapshot.id), updatedToeCodes);
-    setNotification(`Successfully set toe clip code entry to ${toeCodeCollection}`);
 };
 
 export const verifyLizardForm = (
@@ -247,7 +239,7 @@ export const completeLizardCapture = (
     setCurrentData,
     currentData,
     setCurrentForm,
-    lizardData,
+    lizardData
 ) => {
     const date = new Date();
     updateData(
