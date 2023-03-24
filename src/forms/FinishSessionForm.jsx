@@ -23,6 +23,7 @@ import {
     getDocs,
     addDoc,
     writeBatch,
+    getDocsFromCache,
 } from 'firebase/firestore';
 
 import FormWrapper from '../components/FormWrapper';
@@ -41,10 +42,19 @@ export const FinishSessionForm = () => {
     const [trapStatus, setTrapStatus] = useState('');
     const [comments, setComments] = useState('');
     const [environment, setEnvironment] = useAtom(appMode);
+    const [answerSet, setAnswerSet] = useState([]);
 
-    const [answerSet, answerSetLoading, answerSetError, answerSetSnapshot] = useCollectionData(
-        collection(db, 'AnswerSet')
-    );
+    useEffect(() => {
+        const getAnswerSet = async () => {
+            const answerSetSnapshot = await getDocsFromCache(collection(db, 'AnswerSet'));
+            let tempAnswerSetArray = [];
+            answerSetSnapshot.docs.forEach(document => {
+                tempAnswerSetArray.push(document.data())
+            })
+            setAnswerSet(tempAnswerSetArray);
+        }
+        
+    }, [])
 
     const uploadSessionData = async (sessionObj) => {
         if (isEditingPrevious) {
