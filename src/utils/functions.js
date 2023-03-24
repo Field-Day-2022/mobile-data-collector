@@ -273,7 +273,8 @@ export const completeLizardCapture = async (
     currentData,
     setCurrentForm,
     lizardData,
-    environment
+    environment,
+    setLastEditTime
 ) => {
     const date = new Date();
     const lizardDataWithTimes = {
@@ -291,6 +292,7 @@ export const completeLizardCapture = async (
         console.log('successfully added new lizard entry:');
         reloadCachedLizardData(collectionName, `${currentData.site}Lizard${date.getTime()}`);
     });
+    setLastEditTime(lizardDataWithTimes.lastEdit);
     await updateDoc(doc(db, 'Metadata', 'LizardData'), {
         lastEditTime: lizardDataWithTimes.lastEdit,
     });
