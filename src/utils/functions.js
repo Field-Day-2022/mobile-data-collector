@@ -291,9 +291,9 @@ export const completeLizardCapture = async (
         console.log('successfully added new lizard entry:');
         reloadCachedLizardData(collectionName, `${currentData.site}Lizard${date.getTime()}`);
     });
-    await updateDoc(doc(db, "Metadata", "LizardData"), {
+    await updateDoc(doc(db, 'Metadata', 'LizardData'), {
         lastEditTime: lizardDataWithTimes.lastEdit,
-    })
+    });
 };
 
 const createLizardEntry = async (currentData, dataEntry) => {
