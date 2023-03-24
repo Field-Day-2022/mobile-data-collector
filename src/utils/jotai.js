@@ -25,7 +25,7 @@ export const editingPrevious = atomWithStorage('editingPrevious', false);
 
 export const pastEntryIndex = atomWithStorage('pastEntryIndex', -1);
 
-export const notificationText = atomWithStorage('notificationText', 'text');
+export const notificationText = atomWithStorage('notificationText', '');
 
 export const appMode = atomWithStorage('appMode', 'test');
 

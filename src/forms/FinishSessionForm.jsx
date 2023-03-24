@@ -1,4 +1,4 @@
-import { useAtom } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import { useEffect, useState } from 'react';
 import {
     currentFormName,
@@ -8,7 +8,8 @@ import {
     pastEntryIndex,
     currentPageName,
     notificationText,
-    appMode
+    appMode,
+    lizardLastEditTime,
 } from '../utils/jotai';
 
 import { useCollectionData } from 'react-firebase-hooks/firestore';
@@ -41,6 +42,7 @@ export const FinishSessionForm = () => {
     const [trapStatus, setTrapStatus] = useState('');
     const [comments, setComments] = useState('');
     const [environment, setEnvironment] = useAtom(appMode);
+    const lastEditTime = useAtomValue(lizardLastEditTime)
 
     const [answerSet, answerSetLoading, answerSetError, answerSetSnapshot] = useCollectionData(
         collection(db, 'AnswerSet')
@@ -105,7 +107,7 @@ export const FinishSessionForm = () => {
         }
     };
 
-    const uploadBatchedEntryData = async (entryDataArray) => {
+    const uploadBatchedEntryData = async (entryDataArray, latestEditTime) => {
         let collectionName = `Test${currentData.project.replace(/\s/g, '')}Data`;
         let lizardCollection = 'TestLizardData'
         if (environment === 'live') {
@@ -136,11 +138,15 @@ export const FinishSessionForm = () => {
         await lizardBatch.commit();
         console.log('batch(es) written successfully');
         console.log(entryDataArray);
+        await setDoc(doc(db, 'Metadata', 'LizardData'), {
+            lastEditTime: latestEditTime
+        })
     };
 
     // TODO: consider fine tuning the data that is uploaded to eliminate N/A fields where they aren't needed
 
     const finishSession = () => {
+        let latestEditTime = lastEditTime;
         const date = new Date();
         const sessionObj = {
             array: currentData.array,
@@ -266,6 +272,7 @@ export const FinishSessionForm = () => {
                 obj.year = year;
                 obj.comments = dataEntry.comments;
                 dataArray.push(obj);
+                if (dataEntry.lastEdit > latestEditTime) latestEditTime = dataEntry.lastEdit; 
             }
         }
         if (currentData.snake) {
@@ -357,7 +364,7 @@ export const FinishSessionForm = () => {
             }
         }
         console.log(dataArray);
-        uploadSessionData(sessionObj);
+        uploadSessionData(sessionObj, latestEditTime);
         uploadBatchedEntryData(dataArray);
         setCurrentPage('Home');
         setCurrentForm('');
