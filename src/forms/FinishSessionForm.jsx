@@ -107,7 +107,7 @@ export const FinishSessionForm = () => {
         }
     };
 
-    const uploadBatchedEntryData = async (entryDataArray, latestEditTime) => {
+    const uploadBatchedEntryData = async (entryDataArray) => {
         let collectionName = `Test${currentData.project.replace(/\s/g, '')}Data`;
         if (environment === 'live') {
             collectionName = `${currentData.project.replace(/\s/g, '')}Data`
@@ -132,10 +132,6 @@ export const FinishSessionForm = () => {
         await dataBatch.commit();
         console.log('batch(es) written successfully');
         console.log(entryDataArray);
-        console.log(`setting metadata to ${latestEditTime}`)
-        await setDoc(doc(db, 'Metadata', 'LizardData'), {
-            lastEditTime: latestEditTime
-        })
     };
 
     // TODO: consider fine tuning the data that is uploaded to eliminate N/A fields where they aren't needed
@@ -359,7 +355,7 @@ export const FinishSessionForm = () => {
             }
         }
         console.log(dataArray);
-        uploadSessionData(sessionObj, latestEditTime);
+        uploadSessionData(sessionObj);
         uploadBatchedEntryData(dataArray);
         setCurrentPage('Home');
         setCurrentForm('');
