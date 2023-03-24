@@ -18,7 +18,7 @@ function App() {
     const [answerSetLoading, setAnswerSetLoading] = useState(true);
     const currentPage = useAtomValue(currentPageName);
     const setLizardDataLoaded = useSetAtom(lizardDataLoadedAtom);
-    const [lastEditTime, setLastEditTime] = useAtom(lizardLastEditTime);
+    const [lastEditTime, setLastEditTime] = useAtom(lizardLastEditTime);    
 
     useEffect(() => {
         onSnapshot(doc(db, 'Metadata', 'LizardData'), (snapshot) => {
@@ -52,7 +52,7 @@ function App() {
     }, []);
 
     return (
-        <motion.div className="font-openSans  overflow-hidden  absolute  flex  flex-col  items-center  text-center  justify-start  inset-0  bg-white">
+        <motion.div className="font-openSans overflow-hidden absolute flex flex-col items-center text-center justify-start inset-0 bg-white">
             <AnimatePresence mode="wait">
                 {answerSetLoading ? (
                     <LoadingScreen />

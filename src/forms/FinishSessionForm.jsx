@@ -138,6 +138,7 @@ export const FinishSessionForm = () => {
         await lizardBatch.commit();
         console.log('batch(es) written successfully');
         console.log(entryDataArray);
+        console.log(`setting metadata to ${latestEditTime}`)
         await setDoc(doc(db, 'Metadata', 'LizardData'), {
             lastEditTime: latestEditTime
         })
