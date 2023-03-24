@@ -4,9 +4,11 @@ import { appMode, currentSessionData, notificationText } from '../utils/jotai';
 import { db } from '../index';
 import {
     collection,
+    deleteDoc,
     getDocsFromCache,
     query,
     where,
+    doc,
 } from 'firebase/firestore';
 import { motion, useAnimationControls, AnimatePresence } from 'framer-motion';
 import SingleCheckbox from './SingleCheckbox';
@@ -91,17 +93,19 @@ export default function ToeCodeInput({
         if (toeCode.includes('C4') || toeCode.includes('D4')) {
             setNotification('App does not generate toe clip codes with C4 or D4');
         }
-        const collectionName = environment === 'test' ? 'TestLizardData' : 'LizardData';
+        const collectionName = environment === 'live' ? 'LizardData' : 'TestLizardData';
         const lizardSnapshot = await getDocsFromCache(query(
             collection(db, collectionName),
             where('site', '==', currentData.site),
             where('array', '==', currentData.array),
             where('speciesCode', '==', speciesCode)
         ));
+        console.log(`${collectionName} from site ${currentData.site} and array ${currentData.array} with species code ${speciesCode}`)
         const toeCodesArray = [];
         lizardSnapshot.docs.forEach(document => {
             toeCodesArray.push(document.data().toeClipCode)
         })
+        console.log(toeCodesArray)
         const toeCodesTemplateSnapshot = await getDocsFromCache(query(
             collection(db, 'AnswerSet'),
             where('set_name', '==', 'toe clip codes')

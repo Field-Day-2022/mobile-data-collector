@@ -60,6 +60,7 @@ export default function NewLizardEntry() {
     const setCurrentForm = useSetAtom(currentFormName);
     const setNotification = useSetAtom(notificationText);
     const lizardDataLoaded = useAtomValue(lizardDataLoadedAtom);
+    const environment = useAtomValue(appMode)
 
     const sexOptions = ['Male', 'Female', 'Unknown'];
 
@@ -161,7 +162,7 @@ export default function NewLizardEntry() {
                         isDead,
                         comments,
                     }}
-                    completeCapture={completeLizardCapture(
+                    completeCapture={() => completeLizardCapture(
                         setCurrentData,
                         currentData,
                         setCurrentForm,
@@ -179,7 +180,8 @@ export default function NewLizardEntry() {
                             sex,
                             isDead,
                             comments,
-                        }
+                        },
+                        environment
                     )}
                     setConfirmationModalIsOpen={setConfirmationModalIsOpen}
                     modalType="lizard"

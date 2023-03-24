@@ -12,6 +12,7 @@ import {
     orderBy,
     limit,
     setDoc,
+    getDocFromCache,
 } from 'firebase/firestore';
 import { db } from '../index';
 
@@ -225,7 +226,7 @@ export const verifyArthropodForm = (
 
 export const verifyLizardForm = (
     sex,
-    massGrams,
+    mass,
     speciesCode,
     trap,
     setNotification,
@@ -248,7 +249,7 @@ export const verifyLizardForm = (
         comments: '',
     };
     if (sex === '') tempErrors.sex = 'Required';
-    if (massGrams === '') tempErrors.mass = 'Required';
+    if (mass === '') tempErrors.mass = 'Required';
     if (speciesCode === '') tempErrors.speciesCode = 'Required';
     if (trap === '') tempErrors.fenceTrap = 'Required';
     let errorExists = false;
@@ -258,24 +259,146 @@ export const verifyLizardForm = (
     if (errorExists) {
         setNotification('Errors in form');
     } else {
-        setNotification('Form is valid');
         setConfirmationModalIsOpen(true);
+        // setNotification('Form is valid');
     }
     setErrors(tempErrors);
     console.log(tempErrors);
     console.log([trap, speciesCode]);
 };
 
-export const completeLizardCapture = (setCurrentData, currentData, setCurrentForm, lizardData) => {
+export const completeLizardCapture = async (
+    setCurrentData, 
+    currentData, 
+    setCurrentForm, 
+    lizardData,
+    environment
+) => {
     const date = new Date();
+    const lizardDataWithTimes = {
+        ...lizardData,
+        dateTime: date.toISOString(),
+        lastEdit: date.getTime(),
+    } 
     updateData(
         'lizard',
-        {
-            ...lizardData,
-            dateTime: date.toISOString(),
-        },
+        lizardDataWithTimes,
         setCurrentData,
         currentData,
         setCurrentForm
     );
+    const collectionName = environment === 'live' ? 'LizardData' : 'TestLizardData';
+    const lizardEntry = await createLizardEntry(currentData, lizardDataWithTimes);
+    await setDoc(doc(db, collectionName, `${currentData.site}Lizard${date.getTime()}`), lizardEntry)
+    .then(docRef => {
+        console.log('successfully added new lizard entry:')
+        reloadCachedLizardData(collectionName, `${currentData.site}Lizard${date.getTime()}`)
+    })
 };
+
+const createLizardEntry = async (currentData, dataEntry) => {
+    const dataObjTemplate = {
+        aran: 'N/A',
+        array: 'N/A',
+        auch: 'N/A',
+        blat: 'N/A',
+        cclMm: 'N/A',
+        chil: 'N/A',
+        cole: 'N/A',
+        comments: 'N/A',
+        crus: 'N/A',
+        dateTime: 'N/A',
+        dead: 'N/A',
+        derm: 'N/A',
+        diel: 'N/A',
+        dipt: 'N/A',
+        fenceTrap: 'N/A',
+        genus: 'N/A',
+        hatchling: 'N/A',
+        hdBody: 'N/A',
+        hete: 'N/A',
+        hyma: 'N/A',
+        lepi: 'N/A',
+        mant: 'N/A',
+        massG: 'N/A',
+        micro: 'N/A',
+        orth: 'N/A',
+        otlMm: 'N/A',
+        plMm: 'N/A',
+        predator: 'N/A',
+        pseu: 'N/A',
+        recapture: 'N/A',
+        regenTail: 'N/A',
+        scor: 'N/A',
+        sessionDateTime: 'N/A',
+        sex: 'N/A',
+        site: 'N/A',
+        soli: 'N/A',
+        species: 'N/A',
+        speciesCode: 'N/A',
+        svlMm: 'N/A',
+        taxa: 'N/A',
+        thys: 'N/A',
+        toeClipCode: 'N/A',
+        unki: 'N/A',
+        vtlMm: 'N/A',
+        year: 'N/A',
+        noCapture: 'N/A',
+        lastEdit: 'N/A',
+    };
+    const {genus, species} = await getGenusSpecies(
+        currentData.project,
+        'Lizard',
+        dataEntry.speciesCode
+    );
+    // console.log(genus, species)
+    const entryDate = new Date(dataEntry.dateTime);
+    const year = entryDate.getFullYear();
+    const obj = structuredClone(dataObjTemplate);
+    obj.array = currentData.array;
+    obj.dateTime = dataEntry.dateTime;
+    obj.lastEdit = entryDate.getTime();
+    obj.dead = dataEntry.isDead;
+    obj.fenceTrap = dataEntry.trap;
+    obj.genus = genus;
+    obj.hatchling = dataEntry.isHatchling;
+    obj.massG = dataEntry.mass;
+    obj.otlMm = dataEntry.otl;
+    obj.recapture = dataEntry.isRecapture;
+    obj.regenTail = dataEntry.regenTail;
+    obj.sessionDateTime = currentData.sessionDateTime;
+    obj.sex = dataEntry.sex;
+    obj.site = currentData.site;
+    obj.species = species;
+    obj.speciesCode = dataEntry.speciesCode;
+    obj.svlMm = dataEntry.svl;
+    obj.taxa = 'Lizard';
+    obj.toeClipCode = dataEntry.toeCode;
+    obj.vtlMm = dataEntry.vtl;
+    obj.year = year;
+    obj.comments = dataEntry.comments;
+    return obj;
+}
+
+const getGenusSpecies = async (project, taxa, speciesCode) => {
+    const docsSnapshot = await getDocsFromCache(query(
+        collection(db, "AnswerSet"),
+        where('set_name', '==', `${project}${taxa}Species`)
+    ));
+    const answerSet = docsSnapshot.docs[0].data();
+    // console.log(speciesCode)
+    // console.log(answerSet)
+    for (const answer of answerSet.answers) {
+        if (answer.primary === speciesCode) {
+            // console.log(answer.secondary.Genus)
+            return {genus: answer.secondary.Genus, species: answer.secondary.Species};
+        }
+    }
+    return {genus: "N/A", species: "N/A"}
+}
+
+const reloadCachedLizardData = async (collectionName, docId) => {
+    const document = await getDocFromCache(doc(db, collectionName, docId))
+    console.log('retrieved cached lizard entry:')
+    console.log(document)
+}

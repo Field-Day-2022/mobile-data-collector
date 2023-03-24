@@ -109,14 +109,11 @@ export const FinishSessionForm = () => {
 
     const uploadBatchedEntryData = async (entryDataArray, latestEditTime) => {
         let collectionName = `Test${currentData.project.replace(/\s/g, '')}Data`;
-        let lizardCollection = 'TestLizardData'
         if (environment === 'live') {
             collectionName = `${currentData.project.replace(/\s/g, '')}Data`
-            lizardCollection = 'LizardData'
         }
         console.log(`Uploading to ${collectionName}`);
         const dataBatch = writeBatch(db);
-        const lizardBatch = writeBatch(db);
         for (const entryObject of entryDataArray) {
             for (const key in entryObject) {
                 if (!entryObject[key]) {
@@ -131,11 +128,8 @@ export const FinishSessionForm = () => {
             const entryId = `${currentData.site}${taxa}${timestamp.getTime()}`;
             console.log(entryId)
             dataBatch.set(doc(db, collectionName, entryId), entryObject);
-            if (entryObject.taxa === "Lizard")
-                lizardBatch.set(doc(db, lizardCollection, entryId), entryObject);
         }
         await dataBatch.commit();
-        await lizardBatch.commit();
         console.log('batch(es) written successfully');
         console.log(entryDataArray);
         console.log(`setting metadata to ${latestEditTime}`)
@@ -258,7 +252,7 @@ export const FinishSessionForm = () => {
                 obj.genus = genus;
                 obj.hatchling = dataEntry.isHatchling;
                 obj.massG = dataEntry.mass;
-                obj.otlMMm = dataEntry.otl;
+                obj.otlMm = dataEntry.otl;
                 obj.recapture = dataEntry.isRecapture;
                 obj.regenTail = dataEntry.regenTail;
                 obj.sessionDateTime = currentData.sessionDateTime;
