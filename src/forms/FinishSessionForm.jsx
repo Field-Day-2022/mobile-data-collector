@@ -9,7 +9,6 @@ import {
     currentPageName,
     notificationText,
     appMode,
-    lizardLastEditTime,
 } from '../utils/jotai';
 
 import { useCollectionData } from 'react-firebase-hooks/firestore';
@@ -42,7 +41,6 @@ export const FinishSessionForm = () => {
     const [trapStatus, setTrapStatus] = useState('');
     const [comments, setComments] = useState('');
     const [environment, setEnvironment] = useAtom(appMode);
-    const lastEditTime = useAtomValue(lizardLastEditTime)
 
     const [answerSet, answerSetLoading, answerSetError, answerSetSnapshot] = useCollectionData(
         collection(db, 'AnswerSet')
@@ -137,7 +135,6 @@ export const FinishSessionForm = () => {
     // TODO: consider fine tuning the data that is uploaded to eliminate N/A fields where they aren't needed
 
     const finishSession = () => {
-        let latestEditTime = lastEditTime;
         const date = new Date();
         const sessionObj = {
             array: currentData.array,
