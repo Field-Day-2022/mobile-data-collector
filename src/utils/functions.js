@@ -30,18 +30,28 @@ export const updatePreexistingArthropodData = (
     setCurrentForm
 ) => {
     let tempArthropod = currentData.arthropod;
+    let matchesPreviousFenceTrap = false;
     for (const arthropodEntry of tempArthropod) {
+        console.log(`comparing ${arthropodEntry.trap} and ${incomingData.trap}`)
         if (arthropodEntry.trap === incomingData.trap) {
+            matchesPreviousFenceTrap = true;
             for (const arthropodSpecies in arthropodEntry.arthropodData) {
                 arthropodEntry.arthropodData[arthropodSpecies] +=
                     incomingData.arthropodData[arthropodSpecies];
             }
-        }
+        } 
     }
-    setCurrentData({
-        ...currentData,
-        arthropod: tempArthropod,
-    });
+    if (!matchesPreviousFenceTrap) {
+        setCurrentData({
+            ...currentData,
+            arthropod: [...currentData.arthropod, incomingData],
+        });
+    } else {
+        setCurrentData({
+            ...currentData,
+            arthropod: tempArthropod,
+        });
+    }
     setCurrentForm('New Data Entry');
 };
 
@@ -191,6 +201,26 @@ export const getAnswerFormDataFromFirestore = async (
     }
     setFenceTraps(fenceTrapsArray);
 };
+
+export const verifyArthropodForm = (
+    trap,
+    setNotification,
+    setConfirmationModalIsOpen,
+    setErrors
+) => {
+    let tempErrors = {
+        trap: '',
+    };
+    if (trap === '') tempErrors.trap = 'Required'
+    let errorExists = false;
+    if  (tempErrors.trap !== '') errorExists = true;
+    if (errorExists) setNotification('Errors in form');
+    else {
+        setNotification('Form is valid');
+        setConfirmationModalIsOpen(true);
+    }
+    setErrors(tempErrors);
+}
 
 export const verifyLizardForm = (
     sex,
