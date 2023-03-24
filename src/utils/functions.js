@@ -174,7 +174,7 @@ export const downloadLatestLizardDataFromServer = async (latestClientTime) => {
     const incomingLizardData = await getDocsFromServer(
         query(collection(db, 'TestLizardData'), where('lastEdit', '>=', latestClientTime))
     );
-    console.log('fresh lizard data downloaded:')
+    console.log('fresh lizard data downloaded:');
     console.log(incomingLizardData);
 };
 
