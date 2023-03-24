@@ -18,7 +18,7 @@ function App() {
     const [answerSetLoading, setAnswerSetLoading] = useState(true);
     const currentPage = useAtomValue(currentPageName);
     const setLizardDataLoaded = useSetAtom(lizardDataLoadedAtom);
-    const [lastEditTime, setLastEditTime] = useAtom(lizardLastEditTime);    
+    const [lastEditTime, setLastEditTime] = useAtom(lizardLastEditTime);
 
     useEffect(() => {
         onSnapshot(doc(db, 'Metadata', 'LizardData'), (snapshot) => {
