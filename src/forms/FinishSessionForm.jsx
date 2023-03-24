@@ -260,7 +260,6 @@ export const FinishSessionForm = () => {
                 obj.year = year;
                 obj.comments = dataEntry.comments;
                 dataArray.push(obj);
-                if (dataEntry.lastEdit > latestEditTime) latestEditTime = dataEntry.lastEdit; 
             }
         }
         if (currentData.snake) {
