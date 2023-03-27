@@ -8,6 +8,7 @@ import {
     appMode,
     toeCodeLoadedAtom,
     lizardDataLoadedAtom,
+    lizardLastEditTime
 } from '../utils/jotai';
 import FormWrapper from '../components/FormWrapper';
 import Dropdown from '../components/Dropdown';
@@ -60,6 +61,8 @@ export default function NewLizardEntry() {
     const setCurrentForm = useSetAtom(currentFormName);
     const setNotification = useSetAtom(notificationText);
     const lizardDataLoaded = useAtomValue(lizardDataLoadedAtom);
+    const environment = useAtomValue(appMode)
+    const setLastEditTime = useSetAtom(lizardLastEditTime);
 
     const sexOptions = ['Male', 'Female', 'Unknown'];
 
@@ -161,7 +164,7 @@ export default function NewLizardEntry() {
                         isDead,
                         comments,
                     }}
-                    completeCapture={completeLizardCapture(
+                    completeCapture={() => completeLizardCapture(
                         setCurrentData,
                         currentData,
                         setCurrentForm,
@@ -179,7 +182,9 @@ export default function NewLizardEntry() {
                             sex,
                             isDead,
                             comments,
-                        }
+                        },
+                        environment,
+                        setLastEditTime
                     )}
                     setConfirmationModalIsOpen={setConfirmationModalIsOpen}
                     modalType="lizard"

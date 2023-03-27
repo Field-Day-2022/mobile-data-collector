@@ -6,6 +6,8 @@ import { motion } from 'framer-motion';
 export const LoginWrapper = ({ children }) => {
     const [user, loading, error] = useAuthState(auth);
 
+    // console.log(user)
+
     if (user && user.email.slice(-7) === 'asu.edu') {
         return children;
     } else if (loading) {

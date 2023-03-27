@@ -128,12 +128,21 @@ export default function NewSnakeEntry() {
             sex: '',
             comments: '',
         };
-        if (sex === '') tempErrors.sex = 'Required';
-        if (mass === '') tempErrors.mass = 'Required';
         if (speciesCode === '') tempErrors.speciesCode = 'Required';
         if (trap === '') tempErrors.fenceTrap = 'Required';
-        if (vtl === '') tempErrors.vtl = 'Required';
-        if (svl === '') tempErrors.svl = 'Required';
+        if (
+            svl === '' &&
+            vtl === '' &&
+            sex === '' &&
+            mass === ''
+        ) {
+            setNoCapture(true);
+        } else {
+            if (svl === '') tempErrors.svl = 'Required';
+            if (vtl === '') tempErrors.vtl = 'Required';
+            if (sex === '') tempErrors.sex = 'Required';
+            if (mass === '') tempErrors.mass = 'Required';
+        } 
         let errorExists = false;
         for (const key in tempErrors) {
             if (tempErrors[key] !== '') errorExists = true;
@@ -149,11 +158,6 @@ export default function NewSnakeEntry() {
 
     return (
         <FormWrapper>
-            <SingleCheckbox 
-                prompt="No snakes to record?"
-                value={noCapture}
-                setValue={setNoCapture}
-            />
             <Dropdown
                 value={speciesCode}
                 setValue={setSpeciesCode}
