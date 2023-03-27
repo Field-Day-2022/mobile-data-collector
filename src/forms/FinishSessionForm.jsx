@@ -1,4 +1,4 @@
-import { useAtom } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import { useEffect, useState } from 'react';
 import {
     currentFormName,
@@ -8,7 +8,7 @@ import {
     pastEntryIndex,
     currentPageName,
     notificationText,
-    appMode
+    appMode,
 } from '../utils/jotai';
 
 import { useCollectionData } from 'react-firebase-hooks/firestore';
@@ -23,6 +23,7 @@ import {
     getDocs,
     addDoc,
     writeBatch,
+    getDocsFromCache,
 } from 'firebase/firestore';
 
 import FormWrapper from '../components/FormWrapper';
@@ -41,10 +42,19 @@ export const FinishSessionForm = () => {
     const [trapStatus, setTrapStatus] = useState('');
     const [comments, setComments] = useState('');
     const [environment, setEnvironment] = useAtom(appMode);
+    const [answerSet, setAnswerSet] = useState([]);
 
-    const [answerSet, answerSetLoading, answerSetError, answerSetSnapshot] = useCollectionData(
-        collection(db, 'AnswerSet')
-    );
+    useEffect(() => {
+        const getAnswerSet = async () => {
+            const answerSetSnapshot = await getDocsFromCache(collection(db, 'AnswerSet'));
+            let tempAnswerSetArray = [];
+            answerSetSnapshot.docs.forEach(document => {
+                tempAnswerSetArray.push(document.data())
+            })
+            setAnswerSet(tempAnswerSetArray);
+        }
+        
+    }, [])
 
     const uploadSessionData = async (sessionObj) => {
         if (isEditingPrevious) {
@@ -107,14 +117,11 @@ export const FinishSessionForm = () => {
 
     const uploadBatchedEntryData = async (entryDataArray) => {
         let collectionName = `Test${currentData.project.replace(/\s/g, '')}Data`;
-        let lizardCollection = 'TestLizardData'
         if (environment === 'live') {
             collectionName = `${currentData.project.replace(/\s/g, '')}Data`
-            lizardCollection = 'LizardData'
         }
         console.log(`Uploading to ${collectionName}`);
         const dataBatch = writeBatch(db);
-        const lizardBatch = writeBatch(db);
         for (const entryObject of entryDataArray) {
             for (const key in entryObject) {
                 if (!entryObject[key]) {
@@ -129,11 +136,8 @@ export const FinishSessionForm = () => {
             const entryId = `${currentData.site}${taxa}${timestamp.getTime()}`;
             console.log(entryId)
             dataBatch.set(doc(db, collectionName, entryId), entryObject);
-            if (entryObject.taxa === "Lizard")
-                lizardBatch.set(doc(db, lizardCollection, entryId), entryObject);
         }
         await dataBatch.commit();
-        await lizardBatch.commit();
         console.log('batch(es) written successfully');
         console.log(entryDataArray);
     };
@@ -251,7 +255,7 @@ export const FinishSessionForm = () => {
                 obj.genus = genus;
                 obj.hatchling = dataEntry.isHatchling;
                 obj.massG = dataEntry.mass;
-                obj.otlMMm = dataEntry.otl;
+                obj.otlMm = dataEntry.otl;
                 obj.recapture = dataEntry.isRecapture;
                 obj.regenTail = dataEntry.regenTail;
                 obj.sessionDateTime = currentData.sessionDateTime;

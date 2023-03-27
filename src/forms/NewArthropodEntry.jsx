@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useAtom, useAtomValue } from 'jotai';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 
 import NumberInput from '../components/NumberInput';
 import Dropdown from '../components/Dropdown';
@@ -10,8 +10,17 @@ import Button from '../components/Button';
 import ConfirmationModal from '../components/ConfirmationModal';
 import PlusMinusButtons from '../components/PlusMinusButtons';
 
-import { currentFormName, currentSessionData, editingPrevious } from '../utils/jotai';
-import { updateData, updatePreexistingArthropodData } from '../utils/functions';
+import { 
+    currentFormName, 
+    currentSessionData, 
+    editingPrevious,
+    notificationText
+} from '../utils/jotai';
+import { 
+    updateData, 
+    updatePreexistingArthropodData,
+    verifyArthropodForm
+} from '../utils/functions';
 import {
     collection,
     setDoc,
@@ -22,19 +31,24 @@ import {
     getDocFromCache,
 } from 'firebase/firestore';
 import { db } from '../index';
+import { current } from 'daisyui/src/colors';
 
 export default function NewArthropodEntry() {
-    const [trap, setTrap] = useState();
+    const [trap, setTrap] = useState('');
     const [predator, setPredator] = useState(false);
     const [arthropodData, setArthropodData] = useState();
     const [comments, setComments] = useState('');
     const [confirmationModalIsOpen, setConfirmationModalIsOpen] = useState(false);
     const [arthropodSpeciesList, setArthropodSpeciesList] = useState([]);
     const [fenceTraps, setFenceTraps] = useState([]);
+    const [errors, setErrors] = useState({
+        trap: '',
+    })
 
     const [currentData, setCurrentData] = useAtom(currentSessionData);
     const [currentForm, setCurrentForm] = useAtom(currentFormName);
     const isEditingPrevious = useAtomValue(editingPrevious);
+    const setNotification  = useSetAtom(notificationText);
 
     // todo: input validation
 
@@ -65,7 +79,7 @@ export default function NewArthropodEntry() {
 
     const completeCapture = () => {
         const date = new Date();
-        if (isEditingPrevious) {
+        if (isEditingPrevious || currentData.arthropod) {
             updatePreexistingArthropodData(
                 {
                     trap,
@@ -98,6 +112,7 @@ export default function NewArthropodEntry() {
     return (
         <FormWrapper>
             <Dropdown
+                error={errors.trap}
                 value={trap}
                 setValue={setTrap}
                 placeholder="Fence Trap"
@@ -134,7 +149,14 @@ export default function NewArthropodEntry() {
                 value={comments}
                 setValue={setComments}
             />
-            <Button prompt="Finished?" clickHandler={() => setConfirmationModalIsOpen(true)} />
+            <Button prompt="Finished?" clickHandler={() => 
+                verifyArthropodForm(
+                    trap,
+                    setNotification,
+                    setConfirmationModalIsOpen,
+                    setErrors
+                )
+            }/>
             {confirmationModalIsOpen && (
                 <ConfirmationModal
                     data={{
