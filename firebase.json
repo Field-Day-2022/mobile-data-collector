@@ -13,7 +13,8 @@
     ],
     "rewrites": [
       {
-        "source": "**",
+        "source": "/createBundle",
+        "function": "createBundle",
         "destination": "/index.html"
       }
     ]
