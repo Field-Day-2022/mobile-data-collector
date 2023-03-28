@@ -35,7 +35,7 @@ function App() {
 
     useEffect(() => {
         // fetchFromBundle();
-        test();        
+        // test();        
     }, []);
 
     return (

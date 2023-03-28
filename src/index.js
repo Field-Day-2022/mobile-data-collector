@@ -63,6 +63,7 @@ const functions = getFunctions();
 const createBundle = httpsCallable(functions, 'createBundle');
 createBundle()
     .then(data => loadBundle(db, data))
+    .catch(error => console.error(error))
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
