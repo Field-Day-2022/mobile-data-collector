@@ -20,6 +20,8 @@ import {
 } from 'firebase/firestore';
 import { db } from '../index';
 
+const NA = 'N/A';
+
 export const updateData = (species, incomingData, setCurrentData, currentData, setCurrentForm) => {
     setCurrentData({
         ...currentData,
@@ -419,53 +421,53 @@ export const completeLizardCapture = async (
 
 const createLizardEntry = async (currentData, dataEntry) => {
     const dataObjTemplate = {
-        aran: 'N/A',
-        array: 'N/A',
-        auch: 'N/A',
-        blat: 'N/A',
-        cclMm: 'N/A',
-        chil: 'N/A',
-        cole: 'N/A',
-        comments: 'N/A',
-        crus: 'N/A',
-        dateTime: 'N/A',
-        dead: 'N/A',
-        derm: 'N/A',
-        diel: 'N/A',
-        dipt: 'N/A',
-        fenceTrap: 'N/A',
-        genus: 'N/A',
-        hatchling: 'N/A',
-        hdBody: 'N/A',
-        hete: 'N/A',
-        hyma: 'N/A',
-        lepi: 'N/A',
-        mant: 'N/A',
-        massG: 'N/A',
-        micro: 'N/A',
-        orth: 'N/A',
-        otlMm: 'N/A',
-        plMm: 'N/A',
-        predator: 'N/A',
-        pseu: 'N/A',
-        recapture: 'N/A',
-        regenTail: 'N/A',
-        scor: 'N/A',
-        sessionDateTime: 'N/A',
-        sex: 'N/A',
-        site: 'N/A',
-        soli: 'N/A',
-        species: 'N/A',
-        speciesCode: 'N/A',
-        svlMm: 'N/A',
-        taxa: 'N/A',
-        thys: 'N/A',
-        toeClipCode: 'N/A',
-        unki: 'N/A',
-        vtlMm: 'N/A',
-        year: 'N/A',
-        noCapture: 'N/A',
-        lastEdit: 'N/A',
+        aran: NA,
+        array: NA,
+        auch: NA,
+        blat: NA,
+        cclMm: NA,
+        chil: NA,
+        cole: NA,
+        comments: NA,
+        crus: NA,
+        dateTime: NA,
+        dead: NA,
+        derm: NA,
+        diel: NA,
+        dipt: NA,
+        fenceTrap: NA,
+        genus: NA,
+        hatchling: NA,
+        hdBody: NA,
+        hete: NA,
+        hyma: NA,
+        lepi: NA,
+        mant: NA,
+        massG: NA,
+        micro: NA,
+        orth: NA,
+        otlMm: NA,
+        plMm: NA,
+        predator: NA,
+        pseu: NA,
+        recapture: NA,
+        regenTail: NA,
+        scor: NA,
+        sessionDateTime: NA,
+        sex: NA,
+        site: NA,
+        soli: NA,
+        species: NA,
+        speciesCode: NA,
+        svlMm: NA,
+        taxa: NA,
+        thys: NA,
+        toeClipCode: NA,
+        unki: NA,
+        vtlMm: NA,
+        year: NA,
+        noCapture: NA,
+        lastEdit: NA,
     };
     const { genus, species } = await getGenusSpecies(
         currentData.project,
@@ -476,28 +478,28 @@ const createLizardEntry = async (currentData, dataEntry) => {
     const entryDate = new Date(dataEntry.dateTime);
     const year = entryDate.getFullYear();
     const obj = structuredClone(dataObjTemplate);
-    obj.array = currentData.array || 'N/A';
-    obj.dateTime = dataEntry.dateTime || 'N/A';
-    obj.lastEdit = entryDate.getTime() || 'N/A';
-    obj.dead = dataEntry.isDead || 'N/A';
-    obj.fenceTrap = dataEntry.trap || 'N/A';
-    obj.genus = genus || 'N/A';
-    obj.hatchling = dataEntry.isHatchling || 'N/A';
-    obj.massG = dataEntry.mass || 'N/A';
-    obj.otlMm = dataEntry.otl || 'N/A';
-    obj.recapture = dataEntry.isRecapture || 'N/A';
-    obj.regenTail = dataEntry.regenTail || 'N/A';
-    obj.sessionDateTime = currentData.sessionDateTime || 'N/A';
-    obj.sex = dataEntry.sex || 'N/A';
-    obj.site = currentData.site || 'N/A';
-    obj.species = species || 'N/A';
-    obj.speciesCode = dataEntry.speciesCode || 'N/A';
-    obj.svlMm = dataEntry.svl || 'N/A';
-    obj.taxa = 'Lizard' || 'N/A';
-    obj.toeClipCode = dataEntry.toeCode || 'N/A';
-    obj.vtlMm = dataEntry.vtl || 'N/A';
-    obj.year = year || 'N/A';
-    obj.comments = dataEntry.comments || 'N/A';
+    obj.array = currentData.array || NA;
+    obj.dateTime = dataEntry.dateTime || NA;
+    obj.lastEdit = entryDate.getTime() || NA;
+    obj.dead = dataEntry.isDead || NA;
+    obj.fenceTrap = dataEntry.trap || NA;
+    obj.genus = genus || NA;
+    obj.hatchling = dataEntry.isHatchling || NA;
+    obj.massG = dataEntry.mass || NA;
+    obj.otlMm = dataEntry.otl || NA;
+    obj.recapture = dataEntry.isRecapture || NA;
+    obj.regenTail = dataEntry.regenTail || NA;
+    obj.sessionDateTime = currentData.sessionDateTime || NA;
+    obj.sex = dataEntry.sex || NA;
+    obj.site = currentData.site || NA;
+    obj.species = species || NA;
+    obj.speciesCode = dataEntry.speciesCode || NA;
+    obj.svlMm = dataEntry.svl || NA;
+    obj.taxa = 'Lizard' || NA;
+    obj.toeClipCode = dataEntry.toeCode || NA;
+    obj.vtlMm = dataEntry.vtl || NA;
+    obj.year = year || NA;
+    obj.comments = dataEntry.comments || NA;
     return obj;
 };
 
@@ -514,7 +516,7 @@ const getGenusSpecies = async (project, taxa, speciesCode) => {
             return { genus: answer.secondary.Genus, species: answer.secondary.Species };
         }
     }
-    return { genus: 'N/A', species: 'N/A' };
+    return { genus: NA, species: NA };
 };
 
 const reloadCachedLizardData = async (collectionName, docId) => {
