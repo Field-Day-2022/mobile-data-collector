@@ -45,17 +45,17 @@ const fetchFromBundle = async (db) => {
     // const functions = getFunctions();
     // const bundle = httpsCallable(functions, 'createBundle');
     const resp = await fetch('/createBundle');
-    loadBundle(db, resp.body)
+    loadBundle(db, resp.body);
     const gatewayLizardQuery = await db.namedQuery('gateway-lizard-data-query');
     const sanPedroLizardQuery = await db.namedQuery('sanPedro-lizard-data-query');
     const virginRiverLizardQuery = await db.namedQuery('virginRiver-lizard-data-query');
     const answerSetQuery = await db.namedQuery('answerSet-query');
 
-    const gatewaySnap = await gatewayLizardQuery.get({source: 'cache'})
-    const sanPedroSnap = await sanPedroLizardQuery.get({source: 'cache'})
-    const virginRiverSnap = await virginRiverLizardQuery.get({source: 'cache'})
-    const answerSnap = await answerSetQuery.get({source: 'cache'})
-}
+    const gatewaySnap = await gatewayLizardQuery.get({ source: 'cache' });
+    const sanPedroSnap = await sanPedroLizardQuery.get({ source: 'cache' });
+    const virginRiverSnap = await virginRiverLizardQuery.get({ source: 'cache' });
+    const answerSnap = await answerSetQuery.get({ source: 'cache' });
+};
 
 // fetchFromBundle(db)
 

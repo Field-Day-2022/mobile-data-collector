@@ -1,7 +1,15 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react';
-import { collection, doc, getDoc, getDocsFromCache, onSnapshot, query, where } from 'firebase/firestore';
+import {
+    collection,
+    doc,
+    getDoc,
+    getDocsFromCache,
+    onSnapshot,
+    query,
+    where,
+} from 'firebase/firestore';
 import CollectData from './pages/CollectData';
 import { db } from './index';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
@@ -13,7 +21,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import Notification from './components/Notification';
 import { ScaleLoader } from 'react-spinners';
 import { checkForServerData } from './utils/functions';
-import { getFunctions, httpsCallable } from 'firebase/functions'
+import { getFunctions, httpsCallable } from 'firebase/functions';
 
 function App() {
     const [answerSetLoading, setAnswerSetLoading] = useState(true);
@@ -21,17 +29,12 @@ function App() {
     const setLizardDataLoaded = useSetAtom(lizardDataLoadedAtom);
     const [lastEditTime, setLastEditTime] = useAtom(lizardLastEditTime);
 
-   
-
     const test = async () => {
         const testSnap = await getDocsFromCache(
-            query(
-                collection("GatewayData"),
-                where("taxa", "==", "Lizard")
-            )
-        )
-        console.log(testSnap)
-    }
+            query(collection('GatewayData'), where('taxa', '==', 'Lizard'))
+        );
+        console.log(testSnap);
+    };
 
     useEffect(() => {
         // fetchFromBundle();
