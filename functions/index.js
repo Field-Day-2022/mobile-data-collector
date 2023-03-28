@@ -10,27 +10,29 @@ const functions = require('firebase-functions');
 // });
 
 exports.createBundle = functions.https.onRequest(async (request, response) => {
-  const gatewayLizardData = await db.collection('GatewayData')
-      .where('taxa', '==', 'Lizard')
-      .get();
-  const sanPedroLizardData = await db.collection('SanPedroData')
-      .where('taxa', '==', 'Lizard')
-      .get();
-  const virginRiverLizardData = await db
-      .collection('VirginRiverData')
-      .where('taxa', '==', 'Lizard')
-      .get();
-  const answerSetData = await db.collection('AnswerSet').get();
+    const gatewayLizardData = await db
+        .collection('GatewayData')
+        .where('taxa', '==', 'Lizard')
+        .get();
+    const sanPedroLizardData = await db
+        .collection('SanPedroData')
+        .where('taxa', '==', 'Lizard')
+        .get();
+    const virginRiverLizardData = await db
+        .collection('VirginRiverData')
+        .where('taxa', '==', 'Lizard')
+        .get();
+    const answerSetData = await db.collection('AnswerSet').get();
 
-  const bundleBuffer = db
-      .bundle('initial-dataset')
-      .add('gateway-lizard-data-query', gatewayLizardData)
-      .add('sanPedro-lizard-data-query', sanPedroLizardData)
-      .add('virginRiver-lizard-data-query', virginRiverLizardData)
-      .add('answerSet-query', answerSetData)
-      .build();
+    const bundleBuffer = db
+        .bundle('initial-dataset')
+        .add('gateway-lizard-data-query', gatewayLizardData)
+        .add('sanPedro-lizard-data-query', sanPedroLizardData)
+        .add('virginRiver-lizard-data-query', virginRiverLizardData)
+        .add('answerSet-query', answerSetData)
+        .build();
 
-  response.set('Cache-Control', 'public: max-age=7776000, s-maxage=15552000');
+    response.set('Cache-Control', 'public: max-age=7776000, s-maxage=15552000');
 
-  response.end(bundleBuffer);
+    response.end(bundleBuffer);
 });
