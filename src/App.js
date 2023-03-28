@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react';
-import { collection, doc, onSnapshot } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocsFromCache, onSnapshot, query, where } from 'firebase/firestore';
 import CollectData from './pages/CollectData';
 import { db } from './index';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
@@ -13,6 +13,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import Notification from './components/Notification';
 import { ScaleLoader } from 'react-spinners';
 import { checkForServerData } from './utils/functions';
+import { getFunctions, httpsCallable } from 'firebase/functions'
 
 function App() {
     const [answerSetLoading, setAnswerSetLoading] = useState(true);
@@ -20,35 +21,21 @@ function App() {
     const setLizardDataLoaded = useSetAtom(lizardDataLoadedAtom);
     const [lastEditTime, setLastEditTime] = useAtom(lizardLastEditTime);
 
-    useEffect(() => {
-        onSnapshot(doc(db, 'Metadata', 'LizardData'), (snapshot) => {
-            console.log(
-                `Local last edit time: ${new Date(
-                    lastEditTime
-                ).toLocaleString()}, Server last edit time: ${new Date(
-                    snapshot.data().lastEditTime
-                ).toLocaleString()}`
-            );
-            if (snapshot.data().lastEditTime !== lastEditTime) {
-                console.log(
-                    `fetching new/modified lizard data from ${new Date(
-                        lastEditTime
-                    ).toDateString()} to ${new Date(snapshot.data().lastEditTime).toDateString()}`
-                );
-                setLizardDataLoaded(false);
-                checkForServerData(lastEditTime, snapshot.data().lastEditTime, setLizardDataLoaded);
-                setLastEditTime(snapshot.data().lastEditTime);
-            } else {
-                setLizardDataLoaded(true);
-            }
-        });
+   
 
-        onSnapshot(collection(db, 'AnswerSet'), (snapshot) => {
-            console.log(
-                `Answer set loaded from ${snapshot.metadata.fromCache ? 'cache' : 'server'}`
-            );
-            setAnswerSetLoading(false);
-        });
+    const test = async () => {
+        const testSnap = await getDocsFromCache(
+            query(
+                collection("GatewayData"),
+                where("taxa", "==", "Lizard")
+            )
+        )
+        console.log(testSnap)
+    }
+
+    useEffect(() => {
+        // fetchFromBundle();
+        test();        
     }, []);
 
     return (
