@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
-const {initializeApp} = require('firebase-admin/app');
-const {getFirestore} = require('firebase-admin/firestore');
+const { initializeApp } = require('firebase-admin/app');
+const { getFirestore } = require('firebase-admin/firestore');
 const functions = require('firebase-functions');
 const cors = require('cors')({
   origin: true,
@@ -18,11 +18,11 @@ const db = getFirestore();
 // });
 
 exports.createBundle = functions.https.onRequest(async (request, response) => {
-  cors(request, response, async () => {
-    try {
-    //   response.send(await admin.firestore().listCollections());
+    cors(request, response, async () => {
+        try {
+            //   response.send(await admin.firestore().listCollections());
 
-      //   response.send(await db.collection('GatewayData').limit(1).get());
+            //   response.send(await db.collection('GatewayData').limit(1).get());
 
       //   response.send(await db.getAll(
       //       db.collection('GatewayData').doc('04kK9qB8N7LHAaXQyzxz'),
@@ -61,7 +61,7 @@ exports.createBundle = functions.https.onRequest(async (request, response) => {
       response
           .set('Cache-Control', 'public: max-age=7776000, s-maxage=15552000');
 
-      //   response.set('Access-Control-Allow-Origin', '*');
+            //   response.set('Access-Control-Allow-Origin', '*');
 
       response.end(bundleBuffer);
 
