@@ -3,7 +3,7 @@ const {initializeApp} = require('firebase-admin/app');
 const {getFirestore} = require('firebase-admin/firestore');
 const functions = require('firebase-functions');
 const cors = require('cors')({
-  origin: true,
+    origin: true,
 });
 
 initializeApp();
