@@ -82,7 +82,7 @@ const fetchFromBundle = async (db) => {
 //         loadBundle(db, data)
 //     })
 //     .catch((error) => console.error(error));
-fetchFromBundle(db)
+fetchFromBundle(db);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
