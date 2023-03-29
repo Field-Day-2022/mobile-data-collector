@@ -7,7 +7,12 @@ import reportWebVitals from './reportWebVitals';
 import { Provider } from 'jotai';
 // Import the functions you need from the SDKs you need
 import { initializeApp } from 'firebase/app';
-import { getFirestore, enableIndexedDbPersistence, namedQuery, getDocsFromCache } from 'firebase/firestore';
+import {
+    getFirestore,
+    enableIndexedDbPersistence,
+    namedQuery,
+    getDocsFromCache,
+} from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import { LoginWrapper } from './pages/LoginWrapper';
 import { getFunctions, httpsCallable, httpsCallableFromURL } from 'firebase/functions';
@@ -46,14 +51,12 @@ const fetchFromBundle = async (db) => {
     // const bundle = httpsCallable(functions, 'createBundle');
     const resp = await fetch('https://createbundle-2fgw6yxf3a-uc.a.run.app');
     // console.log((await resp.text()))
-    loadBundle(db, resp.body).then(
-        async () => {
-            console.log('complete')
-            const answerSetQuery = await namedQuery(db, 'answerSet-query')
-            const answerSnap = await getDocsFromCache(answerSetQuery)
-            console.log(answerSnap.docs)
-        }
-    );
+    loadBundle(db, resp.body).then(async () => {
+        console.log('complete');
+        const answerSetQuery = await namedQuery(db, 'answerSet-query');
+        const answerSnap = await getDocsFromCache(answerSetQuery);
+        console.log(answerSnap.docs);
+    });
     // const answerSetQuery = await namedQuery(db, 'answerSet-query')
     // const answerSnap = await getDocsFromCache(namedQuery)
     // console.log(answerSnap.docs)
