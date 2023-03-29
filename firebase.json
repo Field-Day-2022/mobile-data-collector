@@ -14,8 +14,7 @@
     "rewrites": [
       {
         "source": "/createBundle",
-        "function": "createBundle",
-        "destination": "/index.html"
+        "function": "createBundle"
       }
     ]
   },

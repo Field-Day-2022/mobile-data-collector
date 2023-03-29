@@ -31,14 +31,14 @@ function App() {
 
     const test = async () => {
         const testSnap = await getDocsFromCache(
-            query(collection('GatewayData'), where('taxa', '==', 'Lizard'))
+            query(collection('AnswerSet'))
         );
         console.log(testSnap);
     };
 
     useEffect(() => {
         // fetchFromBundle();
-        // test();
+        test();
     }, []);
 
     return (
