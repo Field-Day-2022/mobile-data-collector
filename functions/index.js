@@ -3,7 +3,7 @@ const { initializeApp } = require('firebase-admin/app');
 const { getFirestore } = require('firebase-admin/firestore');
 const functions = require('firebase-functions');
 const cors = require('cors')({
-  origin: true,
+    origin: true,
 });
 
 initializeApp();
@@ -24,50 +24,47 @@ exports.createBundle = functions.https.onRequest(async (request, response) => {
 
             //   response.send(await db.collection('GatewayData').limit(1).get());
 
-      //   response.send(await db.getAll(
-      //       db.collection('GatewayData').doc('04kK9qB8N7LHAaXQyzxz'),
-      //   ));
+            //   response.send(await db.getAll(
+            //       db.collection('GatewayData').doc('04kK9qB8N7LHAaXQyzxz'),
+            //   ));
 
-      //   const gatewayLizardData = await db
-      //       .collection('GatewayData')
-      //       .where('taxa', '==', 'Lizard')
-      //       .get();
-      //   const sanPedroLizardData = await db
-      //       .collection('SanPedroData')
-      //       .where('taxa', '==', 'Lizard')
-      //       .get();
-      //   const virginRiverLizardData = await db
-      //       .collection('VirginRiverData')
-      //       .where('taxa', '==', 'Lizard')
-      //       .get();
-      const answerSetData = await db
-          .collection('AnswerSet')
-          .get();
+            //   const gatewayLizardData = await db
+            //       .collection('GatewayData')
+            //       .where('taxa', '==', 'Lizard')
+            //       .get();
+            //   const sanPedroLizardData = await db
+            //       .collection('SanPedroData')
+            //       .where('taxa', '==', 'Lizard')
+            //       .get();
+            //   const virginRiverLizardData = await db
+            //       .collection('VirginRiverData')
+            //       .where('taxa', '==', 'Lizard')
+            //       .get();
+            const answerSetData = await db.collection('AnswerSet').get();
 
-      const bundleBuffer = db
-          .bundle('initial-dataset')
-      //   .add('gateway-lizard-data-query', gatewayLizardData)
-      //   .add('sanPedro-lizard-data-query', sanPedroLizardData)
-      //   .add('virginRiver-lizard-data-query', virginRiverLizardData)
-          .add('answerSet-query', answerSetData)
-          .build();
+            const bundleBuffer = db
+                .bundle('initial-dataset')
+                //   .add('gateway-lizard-data-query', gatewayLizardData)
+                //   .add('sanPedro-lizard-data-query', sanPedroLizardData)
+                //   .add('virginRiver-lizard-data-query', virginRiverLizardData)
+                .add('answerSet-query', answerSetData)
+                .build();
 
-      //   console.log(gatewayLizardData);
+            //   console.log(gatewayLizardData);
 
-      // const bundle = db.bundle('initial-dataset');
+            // const bundle = db.bundle('initial-dataset');
 
-      // const bundleBuffer = bundle.add(gatewayLizardData).build();
+            // const bundleBuffer = bundle.add(gatewayLizardData).build();
 
-      response
-          .set('Cache-Control', 'public: max-age=7776000, s-maxage=15552000');
+            response.set('Cache-Control', 'public: max-age=7776000, s-maxage=15552000');
 
             //   response.set('Access-Control-Allow-Origin', '*');
 
-      response.end(bundleBuffer);
+            response.end(bundleBuffer);
 
-    //   response.status(200).send();
-    } catch (e) {
-      functions.logger.error(e);
-    }
-  });
+            //   response.status(200).send();
+        } catch (e) {
+            functions.logger.error(e);
+        }
+    });
 });
