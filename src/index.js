@@ -7,10 +7,10 @@ import reportWebVitals from './reportWebVitals';
 import { Provider } from 'jotai';
 // Import the functions you need from the SDKs you need
 import { initializeApp } from 'firebase/app';
-import { getFirestore, enableIndexedDbPersistence } from 'firebase/firestore';
+import { getFirestore, enableIndexedDbPersistence, namedQuery, getDocsFromCache } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import { LoginWrapper } from './pages/LoginWrapper';
-import { getFunctions, httpsCallable } from 'firebase/functions';
+import { getFunctions, httpsCallable, httpsCallableFromURL } from 'firebase/functions';
 import { loadBundle } from 'firebase/firestore';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -44,8 +44,19 @@ enableIndexedDbPersistence(db).catch((error) => {
 const fetchFromBundle = async (db) => {
     // const functions = getFunctions();
     // const bundle = httpsCallable(functions, 'createBundle');
-    const resp = await fetch('/createBundle');
-    loadBundle(db, resp.body);
+    const resp = await fetch('https://createbundle-2fgw6yxf3a-uc.a.run.app');
+    // console.log((await resp.text()))
+    loadBundle(db, resp.body).then(
+        async () => {
+            console.log('complete')
+            const answerSetQuery = await namedQuery(db, 'answerSet-query')
+            const answerSnap = await getDocsFromCache(answerSetQuery)
+            console.log(answerSnap.docs)
+        }
+    );
+    // const answerSetQuery = await namedQuery(db, 'answerSet-query')
+    // const answerSnap = await getDocsFromCache(namedQuery)
+    // console.log(answerSnap.docs)
     // const gatewayLizardQuery = await db.namedQuery('gateway-lizard-data-query');
     // const sanPedroLizardQuery = await db.namedQuery('sanPedro-lizard-data-query');
     // const virginRiverLizardQuery = await db.namedQuery('virginRiver-lizard-data-query');
@@ -60,10 +71,10 @@ const fetchFromBundle = async (db) => {
 // fetchFromBundle(db)
 
 // const functions = getFunctions();
-// const createBundle = httpsCallable(functions, 'createBundle');
+// const createBundle = httpsCallableFromURL('/createBundle');
 // createBundle()
 //     .then(result => {
-//         console.log(result.getData())
+//         loadBundle(db, result)
 //     })
 // createBundle()
 //     .then((data) => {

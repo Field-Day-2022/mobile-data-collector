@@ -30,15 +30,14 @@ function App() {
     const [lastEditTime, setLastEditTime] = useAtom(lizardLastEditTime);
 
     const test = async () => {
-        const testSnap = await getDocsFromCache(
-            query(collection('AnswerSet'))
-        );
+        const testSnap = await getDocsFromCache(collection(db, "AnswerSet"))
         console.log(testSnap);
     };
 
     useEffect(() => {
         // fetchFromBundle();
-        test();
+        setTimeout(() => test(), 3000)
+        // test();
     }, []);
 
     return (
