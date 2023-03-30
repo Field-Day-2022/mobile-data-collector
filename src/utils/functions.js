@@ -230,7 +230,7 @@ export const syncDeletedEntries = async (deletedEntries, setLizardDataLoaded) =>
                 });
             }
         } catch (exc) {
-            if (exc.toString().includes("Failed to get document from cache")) continue; // expected if the document is already deleted
+            if (exc.toString().includes("Failed to get document from cache")) continue;
             else console.error(exc);
         }
     }
