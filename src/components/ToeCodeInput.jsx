@@ -42,7 +42,7 @@ export default function ToeCodeInput({
     // const recaptureHistoryContainerControls = useAnimationControls();
     const errorMsgControls = useAnimationControls();
 
-    const [environment] = useAtomValue(appMode)
+    const environment = useAtomValue(appMode)
     const setNotification = useSetAtom(notificationText);
 
     useEffect(() => {
@@ -93,7 +93,11 @@ export default function ToeCodeInput({
         if (toeCode.includes('C4') || toeCode.includes('D4')) {
             setNotification('App does not generate toe clip codes with C4 or D4');
         }
-        const collectionName = environment === 'live' ? 'LizardData' : 'TestLizardData';
+        console.log(`Environment: ${environment}`)
+        const collectionName = environment === 'live' ? 
+            `${currentData.project.replace(/\s/g, '')}Data` 
+            : 
+            `Test${currentData.project.replace(/\s/g, '')}Data`;
         const lizardSnapshot = await getDocsFromCache(query(
             collection(db, collectionName),
             where('site', '==', currentData.site),
@@ -228,7 +232,11 @@ export default function ToeCodeInput({
 
     const findPreviousLizardEntries = async () => {
         setHistoryButtonText('Querying...');
-        const lizardDataRef = collection(db, 'LizardData');
+        const collectionName = environment === 'live' ? 
+        `${currentData.project.replace(/\s/g, '')}Data` 
+        : 
+        `Test${currentData.project.replace(/\s/g, '')}Data`;
+        const lizardDataRef = collection(db, collectionName);
         const q = query(
             lizardDataRef,
             where('toeClipCode', '==', toeCode),
