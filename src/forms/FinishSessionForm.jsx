@@ -24,6 +24,8 @@ import {
     addDoc,
     writeBatch,
     getDocsFromCache,
+    updateDoc,
+    arrayRemove,
 } from 'firebase/firestore';
 
 import FormWrapper from '../components/FormWrapper';
@@ -136,6 +138,14 @@ export const FinishSessionForm = () => {
             const entryId = `${currentData.site}${taxa}${timestamp.getTime()}`;
             console.log(entryId)
             dataBatch.set(doc(db, collectionName, entryId), entryObject);
+            if (taxa === 'Lizard') {
+                await updateDoc(doc(db, 'Metadata', 'LizardData'), {
+                    deletedEntries: arrayRemove({
+                        entryId,
+                        collectionId: collectionName
+                    })
+                })
+            }
         }
         await dataBatch.commit();
         console.log('batch(es) written successfully');
@@ -254,7 +264,7 @@ export const FinishSessionForm = () => {
                 obj.fenceTrap = dataEntry.trap;
                 obj.genus = genus;
                 obj.hatchling = dataEntry.isHatchling;
-                obj.massG = dataEntry.mass;
+                obj.massG = dataEntry.massG;
                 obj.otlMm = dataEntry.otl;
                 obj.recapture = dataEntry.isRecapture;
                 obj.regenTail = dataEntry.regenTail;
@@ -265,7 +275,7 @@ export const FinishSessionForm = () => {
                 obj.speciesCode = dataEntry.speciesCode;
                 obj.svlMm = dataEntry.svl;
                 obj.taxa = 'Lizard';
-                obj.toeClipCode = dataEntry.toeCode;
+                obj.toeClipCode = dataEntry.toeClipCode;
                 obj.vtlMm = dataEntry.vtl;
                 obj.year = year;
                 obj.comments = dataEntry.comments;
