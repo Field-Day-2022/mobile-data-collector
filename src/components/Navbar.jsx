@@ -2,7 +2,7 @@
 import { useAtom } from 'jotai';
 import { currentPageName, currentFormName, currentSessionData } from '../utils/jotai';
 import { useRef } from 'react';
-import { motion, useCycle } from 'framer-motion';
+import { AnimatePresence, motion, useCycle } from 'framer-motion';
 
 export default function Navbar() {
     const [currentPage, setCurrentPage] = useAtom(currentPageName);
@@ -17,31 +17,36 @@ export default function Navbar() {
     const navigationContainerVariant = {
         open: {
             opacity: 1,
-            left: 0,
         },
         closed: {
             opacity: 0,
-            left: '-50%',
         },
     };
 
     const navItemVariant = {
         open: {
             opacity: 1,
-            bottom: 0,
+            x: 0,
         },
         closed: {
             opacity: 0,
-            bottom: '-50%',
+            x: '-25%',
+            transition: {
+                duration: .5,
+            }
         },
     };
 
     const navUlVariant = {
         open: {
-            transition: { staggerChildren: 0.05, delayChildren: 0.1 },
+            opacity: 1,
+            transition: { 
+                staggerChildren: 0.1, 
+                delayChildren: 0.05 
+            },
         },
         closed: {
-            transition: { staggerChildren: 0.05, staggerDirection: -1 },
+            opacity: 0,
         },
     };
 
@@ -52,34 +57,43 @@ export default function Navbar() {
             animate={isOpen ? 'open' : 'closed'}
             ref={containerRef}
         >
-            {isOpen && <div 
-                className="fixed inset-0 z-50 border-0 border-green-400"
-                onClick={() => toggleOpen()}
-            />}
-            <motion.div
-                className="bg-white/90 rounded-tr-xl rounded-br-xl w-1/2 absolute top-12 z-50"
+            <AnimatePresence>
+                {isOpen && <motion.div 
+                    key='backgroundDiv'
+                    className="fixed inset-0 z-30 bg-black/80 border-2 border-green-400"
+                    initial={{opacity: 0}}
+                    animate={{opacity: 1}}
+                    exit={{opacity: 0}}
+                    onClick={() => toggleOpen()}
+                />}
+            </AnimatePresence>
+            {isOpen && <motion.div
+                key="navDiv"
+                className="bg-transparent rounded-tr-xl rounded-br-xl w-full absolute top-12 z-50"
                 variants={navigationContainerVariant}
+                initial='closed'
+                animate={isOpen ? 'open' : 'closed'}
             >
                 <motion.ul
                     variants={navUlVariant}
-                    initial={false}
+                    initial={'closed'}
                     animate={isOpen ? 'open' : 'closed'}
                 >
-                    <motion.li
-                        className="text-2xl p-2 border-2 border-asu-gold brightness-90 m-2"
-                        variants={navItemVariant}
-                        onClick={() => {
+                    <ListItem 
+                        variant={navItemVariant}
+                        menuLabel={"Home"}
+                        activeMenuLabel={currentPage}
+                        clickHandler={() => {
                             setCurrentPage('Home');
                             setCurrentForm('');
                             toggleOpen();
                         }}
-                    >
-                        Home
-                    </motion.li>
-                    <motion.li
-                        className="text-2xl p-2 border-2 border-asu-gold brightness-90 m-2"
-                        variants={navItemVariant}
-                        onClick={() => {
+                    />
+                    <ListItem 
+                        variant={navItemVariant}
+                        menuLabel={"Collect Data"}
+                        activeMenuLabel={currentPage}
+                        clickHandler={() => {
                             setCurrentPage('Collect Data');
                             if (currentData.project === '') {
                                 setCurrentForm('New Data');
@@ -88,35 +102,31 @@ export default function Navbar() {
                             }
                             toggleOpen();
                         }}
-                    >
-                        Collect Data
-                    </motion.li>
-                    <motion.li
-                        className="text-2xl p-2 border-2 border-asu-gold brightness-90 m-2"
-                        variants={navItemVariant}
-                        onClick={() => {
+                    />
+                    <ListItem 
+                        variant={navItemVariant}
+                        menuLabel={"History"}
+                        activeMenuLabel={currentPage}
+                        clickHandler={() => {
                             setCurrentPage('History');
                             setCurrentForm('');
                             toggleOpen();
                         }}
-                    >
-                        History
-                    </motion.li>
-                    <motion.li
-                        className="text-2xl p-2 border-2 border-asu-gold brightness-90 m-2"
-                        variants={navItemVariant}
-                        onClick={() => {
+                    />
+                    <ListItem 
+                        variant={navItemVariant}
+                        menuLabel={"About Us"}
+                        activeMenuLabel={currentPage}
+                        clickHandler={() => {
                             setCurrentPage('About Us');
                             setCurrentForm('');
                             toggleOpen();
                         }}
-                    >
-                        About Us
-                    </motion.li>
+                    />
                 </motion.ul>
-            </motion.div>
+            </motion.div>}
 
-            <MenuToggle toggle={() => toggleOpen()} />
+            <MenuToggle isOpen={isOpen} toggle={() => toggleOpen()} />
 
             <motion.div className="text-lg breadcrumbs ml-2 overflow-hidden">
                 <ul>
@@ -128,26 +138,49 @@ export default function Navbar() {
     );
 }
 
-const Path = (props) => (
+const ListItem = ({
+    variant, 
+    menuLabel,
+    activeMenuLabel,
+    clickHandler,
+}) => {
+    return (
+        <motion.li
+            className={
+                menuLabel === activeMenuLabel ? 
+                "text-2xl px-2 py-6 bg-white border-4 border-asu-gold mx-2 mb-8 shadow-asu-gold shadow-xl"
+                :
+                "text-2xl px-2 py-6 bg-white border-2 border-asu-gold mx-2 mb-8"}
+            variants={variant}
+            onClick={() => clickHandler()}
+        >
+            <p className={menuLabel === activeMenuLabel ? "font-bold underline" : ""}>{menuLabel}</p>
+        </motion.li>
+    )
+}
+
+const Path = ({isOpen, ...props}) => (
     <motion.path
         fill="transparent"
         strokeWidth="3"
-        stroke="#8C1D40"
         strokeLinecap="round"
         {...props}
+        className={isOpen ? 'stroke-asu-gold' : 'stroke-asu-maroon'}
     />
 );
 
-const MenuToggle = ({ toggle }) => (
+const MenuToggle = ({ isOpen, toggle }) => (
     <button onClick={toggle} className="p-2 z-40">
         <svg width="33" height="33" viewBox="0 0 23 23">
             <Path
+                isOpen={isOpen}
                 variants={{
                     closed: { d: 'M 2 2.5 L 20 2.5' },
                     open: { d: 'M 3 16.5 L 17 2.5' },
                 }}
             />
             <Path
+                isOpen={isOpen}
                 d="M 2 9.423 L 20 9.423"
                 variants={{
                     closed: { opacity: 1 },
@@ -156,6 +189,7 @@ const MenuToggle = ({ toggle }) => (
                 transition={{ duration: 0.1 }}
             />
             <Path
+                isOpen={isOpen}
                 variants={{
                     closed: { d: 'M 2 16.346 L 20 16.346' },
                     open: { d: 'M 3 2.5 L 17 16.346' },
