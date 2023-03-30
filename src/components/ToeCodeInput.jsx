@@ -145,7 +145,10 @@ export default function ToeCodeInput({
             setIsValid(false);
             setErrorMsg('Toe Clip Code must have an even number of characters');
         } else {
-            const collectionName = environment === 'test' ? 'TestLizardData' : 'LizardData';
+            const collectionName = environment === 'live' ? 
+                `${currentData.project.replace(/\s/g, '')}Data` 
+                : 
+                `Test${currentData.project.replace(/\s/g, '')}Data`;
             const lizardSnapshot = await getDocsFromCache(query(
                 collection(db, collectionName),
                 where('toeClipCode', '==', toeCode),
@@ -233,9 +236,9 @@ export default function ToeCodeInput({
     const findPreviousLizardEntries = async () => {
         setHistoryButtonText('Querying...');
         const collectionName = environment === 'live' ? 
-        `${currentData.project.replace(/\s/g, '')}Data` 
-        : 
-        `Test${currentData.project.replace(/\s/g, '')}Data`;
+            `${currentData.project.replace(/\s/g, '')}Data` 
+            : 
+            `Test${currentData.project.replace(/\s/g, '')}Data`;
         const lizardDataRef = collection(db, collectionName);
         const q = query(
             lizardDataRef,
