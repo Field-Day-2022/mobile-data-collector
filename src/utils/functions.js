@@ -14,6 +14,8 @@ import {
     setDoc,
     getDocFromCache,
     updateDoc,
+    deleteDoc,
+    getDocFromServer,
 } from 'firebase/firestore';
 import { db } from '../index';
 
@@ -162,22 +164,79 @@ export const changeLizardDataTimesToEpochTime = async () => {
 export const checkForServerData = async (
     latestClientTime,
     latestServerTime,
-    setLizardDataLoaded
+    setLizardDataLoaded,
+    environment
 ) => {
     console.log(`comparing ${latestClientTime} and ${latestServerTime}`);
-    if (latestClientTime < latestServerTime) {
-        await downloadLatestLizardDataFromServer(latestClientTime);
+    if (latestClientTime === 0) {
+        await downloadAllLizardDataFromServer(environment);
+        setLizardDataLoaded(true);
+    } else if (latestClientTime < latestServerTime) {
+        await downloadLatestLizardDataFromServer(latestClientTime, environment);
         setLizardDataLoaded(true);
     }
 };
 
-export const downloadLatestLizardDataFromServer = async (latestClientTime) => {
-    const incomingLizardData = await getDocsFromServer(
-        query(collection(db, 'TestLizardData'), where('lastEdit', '>=', latestClientTime))
-    );
-    console.log('fresh lizard data downloaded:');
-    console.log(incomingLizardData);
+export const downloadAllLizardDataFromServer = async (environment) => {
+    const collections = ['GatewayData', 'VirginRiverData', 'SanPedroData'];
+    if (environment === 'test') {
+        collections.forEach((value, index) => {
+            collections[index] = `Test${value}`
+        })
+    }
+    for (const collectionName of collections) {
+        const incomingLizardData = await getDocsFromServer(
+            query(
+                collection(db, collectionName), 
+                where('taxa', '==', 'Lizard')
+            )
+        );
+        console.log('fresh lizard data downloaded:');
+        console.log(incomingLizardData);
+    }
+}
+
+export const downloadLatestLizardDataFromServer = async (latestClientTime, environment) => {
+    const collections = ['GatewayData', 'VirginRiverData', 'SanPedroData'];
+    if (environment === 'test') {
+        collections.forEach((value, index) => {
+            collections[index] = `Test${value}`
+        })
+    }
+    for (const collectionName of collections) {
+        const incomingLizardData = await getDocsFromServer(
+            query(
+                collection(db, collectionName), 
+                where('lastEdit', '>=', latestClientTime),
+                where('taxa', '==', 'Lizard')
+            )
+        );
+        if (!incomingLizardData.empty) {       
+            console.log(`fresh lizard data downloaded from ${collectionName}:`);
+            console.log(incomingLizardData);
+        } 
+    }
 };
+
+export const syncDeletedEntries = async (
+    deletedEntries, 
+    setLizardDataLoaded
+) => {
+    for (const {entryId, collectionId} of deletedEntries) {
+        // const [entryId, collectionId] = entry;
+        const entryData = await getDocFromCache(doc(db, collectionId, entryId));
+        console.log(`${entryId} ${entryData.exists() ? 'does' : 'does not'} exist locally`)
+        if (entryData.exists()) {
+            console.log(`fetching ${entryId} from the server...`)
+            getDocFromServer(doc(db, collectionId, entryId))
+            .then(snapshot => {
+                console.log(`this doc ${snapshot.exists() ? 'does' : 'does not'} exist remotely`)
+                console.log(snapshot);
+            });
+        }
+    }
+    setLizardDataLoaded(true);
+}
 
 export const getAnswerFormDataFromFirestore = async (
     currentData,
@@ -282,9 +341,12 @@ export const completeLizardCapture = async (
         dateTime: date.toISOString(),
         lastEdit: date.getTime(),
     };
-    updateData('lizard', lizardDataWithTimes, setCurrentData, currentData, setCurrentForm);
-    const collectionName = environment === 'live' ? 'LizardData' : 'TestLizardData';
+    const collectionName = environment === 'live' ? 
+    `${currentData.project.replace(/\s/g, '')}Data` 
+    : 
+    `Test${currentData.project.replace(/\s/g, '')}Data`;
     const lizardEntry = await createLizardEntry(currentData, lizardDataWithTimes);
+    updateData('lizard', lizardEntry, setCurrentData, currentData, setCurrentForm);
     await setDoc(
         doc(db, collectionName, `${currentData.site}Lizard${date.getTime()}`),
         lizardEntry
@@ -293,9 +355,10 @@ export const completeLizardCapture = async (
         reloadCachedLizardData(collectionName, `${currentData.site}Lizard${date.getTime()}`);
     });
     setLastEditTime(lizardDataWithTimes.lastEdit);
-    await updateDoc(doc(db, 'Metadata', 'LizardData'), {
+    setTimeout(async () => {
+        await updateDoc(doc(db, 'Metadata', 'LizardData'), {
         lastEditTime: lizardDataWithTimes.lastEdit,
-    });
+    })}, 1000)
 };
 
 const createLizardEntry = async (currentData, dataEntry) => {
@@ -357,28 +420,28 @@ const createLizardEntry = async (currentData, dataEntry) => {
     const entryDate = new Date(dataEntry.dateTime);
     const year = entryDate.getFullYear();
     const obj = structuredClone(dataObjTemplate);
-    obj.array = currentData.array;
-    obj.dateTime = dataEntry.dateTime;
-    obj.lastEdit = entryDate.getTime();
-    obj.dead = dataEntry.isDead;
-    obj.fenceTrap = dataEntry.trap;
-    obj.genus = genus;
-    obj.hatchling = dataEntry.isHatchling;
-    obj.massG = dataEntry.mass;
-    obj.otlMm = dataEntry.otl;
-    obj.recapture = dataEntry.isRecapture;
-    obj.regenTail = dataEntry.regenTail;
-    obj.sessionDateTime = currentData.sessionDateTime;
-    obj.sex = dataEntry.sex;
-    obj.site = currentData.site;
-    obj.species = species;
-    obj.speciesCode = dataEntry.speciesCode;
-    obj.svlMm = dataEntry.svl;
-    obj.taxa = 'Lizard';
-    obj.toeClipCode = dataEntry.toeCode;
-    obj.vtlMm = dataEntry.vtl;
-    obj.year = year;
-    obj.comments = dataEntry.comments;
+    obj.array = currentData.array || 'N/A';
+    obj.dateTime = dataEntry.dateTime || 'N/A';
+    obj.lastEdit = entryDate.getTime() || 'N/A';
+    obj.dead = dataEntry.isDead || 'N/A';
+    obj.fenceTrap = dataEntry.trap || 'N/A';
+    obj.genus = genus || 'N/A';
+    obj.hatchling = dataEntry.isHatchling || 'N/A';
+    obj.massG = dataEntry.mass || 'N/A';
+    obj.otlMm = dataEntry.otl || 'N/A';
+    obj.recapture = dataEntry.isRecapture || 'N/A';
+    obj.regenTail = dataEntry.regenTail || 'N/A';
+    obj.sessionDateTime = currentData.sessionDateTime || 'N/A';
+    obj.sex = dataEntry.sex || 'N/A';
+    obj.site = currentData.site || 'N/A';
+    obj.species = species || 'N/A';
+    obj.speciesCode = dataEntry.speciesCode || 'N/A';
+    obj.svlMm = dataEntry.svl || 'N/A';
+    obj.taxa = 'Lizard' || 'N/A';
+    obj.toeClipCode = dataEntry.toeCode || 'N/A';
+    obj.vtlMm = dataEntry.vtl || 'N/A';
+    obj.year = year || 'N/A';
+    obj.comments = dataEntry.comments || 'N/A';
     return obj;
 };
 
