@@ -1,26 +1,28 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState } from 'react';
+import { useEffect, useState, memo, useRef } from 'react';
 import { collection, doc, onSnapshot } from 'firebase/firestore';
 import CollectData from './pages/CollectData';
 import { db } from './index';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
-import { currentPageName, lizardDataLoadedAtom, lizardLastEditTime } from './utils/jotai';
+import { appMode, currentPageName, lizardDataLoadedAtom, lizardLastEditTime } from './utils/jotai';
 import Home from './pages/Home';
 import PastSessionData from './pages/PastSessionData';
 import Navbar from './components/Navbar';
 import { AnimatePresence, motion } from 'framer-motion';
 import Notification from './components/Notification';
 import { ScaleLoader } from 'react-spinners';
-import { checkForServerData } from './utils/functions';
+import { checkForServerData, syncDeletedEntries } from './utils/functions';
 
 function App() {
     const [answerSetLoading, setAnswerSetLoading] = useState(true);
     const currentPage = useAtomValue(currentPageName);
     const setLizardDataLoaded = useSetAtom(lizardDataLoadedAtom);
     const [lastEditTime, setLastEditTime] = useAtom(lizardLastEditTime);
+    const environment = useAtomValue(appMode);
+    const dataFetchedRef = useRef(false);
 
-    useEffect(() => {
+    const createFirestoreListeners = () => {
         onSnapshot(doc(db, 'Metadata', 'LizardData'), (snapshot) => {
             console.log(
                 `Local last edit time: ${new Date(
@@ -36,11 +38,16 @@ function App() {
                     ).toDateString()} to ${new Date(snapshot.data().lastEditTime).toDateString()}`
                 );
                 setLizardDataLoaded(false);
-                checkForServerData(lastEditTime, snapshot.data().lastEditTime, setLizardDataLoaded);
+                checkForServerData(lastEditTime, snapshot.data().lastEditTime, setLizardDataLoaded, environment);
                 setLastEditTime(snapshot.data().lastEditTime);
-            } else {
-                setLizardDataLoaded(true);
+            } 
+            if (snapshot.data().deletedEntries) {
+                console.log(`there are deleted entries`);
+                console.log(snapshot.data().deletedEntries);
+                setLizardDataLoaded(false);
+                syncDeletedEntries(snapshot.data().deletedEntries, setLizardDataLoaded)
             }
+            if (lastEditTime === snapshot.data().lastEditTime) setLizardDataLoaded(true);
         });
 
         onSnapshot(collection(db, 'AnswerSet'), (snapshot) => {
@@ -49,6 +56,12 @@ function App() {
             );
             setAnswerSetLoading(false);
         });
+    }
+
+    useEffect(() => {
+        if (dataFetchedRef.current) return; // to avoid excessive function calls during development
+        dataFetchedRef.current = true;
+        createFirestoreListeners();
     }, []);
 
     return (
@@ -68,7 +81,7 @@ function App() {
     );
 }
 
-export default App;
+export default memo(App);
 
 const AppWrapper = ({ children }) => (
     <motion.div
