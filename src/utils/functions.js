@@ -224,15 +224,20 @@ export const syncDeletedEntries = async (
 ) => {
     for (const {entryId, collectionId} of deletedEntries) {
         // const [entryId, collectionId] = entry;
-        const entryData = await getDocFromCache(doc(db, collectionId, entryId));
-        console.log(`${entryId} ${entryData.exists() ? 'does' : 'does not'} exist locally`)
-        if (entryData.exists()) {
-            console.log(`fetching ${entryId} from the server...`)
-            getDocFromServer(doc(db, collectionId, entryId))
-            .then(snapshot => {
-                console.log(`this doc ${snapshot.exists() ? 'does' : 'does not'} exist remotely`)
-                console.log(snapshot);
-            });
+        try {
+            const entryData = await getDocFromCache(doc(db, collectionId, entryId)); // should throw error if the document is already deleted
+            console.log(`${entryId} ${entryData.exists() ? 'does' : 'does not'} exist locally`)
+            if (entryData.exists()) {
+                console.log(`fetching ${entryId} from the server...`)
+                getDocFromServer(doc(db, collectionId, entryId))
+                .then(snapshot => {
+                    console.log(`this doc ${snapshot.exists() ? 'does' : 'does not'} exist remotely`)
+                    console.log(snapshot);
+                });
+            }
+        } catch (exc) {
+            if (exc.toString().includes("Failed to get document from cache")) continue; // expected if the document is already deleted
+            else console.error(exc);
         }
     }
     setLizardDataLoaded(true);
