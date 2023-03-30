@@ -181,48 +181,42 @@ export const downloadAllLizardDataFromServer = async (environment) => {
     const collections = ['GatewayData', 'VirginRiverData', 'SanPedroData'];
     if (environment === 'test') {
         collections.forEach((value, index) => {
-            collections[index] = `Test${value}`
-        })
+            collections[index] = `Test${value}`;
+        });
     }
     for (const collectionName of collections) {
         const incomingLizardData = await getDocsFromServer(
-            query(
-                collection(db, collectionName), 
-                where('taxa', '==', 'Lizard')
-            )
+            query(collection(db, collectionName), where('taxa', '==', 'Lizard'))
         );
         console.log('fresh lizard data downloaded:');
         console.log(incomingLizardData);
     }
-}
+};
 
 export const downloadLatestLizardDataFromServer = async (latestClientTime, environment) => {
     const collections = ['GatewayData', 'VirginRiverData', 'SanPedroData'];
     if (environment === 'test') {
         collections.forEach((value, index) => {
-            collections[index] = `Test${value}`
-        })
+            collections[index] = `Test${value}`;
+        });
     }
     for (const collectionName of collections) {
         const incomingLizardData = await getDocsFromServer(
             query(
-                collection(db, collectionName), 
+                collection(db, collectionName),
                 where('lastEdit', '>=', latestClientTime),
                 where('taxa', '==', 'Lizard')
             )
         );
-        if (!incomingLizardData.empty) {       
+        if (!incomingLizardData.empty) {
             console.log(`fresh lizard data downloaded from ${collectionName}:`);
             console.log(incomingLizardData);
-        } 
+        }
     }
 };
 
-export const syncDeletedEntries = async (
-    deletedEntries, 
-    setLizardDataLoaded
-) => {
-    for (const {entryId, collectionId} of deletedEntries) {
+export const syncDeletedEntries = async (deletedEntries, setLizardDataLoaded) => {
+    for (const { entryId, collectionId } of deletedEntries) {
         // const [entryId, collectionId] = entry;
         try {
             const entryData = await getDocFromCache(doc(db, collectionId, entryId)); // should throw error if the document is already deleted
@@ -241,7 +235,7 @@ export const syncDeletedEntries = async (
         }
     }
     setLizardDataLoaded(true);
-}
+};
 
 export const getAnswerFormDataFromFirestore = async (
     currentData,
@@ -346,10 +340,10 @@ export const completeLizardCapture = async (
         dateTime: date.toISOString(),
         lastEdit: date.getTime(),
     };
-    const collectionName = environment === 'live' ? 
-    `${currentData.project.replace(/\s/g, '')}Data` 
-    : 
-    `Test${currentData.project.replace(/\s/g, '')}Data`;
+    const collectionName =
+        environment === 'live'
+            ? `${currentData.project.replace(/\s/g, '')}Data`
+            : `Test${currentData.project.replace(/\s/g, '')}Data`;
     const lizardEntry = await createLizardEntry(currentData, lizardDataWithTimes);
     updateData('lizard', lizardEntry, setCurrentData, currentData, setCurrentForm);
     await setDoc(
@@ -362,8 +356,9 @@ export const completeLizardCapture = async (
     setLastEditTime(lizardDataWithTimes.lastEdit);
     setTimeout(async () => {
         await updateDoc(doc(db, 'Metadata', 'LizardData'), {
-        lastEditTime: lizardDataWithTimes.lastEdit,
-    })}, 1000)
+            lastEditTime: lizardDataWithTimes.lastEdit,
+        });
+    }, 1000);
 };
 
 const createLizardEntry = async (currentData, dataEntry) => {
