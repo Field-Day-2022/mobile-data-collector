@@ -38,14 +38,19 @@ function App() {
                     ).toDateString()} to ${new Date(snapshot.data().lastEditTime).toDateString()}`
                 );
                 setLizardDataLoaded(false);
-                checkForServerData(lastEditTime, snapshot.data().lastEditTime, setLizardDataLoaded, environment);
+                checkForServerData(
+                    lastEditTime,
+                    snapshot.data().lastEditTime,
+                    setLizardDataLoaded,
+                    environment
+                );
                 setLastEditTime(snapshot.data().lastEditTime);
-            } 
+            }
             if (snapshot.data().deletedEntries) {
                 console.log(`there are deleted entries`);
                 console.log(snapshot.data().deletedEntries);
                 setLizardDataLoaded(false);
-                syncDeletedEntries(snapshot.data().deletedEntries, setLizardDataLoaded)
+                syncDeletedEntries(snapshot.data().deletedEntries, setLizardDataLoaded);
             }
             if (lastEditTime === snapshot.data().lastEditTime) setLizardDataLoaded(true);
         });
@@ -56,7 +61,7 @@ function App() {
             );
             setAnswerSetLoading(false);
         });
-    }
+    };
 
     useEffect(() => {
         if (dataFetchedRef.current) return; // to avoid excessive function calls during development
