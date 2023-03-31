@@ -69,7 +69,15 @@ export default function NewLizardEntry() {
     useEffect(() => {
         getAnswerFormDataFromFirestore(currentData, setLizardSpeciesList, setFenceTraps);
     }, []);
+
+    useEffect(() => {
+        if (otl > vtl && Number(otl) && Number(vtl)) setOtl(vtl)
+    }, [ vtl ])
     
+    useEffect(() => {
+        if (!regenTail) setOtl('')
+    }, [ regenTail ])
+
     return (
         ((lizardDataLoaded)) ?
             <FormWrapper>
@@ -121,6 +129,7 @@ export default function NewLizardEntry() {
                 label="Mass (g)"
                 value={mass}
                 setValue={setMass}
+                inputValidation='mass'
             />
             <Dropdown
                 error={errors.sex}
