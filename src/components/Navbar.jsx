@@ -30,7 +30,7 @@ export default function Navbar() {
         },
         closed: {
             opacity: 0,
-            x: '-25%',
+            x: '-10%',
             transition: {
                 duration: .5,
             }
@@ -60,7 +60,7 @@ export default function Navbar() {
             <AnimatePresence>
                 {isOpen && <motion.div 
                     key='backgroundDiv'
-                    className="fixed inset-0 z-30 bg-black/80 border-2 border-green-400"
+                    className="fixed inset-0 z-30 bg-black/80 border-0 border-green-400"
                     initial={{opacity: 0}}
                     animate={{opacity: 1}}
                     exit={{opacity: 0}}

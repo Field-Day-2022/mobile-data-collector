@@ -52,6 +52,7 @@ export default function ToeCodeInput({
 
     const errorMsgVariant = {
         visible: {
+            y: 0,
             scale: 1,
             opacity: 1,
             transition: {
@@ -60,12 +61,13 @@ export default function ToeCodeInput({
             },
         },
         hidden: {
+            y: '-100%',
             scale: 0,
             opacity: 0,
             transition: {
                 duration: 0.5,
                 type: 'spring',
-                delay: 1,
+                delay: 2,
             },
         },
     };
@@ -168,7 +170,7 @@ export default function ToeCodeInput({
             } else {
                 if (lizardSnapshot.size > 0) {
                     setErrorMsg(
-                        'Toe Clip Code is already taken, choose another or check recapture box to record a recapture'
+                        'Toe Clip Code is already taken, choose another or check recapture box'
                     );
                     setIsValid(false);
                 } else {
@@ -585,7 +587,7 @@ export default function ToeCodeInput({
                 />
 
                 <motion.div className="modal z-40">
-                    <div className="modal-box  w-11/12  max-w-sm bg-white/90 border-asu-maroon border-[1px] flex flex-col items-center min-h-screen max-h-screen p-1">
+                    <div className="modal-box  w-11/12  max-w-sm bg-white border-asu-maroon border-[1px] flex flex-col items-center min-h-screen max-h-screen p-1">
                         <div className="flex flex-row">
                             <div className="flex flex-col">
                                 <p className="text-sm">Toe-Clip Code:</p>
@@ -680,7 +682,7 @@ export default function ToeCodeInput({
                         variants={errorMsgVariant}
                         initial="hidden"
                     >
-                        <div className="alert bg-red-800/90 text-white text-xl">
+                        <div className="alert bg-red-800 text-white text-xl">
                             <div>
                                 <span>{errorMsg}</span>
                             </div>

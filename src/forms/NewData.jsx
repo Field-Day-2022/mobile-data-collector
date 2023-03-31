@@ -192,9 +192,7 @@ export default function NewData() {
           menu 
           p-2 
           shadow 
-          bg-gradient-radial
-          from-white
-          to-white/75
+          bg-white
           rounded-box 
           w-48
           text-asu-maroon
@@ -265,9 +263,7 @@ export default function NewData() {
             pl-2
             pr-2
             shadow 
-            bg-gradient-radial
-            from-white
-            to-white/75
+            bg-white
             overflow-y-auto
             max-h-72
             text-asu-maroon 
@@ -309,9 +305,7 @@ export default function NewData() {
             -bottom-[25%]
             p-2 
             shadow 
-            bg-gradient-radial
-            from-white
-            to-white/75
+            bg-white
             text-asu-maroon
             rounded-box 
             w-28"
