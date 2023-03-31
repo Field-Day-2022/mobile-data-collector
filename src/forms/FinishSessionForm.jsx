@@ -237,7 +237,7 @@ export const FinishSessionForm = () => {
                 obj.hdBody = dataEntry.hdBody;
                 obj.massG = dataEntry.massG;
                 obj.sessionDateTime = sessionDateTime;
-                obj.sex = dataEntry.sex;
+                obj.sex = dataEntry.sex.charAt(0);
                 obj.site = currentData.site;
                 obj.species = species;
                 obj.speciesCode = dataEntry.speciesCode;
@@ -269,7 +269,7 @@ export const FinishSessionForm = () => {
                 obj.recapture = dataEntry.isRecapture;
                 obj.regenTail = dataEntry.regenTail;
                 obj.sessionDateTime = sessionDateTime;
-                obj.sex = dataEntry.sex;
+                obj.sex = dataEntry.sex.charAt(0);
                 obj.site = currentData.site;
                 obj.species = species;
                 obj.speciesCode = dataEntry.speciesCode;
@@ -301,7 +301,7 @@ export const FinishSessionForm = () => {
                 obj.genus = genus;
                 obj.massG = dataEntry.mass;
                 obj.sessionDateTime = sessionDateTime;
-                obj.sex = dataEntry.sex;
+                obj.sex = dataEntry.sex.charAt(0);
                 obj.site = currentData.site;
                 obj.species = species;
                 obj.speciesCode = dataEntry.speciesCode;
@@ -366,7 +366,7 @@ export const FinishSessionForm = () => {
                 obj.comments = dataEntry.comments;
                 obj.dead = dataEntry.isDead;
                 obj.massG = dataEntry.mass;
-                obj.sex = dataEntry.sex;
+                obj.sex = dataEntry.sex.charAt(0);
                 dataArray.push(obj);
             }
         }
