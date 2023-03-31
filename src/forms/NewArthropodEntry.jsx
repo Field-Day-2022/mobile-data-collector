@@ -19,7 +19,8 @@ import {
 import { 
     updateData, 
     updatePreexistingArthropodData,
-    verifyArthropodForm
+    verifyArthropodForm,
+    changeStringsToNumbers
 } from '../utils/functions';
 import {
     collection,
@@ -50,8 +51,6 @@ export default function NewArthropodEntry() {
     const isEditingPrevious = useAtomValue(editingPrevious);
     const setNotification  = useSetAtom(notificationText);
 
-    // todo: input validation
-
     useEffect(() => {
         const getAnswerFormDataFromFirestore = async () => {
             const speciesSnapshot = await getDocsFromCache(
@@ -61,7 +60,7 @@ export default function NewArthropodEntry() {
             let tempArthropodData = {};
             for (const arthropodSpecies of speciesSnapshot.docs[0].data().answers) {
                 tempArthropodSpeciesArray.push(arthropodSpecies.primary.toLowerCase());
-                tempArthropodData[arthropodSpecies.primary.toLowerCase()] = 0;
+                tempArthropodData[arthropodSpecies.primary.toLowerCase()] = '';
             }
             setArthropodSpeciesList(tempArthropodSpeciesArray);
             setArthropodData(tempArthropodData);
@@ -79,12 +78,13 @@ export default function NewArthropodEntry() {
 
     const completeCapture = () => {
         const date = new Date();
+        const formattedArthropodData = changeStringsToNumbers(arthropodData);
         if (isEditingPrevious || currentData.arthropod) {
             updatePreexistingArthropodData(
                 {
                     trap,
                     predator,
-                    arthropodData,
+                    arthropodData: formattedArthropodData,
                     comments,
                     dateTime: date.toISOString(),
                 },
@@ -98,7 +98,7 @@ export default function NewArthropodEntry() {
                 {
                     trap,
                     predator,
-                    arthropodData,
+                    arthropodData: formattedArthropodData,
                     comments,
                     dateTime: date.toISOString(),
                 },
