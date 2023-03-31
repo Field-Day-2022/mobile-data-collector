@@ -34,7 +34,7 @@ export const changeStringsToNumbers = (obj) => {
     }
     console.log(obj);
     return obj;
-}
+};
 
 export const updatePreexistingArthropodData = (
     incomingData,
@@ -48,7 +48,7 @@ export const updatePreexistingArthropodData = (
         console.log(`comparing ${arthropodEntry.trap} and ${incomingData.trap}`);
         if (arthropodEntry.trap === incomingData.trap) {
             matchesPreviousFenceTrap = true;
-            console.log(arthropodEntry)
+            console.log(arthropodEntry);
             for (const arthropodSpecies in arthropodEntry.arthropodData) {
                 arthropodEntry.arthropodData[arthropodSpecies] =
                     Number(arthropodEntry.arthropodData[arthropodSpecies]) +
