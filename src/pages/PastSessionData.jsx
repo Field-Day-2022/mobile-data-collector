@@ -80,7 +80,7 @@ export default function PastSessionData() {
         show: {
             opacity: 1,
             transition: {
-                staggerChildren: 0.1,
+                staggerChildren: 0.01,
             },
         },
     };
@@ -112,9 +112,11 @@ export default function PastSessionData() {
         rounded-lg 
       "
         >
+            <h1 className="text-xl">{`All previous sessions from today (${new Date().getMonth() + 1}-${new Date().getDate()})`}</h1>
             {pastData.map((sessionEntry, index) => {
                 const date = new Date(sessionEntry.sessionData.sessionDateTime);
-                const displayDate = date.toLocaleString();
+                const displayDate = date.toLocaleTimeString();
+                const displayString = `${displayDate} - ${sessionEntry.sessionData.site}`
                 const today = new Date();
                 if (today.getDate() === date.getDate()) {
                     return (
@@ -132,8 +134,8 @@ export default function PastSessionData() {
                             }}
                             custom={index}
                         >
-                            {displayDate}
-                            <AnimatePresence>
+                            {displayString}
+                            <AnimatePresence mode='popLayout'>
                                 {isOpen[index] && (
                                     <motion.div
                                         variants={container}
@@ -216,6 +218,7 @@ export default function PastSessionData() {
                                     </motion.div>
                                 )}
                             </AnimatePresence>
+                            <div className="h-20"/>
                         </motion.li>
                     );
                 } else {
