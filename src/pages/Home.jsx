@@ -10,10 +10,12 @@ import {
     notificationText,
     currentSessionData,
     editingPrevious,
-    pastEntryIndex
+    pastEntryIndex,
+    currentFormName
 } from '../utils/jotai';
 import { doc, getDoc } from 'firebase/firestore';
 import Dropdown from '../components/Dropdown';
+import Button from '../components/Button';
 
 export default function Home() {
     const [user, loading, error] = useAuthState(auth);
@@ -23,16 +25,31 @@ export default function Home() {
     const setCurrentSession = useSetAtom(currentSessionData);
     const setIsEditingPrevious = useSetAtom(editingPrevious);
     const setPastEntryIndex = useSetAtom(pastEntryIndex);
+    const setCurrentForm = useSetAtom(currentFormName);
+
+    const clearCurrentSession = () => {
+        setCurrentSession({
+            captureStatus: '',
+            array: '',
+            project: '',
+            site: '',
+            handler: '',
+            recorder: '',
+            arthropod: [],
+            amphibian: [],
+            lizard: [],
+            mammal: [],
+            snake: [],
+        });
+    }
 
     return (
         <motion.div>
             <motion.h1 className="text-xl">Hello, {user.displayName}!</motion.h1>
-            <button
-                className="text-lg px-4 py-1 border-[1px] border-asu-maroon rounded-xl my-2"
-                onClick={() => signOut(auth)}
-            >
-                Logout
-            </button>
+            <Button 
+                prompt={"Logout"}
+                clickHandler={() => signOut(auth)}
+            />
             <Dropdown 
                 placeholder={"App mode"}
                 value={environment}
@@ -56,6 +73,10 @@ export default function Home() {
                     setIsEditingPrevious(false);
                     setPastEntryIndex(-1);
                 }}
+            />
+            <Button 
+                prompt='Clear current session data'
+                clickHandler={() => clearCurrentSession()}
             />
             <p className="text-xl mt-4 font-bold underline mb-2">Daily summary:</p>
             <table className="rounded-xl table-auto border-collapse w-full">

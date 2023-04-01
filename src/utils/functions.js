@@ -289,7 +289,6 @@ export const verifyArthropodForm = (
     if (tempErrors.trap !== '') errorExists = true;
     if (errorExists) setNotification('Errors in form');
     else {
-        setNotification('Form is valid');
         setConfirmationModalIsOpen(true);
     }
     setErrors(tempErrors);
