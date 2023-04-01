@@ -43,6 +43,7 @@ export default function Home() {
             snake: [],
         });
         setNotification('Current session cleared!')
+        setClearSessionConfirmationOpen(false);
     }
 
     const clearSessionConfirmationVariant = {

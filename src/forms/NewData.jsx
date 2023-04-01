@@ -134,7 +134,7 @@ export default function NewData() {
                 sessionDateTime: date.toUTCString(),
             });
         }
-        setCurrentForm('New Data Entry');
+        setCurrentForm('Finish Session');
     };
 
     return (
@@ -241,7 +241,6 @@ export default function NewData() {
                     </li>
                 </ul>
             </div>
-            {sites && (
                 <div
                     className="
           dropdown
@@ -255,6 +254,7 @@ export default function NewData() {
                     >
                         {currentSite !== 'Site' ? `Site ${currentSite}` : currentSite}
                     </label>
+                    {sites && 
                     <ul
                         tabIndex={0}
                         className="
@@ -287,9 +287,8 @@ export default function NewData() {
                             </li>
                         ))}
                     </ul>
+                    }
                 </div>
-            )}
-            {arrays && (
                 <div className="dropdown flex justify-center">
                     <label
                         tabIndex={0}
@@ -297,6 +296,7 @@ export default function NewData() {
                     >
                         {currentArray !== 'Array' ? `Array ${currentArray}` : currentArray}
                     </label>
+                {arrays && 
                     <ul
                         tabIndex={0}
                         className="
@@ -325,27 +325,25 @@ export default function NewData() {
                             </li>
                         ))}
                     </ul>
+                    }
                 </div>
-            )}
-            {currentArray !== 'Array' && (
                 <div className="flex flex-col justify-center items-center border-black border-0">
                     <p className="text-xl mb-1 text-asu-maroon font-semibold">Any captures?</p>
                     <div className="flex">
                         <button
-                            onClick={() => finishForm('withCaptures')}
+                            onClick={() => currentArray !== 'Array' && finishForm('withCaptures')}
                             className="btn w-28 mr-2 glass text-asu-maroon text-xl capitalize"
                         >
                             Yes
                         </button>
                         <button
-                            onClick={() => finishForm('withoutCaptures')}
+                            onClick={() => currentArray !== 'Array' && finishForm('withoutCaptures')}
                             className="btn w-28 glass text-asu-maroon text-xl capitalize"
                         >
                             No
                         </button>
                     </div>
                 </div>
-            )}
         </div>
     );
 }
