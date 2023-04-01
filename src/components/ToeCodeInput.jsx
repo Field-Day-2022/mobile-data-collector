@@ -503,7 +503,7 @@ const Comments = ({
                 className='absolute border-[1px] border-asu-maroon z-10 bg-white rounded-sm p-1'>
                 <p>{commentText}</p>
             </motion.div>}</AnimatePresence>
-            <p>{commentText.length > 5 ? `${commentText.slice(0, 5)}...` : commentText}</p>
+            <p>{`${commentText.slice(0, 5)}${commentText.length > 8 ? '...' : commentText.slice(5)}`}</p>
             
         </motion.div>
     )
