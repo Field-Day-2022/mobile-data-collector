@@ -1,8 +1,8 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, db } from '../index';
 import { signOut } from 'firebase/auth';
-import { motion } from 'framer-motion';
+import { AnimatePresence, LayoutGroup, motion, useAnimationControls } from 'framer-motion';
 import { useAtom, useSetAtom } from 'jotai';
 import { 
     pastSessionData, 
@@ -25,7 +25,8 @@ export default function Home() {
     const setCurrentSession = useSetAtom(currentSessionData);
     const setIsEditingPrevious = useSetAtom(editingPrevious);
     const setPastEntryIndex = useSetAtom(pastEntryIndex);
-    const setCurrentForm = useSetAtom(currentFormName);
+    const [clearSessionConfirmationOpen, setClearSessionConfirmationOpen] = useState('')
+    const clearSessionControls = useAnimationControls();
 
     const clearCurrentSession = () => {
         setCurrentSession({
@@ -41,10 +42,36 @@ export default function Home() {
             mammal: [],
             snake: [],
         });
+        setNotification('Current session cleared!')
+    }
+
+    const clearSessionConfirmationVariant = {
+        hidden: {
+            y: '-100%',
+            opacity: 0,
+        },
+        visible: {
+            y: 0,
+            opacity: 1
+        },
+        exit: {
+            opacity: 0,
+            y: '-100%',
+            transition: {
+                y: {
+                    duration: .3
+                },
+                opacity: {
+                    duration: .25
+                }
+            }
+        }
     }
 
     return (
         <motion.div>
+            <LayoutGroup>
+
             <motion.h1 className="text-xl">Hello, {user.displayName}!</motion.h1>
             <Button 
                 prompt={"Logout"}
@@ -75,11 +102,35 @@ export default function Home() {
                 }}
             />
             <Button 
-                prompt='Clear current session data'
-                clickHandler={() => clearCurrentSession()}
+                prompt='Clear current session data?'
+                clickHandler={() => {
+                    if (clearSessionConfirmationOpen) {
+                        setClearSessionConfirmationOpen(false)
+                    } else {
+                        setClearSessionConfirmationOpen(true)
+                    }
+                }}
             />
-            <p className="text-xl mt-4 font-bold underline mb-2">Daily summary:</p>
-            <table className="rounded-xl table-auto border-collapse w-full">
+            <AnimatePresence mode='popLayout'>
+            {clearSessionConfirmationOpen && <motion.div
+                variants={clearSessionConfirmationVariant}
+                initial='hidden'
+                animate='visible'
+                exit='exit'
+                className='flex flex-row items-center justify-around'
+            >   
+                <Button 
+                    prompt='Yes'
+                    clickHandler={() => clearCurrentSession()}
+                />
+                <Button 
+                    prompt='No'
+                    clickHandler={() => setClearSessionConfirmationOpen(false)}
+                />
+            </motion.div>}
+            </AnimatePresence>
+            <motion.p layout className="text-xl mt-4 font-bold underline mb-2">Daily summary:</motion.p>
+            <motion.table layout className="rounded-xl table-auto border-collapse w-full">
                 <thead>
                     <tr>
                         <th className="border-b border-r border-slate-500 w-1/4 p-2">Synced?</th>
@@ -134,7 +185,8 @@ export default function Home() {
                         } else return null;
                     })}
                 </tbody>
-            </table>
+            </motion.table>
+            </LayoutGroup>
         </motion.div>
     );
 }
