@@ -24,15 +24,11 @@ import {
 } from '../utils/functions';
 import {
     collection,
-    setDoc,
     query,
     where,
-    doc,
     getDocsFromCache,
-    getDocFromCache,
 } from 'firebase/firestore';
 import { db } from '../index';
-import { current } from 'daisyui/src/colors';
 
 export default function NewArthropodEntry() {
     const [trap, setTrap] = useState('');
@@ -47,7 +43,7 @@ export default function NewArthropodEntry() {
     })
 
     const [currentData, setCurrentData] = useAtom(currentSessionData);
-    const [currentForm, setCurrentForm] = useAtom(currentFormName);
+    const setCurrentForm = useSetAtom(currentFormName);
     const isEditingPrevious = useAtomValue(editingPrevious);
     const setNotification  = useSetAtom(notificationText);
 

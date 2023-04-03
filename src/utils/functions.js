@@ -16,6 +16,7 @@ import {
     updateDoc,
     deleteDoc,
     getDocFromServer,
+    arrayRemove,
 } from 'firebase/firestore';
 import { db } from '../index';
 
@@ -226,30 +227,57 @@ export const downloadLatestLizardDataFromServer = async (latestClientTime, envir
     }
 };
 
-export const syncDeletedEntries = async (deletedEntries, setLizardDataLoaded) => {
+const fetchDocFromServer = async (
+    entryId,
+    collectionId
+) => {
+    console.log(`Syncing ${entryId} with server...`)
+    try {
+        const docSnap = await getDocFromServer(doc(db, collectionId, entryId));
+        if (docSnap.exists()) {
+            console.log(
+                `Unexpected: document ${
+                    docSnap.id
+                } exists on server, removing from deletedEntries`);
+            await updateDoc(doc(db, 'Metadata', 'LizardData'), {
+                deletedEntries: arrayRemove({
+                    entryId,
+                    collectionId
+                })
+            }).then(() => console.log('Success!'))
+            .catch(err => console.error(`Error: ${err}`));
+        } else {
+            console.log(
+                `${entryId} does not exist on server, local db is now synced`);
+        }
+    } catch (exc) {
+        console.error(exc);
+    }
+}
+
+export const syncDeletedEntries = async (
+    deletedEntries, 
+    setLizardDataLoaded
+) => {
     for (const { entryId, collectionId } of deletedEntries) {
-        // const [entryId, collectionId] = entry;
+        let entryData = null;
         try {
-            const entryData = await getDocFromCache(doc(db, collectionId, entryId)); // should throw error if the document is already deleted
-            console.log(`${entryId} ${entryData.exists() ? 'does' : 'does not'} exist locally`);
-            if (entryData.exists()) {
-                console.log(`fetching ${entryId} from the server...`);
-                getDocFromServer(doc(db, collectionId, entryId)).then((snapshot) => {
-                    console.log(
-                        `this doc ${snapshot.exists() ? 'does' : 'does not'} exist remotely`
-                    );
-                    console.log(snapshot);
-                });
-            }
-        } catch (exc) {
-            if (exc.toString().includes('Failed to get document from cache')) continue;
-            else console.error(exc);
+            entryData = await getDocFromCache(doc(db, collectionId, entryId));
+        } catch (e) {
+            if (e.toString().includes('Failed to get document from cache'))
+                continue;
+            else console.error(e);
+        }
+        if (entryData === null) continue;
+        if (entryData.exists()) {
+            console.log(`${entryId} exists in local db and deletedEntries... `);
+            fetchDocFromServer(entryId, collectionId);
         }
     }
     setLizardDataLoaded(true);
 };
 
-export const getAnswerFormDataFromFirestore = async (
+export const getLizardAnswerFormDataFromFirestore = async (
     currentData,
     setLizardSpeciesList,
     setFenceTraps
@@ -274,6 +302,31 @@ export const getAnswerFormDataFromFirestore = async (
     }
     setFenceTraps(fenceTrapsArray);
 };
+
+export const verifyForm = (
+    blankErrors,
+    entryData,
+    setNotification,
+    setConfirmationModalIsOpen,
+    setErrors
+) => {
+    let tempErrors = blankErrors;
+    let errorExists = false;
+    for (const key in entryData) {
+        if (entryData[key] === '') {
+            tempErrors[key] = 'Required';
+            errorExists = true;
+        } else if (entryData[key] === '0') {
+            tempErrors[key] = 'Must not be 0'
+        }
+    }
+    if (errorExists) {
+        setNotification('Errors in form');
+    } else {
+        setConfirmationModalIsOpen(true);
+    }
+    setErrors(tempErrors);
+}
 
 export const verifyArthropodForm = (
     trap,
@@ -322,6 +375,7 @@ export const verifyLizardForm = (
     if (mass === '') tempErrors.mass = 'Required';
     if (speciesCode === '') tempErrors.speciesCode = 'Required';
     if (trap === '') tempErrors.fenceTrap = 'Required';
+
     let errorExists = false;
     for (const key in tempErrors) {
         if (tempErrors[key] !== '') errorExists = true;
@@ -330,7 +384,6 @@ export const verifyLizardForm = (
         setNotification('Errors in form');
     } else {
         setConfirmationModalIsOpen(true);
-        // setNotification('Form is valid');
     }
     setErrors(tempErrors);
     console.log(tempErrors);

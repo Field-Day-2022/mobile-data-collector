@@ -1,5 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react';
-import { useAtom } from 'jotai';
+import { useAtom, useSetAtom } from 'jotai';
 
 import NumberInput from '../components/NumberInput';
 import Dropdown from '../components/Dropdown';
@@ -18,8 +19,12 @@ import {
     getDocFromCache,
 } from 'firebase/firestore';
 import { db } from '../index';
-import { currentFormName, currentSessionData } from '../utils/jotai';
-import { updateData } from '../utils/functions';
+import { 
+    currentFormName, 
+    currentSessionData,
+    notificationText,
+} from '../utils/jotai';
+import { updateData, verifyForm } from '../utils/functions';
 
 // TODO: dynamic answer set loading, test everything
 
@@ -28,18 +33,25 @@ import {
 } from '../utils/hardCodedData';
 
 export default function NewMammalEntry() {
-    const [speciesCode, setSpeciesCode] = useState();
-    const [trap, setTrap] = useState();
+    const mammalErrors = {
+        speciesCode: '',
+        trap: '',
+        mass: '',
+        sex: ''
+    }
+    const [speciesCode, setSpeciesCode] = useState('');
+    const [trap, setTrap] = useState('');
     const [mass, setMass] = useState('');
-    const [sex, setSex] = useState();
+    const [sex, setSex] = useState('');
     const [isDead, setIsDead] = useState(false);
     const [comments, setComments] = useState('');
     const [confirmationModalIsOpen, setConfirmationModalIsOpen] = useState(false);
     const [species, setSpecies] = useState([]);
     const [fenceTraps, setFenceTraps] = useState([1]);
-
+    const [errors, setErrors] = useState(mammalErrors);
     const [currentData, setCurrentData] = useAtom(currentSessionData);
-    const [currentForm, setCurrentForm] = useAtom(currentFormName);
+    const setCurrentForm = useSetAtom(currentFormName);
+    const setNotification = useSetAtom(notificationText);
 
     useEffect(() => {
         const getAnswerFormDataFromFirestore = async () => {
@@ -92,23 +104,57 @@ export default function NewMammalEntry() {
                 setValue={setSpeciesCode}
                 placeholder="Species Code"
                 options={species}
+                error={errors.speciesCode}
             />
             <Dropdown
                 value={trap}
                 setValue={setTrap}
                 placeholder="Fence Trap"
                 options={fenceTraps}
+                error={errors.trap}
             />
-            <NumberInput label="Mass (g)" value={mass} setValue={setMass} placeholder="ex: 1.2" />
-            <Dropdown value={sex} setValue={setSex} placeholder="Sex" options={sexOptions} />
-            <SingleCheckbox prompt="Is it dead?" value={isDead} setValue={setIsDead} />
+            <NumberInput 
+                label="Mass (g)" 
+                value={mass} 
+                setValue={setMass} 
+                placeholder="ex: 1.2"
+                error={errors.mass}
+            />
+            <Dropdown 
+                value={sex} 
+                setValue={setSex} 
+                placeholder="Sex" 
+                options={sexOptions}
+                error={errors.sex}
+            />
+            <SingleCheckbox 
+                prompt="Is it dead?" 
+                value={isDead} 
+                setValue={setIsDead}
+            />
             <TextInput
                 prompt="Comments"
                 placeholder="any thoughts?"
                 value={comments}
                 setValue={setComments}
             />
-            <Button prompt="Finished?" clickHandler={() => setConfirmationModalIsOpen(true)} />
+            <Button 
+                prompt="Finished?" 
+                clickHandler={() => {
+                    verifyForm(
+                        mammalErrors,
+                        {
+                            speciesCode,
+                            trap,
+                            mass,
+                            sex
+                        },
+                        setNotification,
+                        setConfirmationModalIsOpen,
+                        setErrors
+                    )
+                }}
+            />
             {confirmationModalIsOpen && (
                 <ConfirmationModal
                     data={{

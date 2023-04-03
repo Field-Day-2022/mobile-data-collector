@@ -6,7 +6,6 @@ import {
     currentSessionData, 
     notificationText, 
     appMode,
-    toeCodeLoadedAtom,
     lizardDataLoadedAtom,
     lizardLastEditTime
 } from '../utils/jotai';
@@ -20,12 +19,28 @@ import Button from '../components/Button';
 import ConfirmationModal from '../components/ConfirmationModal';
 import { ScaleLoader } from 'react-spinners';
 import { 
-    getAnswerFormDataFromFirestore, 
+    getLizardAnswerFormDataFromFirestore, 
     verifyLizardForm,
     completeLizardCapture,
+    verifyForm
 } from '../utils/functions'
 
 export default function NewLizardEntry() {
+    const lizardErrors = {
+        speciesCode: '',
+        fenceTrap: '',
+        recapture: '',
+        toeCode: '',
+        svl: '',
+        vtl: '',
+        regenTail: '',
+        otl: '',
+        hatchling: '',
+        mass: '',
+        sex: '',
+        dead: '',
+        comments: '',
+    }
     const [speciesCode, setSpeciesCode] = useState('');
     const [trap, setTrap] = useState('');
     const [isRecapture, setIsRecapture] = useState(false);
@@ -42,21 +57,7 @@ export default function NewLizardEntry() {
     const [lizardSpeciesList, setLizardSpeciesList] = useState([]);
     const [fenceTraps, setFenceTraps] = useState([]);
     const [confirmationModalIsOpen, setConfirmationModalIsOpen] = useState(false);
-    const [errors, setErrors] = useState({
-        speciesCode: '',
-        fenceTrap: '',
-        recapture: '',
-        toeCode: '',
-        svl: '',
-        vtl: '',
-        regenTail: '',
-        otl: '',
-        hatchling: '',
-        mass: '',
-        sex: '',
-        dead: '',
-        comments: '',
-    });
+    const [errors, setErrors] = useState(lizardErrors);
     const [currentData, setCurrentData] = useAtom(currentSessionData);
     const setCurrentForm = useSetAtom(currentFormName);
     const setNotification = useSetAtom(notificationText);
@@ -67,7 +68,7 @@ export default function NewLizardEntry() {
     const sexOptions = ['Male', 'Female', 'Unknown'];
 
     useEffect(() => {
-        getAnswerFormDataFromFirestore(currentData, setLizardSpeciesList, setFenceTraps);
+        getLizardAnswerFormDataFromFirestore(currentData, setLizardSpeciesList, setFenceTraps);
     }, []);
 
     useEffect(() => {
@@ -107,8 +108,20 @@ export default function NewLizardEntry() {
                 isRecapture={isRecapture}
                 setIsRecapture={setIsRecapture}
             />
-            <NumberInput label="SVL (mm)" value={svl} setValue={setSvl} placeholder="0.0 mm" />
-            <NumberInput label="VTL (mm)" value={vtl} setValue={setVtl} placeholder="0.0 mm" />
+            <NumberInput 
+                label="SVL (mm)" 
+                value={svl} 
+                setValue={setSvl} 
+                placeholder="0.0 mm" 
+                error={errors.svl}
+            />
+            <NumberInput 
+                label="VTL (mm)" 
+                value={vtl} 
+                setValue={setVtl} 
+                placeholder="0.0 mm" 
+                error={errors.svl}
+            />
             <SingleCheckbox prompt="Regen tail?" value={regenTail} setValue={setRegenTail} />
             <NumberInput
                 isDisabled={!regenTail}
@@ -118,6 +131,7 @@ export default function NewLizardEntry() {
                 placeholder="0.0 mm"
                 inputValidation="vtl"
                 upperBound={vtl}
+                error={errors.otl}
             />
             <SingleCheckbox
                 prompt="Is it a hatchling?"
@@ -145,17 +159,43 @@ export default function NewLizardEntry() {
                 value={comments}
                 setValue={setComments}
             />
-            <Button prompt="Finished?" clickHandler={() => 
-                verifyLizardForm(
-                    sex,
-                    mass,
-                    speciesCode,
-                    trap,
-                    setNotification,
-                    setConfirmationModalIsOpen,
-                    setErrors
-                )
-            }/>
+            <Button 
+                prompt="Finished?" 
+                clickHandler={() =>  {
+                    if (regenTail) {
+                        verifyForm(
+                            lizardErrors,
+                            {
+                                sex,
+                                mass,
+                                speciesCode,
+                                trap,
+                                svl,
+                                vtl,
+                                otl,
+                            },
+                            setNotification,
+                            setConfirmationModalIsOpen,
+                            setErrors
+                        )
+                    } else {
+                        verifyForm(
+                            lizardErrors,
+                            {
+                                sex,
+                                mass,
+                                speciesCode,
+                                trap,
+                                svl,
+                                vtl,
+                            },
+                            setNotification,
+                            setConfirmationModalIsOpen,
+                            setErrors
+                        )
+                    }
+                }}
+            />
             {confirmationModalIsOpen && (
                 <ConfirmationModal
                     data={{

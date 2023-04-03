@@ -11,7 +11,8 @@ export default function NumberInput({
     const createInputValidator = (value, upperBound) => {
         const obj = {};
         obj.generalValidation = value >= 0 && !isNaN(value);
-        obj.oneDecimalPlaceMax = ((value.includes('.') && value.split('.')[1].length <= 1) || !value.includes('.'));
+        obj.oneDecimalPlaceMax =
+            (value.includes('.') && value.split('.')[1].length <= 1) || !value.includes('.');
         obj.upperBound = Number(value) <= Number(upperBound);
         obj.integerOnly = !value.includes('.');
         return obj;
@@ -29,11 +30,25 @@ export default function NumberInput({
                     const value = e.target.value;
                     const inputValidator = createInputValidator(value, upperBound);
                     if (inputValidator.generalValidation) {
-                        if (inputValidation === 'mass' && inputValidator.oneDecimalPlaceMax)
+                        if (
+                            (
+                                inputValidation === 'mass' || 
+                                inputValidation === 'oneDecimalPlace'
+                            ) &&
+                            inputValidator.oneDecimalPlaceMax
+                        )
                             setValue(value);
-                        else if (inputValidation === 'vtl' && inputValidator.upperBound && inputValidator.integerOnly)
+                        else if (
+                            inputValidation === 'vtl' &&
+                            inputValidator.upperBound &&
+                            inputValidator.integerOnly
+                        )
                             setValue(value);
-                        else if (inputValidation === undefined && inputValidator.integerOnly) setValue(value);
+                        else if (
+                            inputValidation === undefined && 
+                            inputValidator.integerOnly
+                        )
+                            setValue(value);
                     }
                 }}
                 value={value ?? ''}

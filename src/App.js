@@ -24,13 +24,6 @@ function App() {
 
     const createFirestoreListeners = () => {
         onSnapshot(doc(db, 'Metadata', 'LizardData'), (snapshot) => {
-            console.log(
-                `Local last edit time: ${new Date(
-                    lastEditTime
-                ).toLocaleString()}, Server last edit time: ${new Date(
-                    snapshot.data().lastEditTime
-                ).toLocaleString()}`
-            );
             if (snapshot.data().lastEditTime !== lastEditTime) {
                 console.log(
                     `fetching new/modified lizard data from ${new Date(
@@ -47,8 +40,6 @@ function App() {
                 setLastEditTime(snapshot.data().lastEditTime);
             }
             if (snapshot.data().deletedEntries) {
-                console.log(`there are deleted entries`);
-                console.log(snapshot.data().deletedEntries);
                 setLizardDataLoaded(false);
                 syncDeletedEntries(snapshot.data().deletedEntries, setLizardDataLoaded);
             }
@@ -56,9 +47,6 @@ function App() {
         });
 
         onSnapshot(collection(db, 'AnswerSet'), (snapshot) => {
-            console.log(
-                `Answer set loaded from ${snapshot.metadata.fromCache ? 'cache' : 'server'}`
-            );
             setAnswerSetLoading(false);
         });
     };

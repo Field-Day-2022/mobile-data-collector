@@ -15,12 +15,20 @@ import TextInput from '../components/TextInput';
 import Button from '../components/Button';
 
 import { currentFormName, currentSessionData, notificationText } from '../utils/jotai';
-import { updateData } from '../utils/functions';
-//TODO: species list for snakes
+import { updateData, verifyForm } from '../utils/functions';
 import { sexOptions } from '../utils/hardCodedData';
 import ConfirmationModal from '../components/ConfirmationModal';
 
 export default function NewSnakeEntry() {
+    const snakeErrors = {
+        speciesCode: '',
+        fenceTrap: '',
+        vtl: '',
+        svl: '',
+        mass: '',
+        sex: '',
+        comments: '',
+    };
     const [speciesCode, setSpeciesCode] = useState('');
     const [trap, setTrap] = useState('');
     const [mass, setMass] = useState('');
@@ -32,15 +40,7 @@ export default function NewSnakeEntry() {
     const [species, setSpecies] = useState([]);
     const [fenceTraps, setFenceTraps] = useState([]);
     const [confirmationModalIsOpen, setConfirmationModalIsOpen] = useState(false);
-    const [errors, setErrors] = useState({
-        speciesCode: '',
-        fenceTrap: '',
-        vtl: '',
-        svl: '',
-        mass: '',
-        sex: '',
-        comments: '',
-    });
+    const [errors, setErrors] = useState(snakeErrors);
     const [noCapture, setNoCapture] = useState(false);
 
     const [currentData, setCurrentData] = useAtom(currentSessionData);
@@ -118,44 +118,6 @@ export default function NewSnakeEntry() {
         );
     };
 
-    const verifyForm = () => {
-        let tempErrors = {
-            speciesCode: '',
-            fenceTrap: '',
-            vtl: '',
-            svl: '',
-            mass: '',
-            sex: '',
-            comments: '',
-        };
-        if (speciesCode === '') tempErrors.speciesCode = 'Required';
-        if (trap === '') tempErrors.fenceTrap = 'Required';
-        if (
-            svl === '' &&
-            vtl === '' &&
-            sex === '' &&
-            mass === ''
-        ) {
-            setNoCapture(true);
-        } else {
-            if (svl === '') tempErrors.svl = 'Required';
-            if (vtl === '') tempErrors.vtl = 'Required';
-            if (sex === '') tempErrors.sex = 'Required';
-            if (mass === '') tempErrors.mass = 'Required';
-        } 
-        let errorExists = false;
-        for (const key in tempErrors) {
-            if (tempErrors[key] !== '') errorExists = true;
-        }
-        if (errorExists) {
-            setNotification('Errors in form');
-        } else {
-            setNotification('Form is valid');
-            setConfirmationModalIsOpen(true);
-        }
-        setErrors(tempErrors);
-    };
-
     return (
         <FormWrapper>
             <Dropdown
@@ -170,21 +132,21 @@ export default function NewSnakeEntry() {
                 setValue={setTrap}
                 placeholder="Fence Trap"
                 options={fenceTraps}
-                error={errors.fenceTrap}
+                error={errors.trap}
             />
             <NumberInput
                 error={errors.svl}
                 label="SVL (mm)"
                 value={svl}
                 setValue={setSvl}
-                placeholder="ex: 1.2"
+                placeholder="ex: 1"
             />
             <NumberInput
                 error={errors.vtl}
                 label="VTL (mm)"
                 value={vtl}
                 setValue={setVtl}
-                placeholder="ex: 1.2"
+                placeholder="ex: 1"
             />
             <NumberInput
                 error={errors.mass}
@@ -192,6 +154,7 @@ export default function NewSnakeEntry() {
                 value={mass}
                 setValue={setMass}
                 placeholder="ex: 1.2"
+                inputValidation='mass'
             />
             <Dropdown
                 error={errors.sex}
@@ -207,7 +170,25 @@ export default function NewSnakeEntry() {
                 value={comments}
                 setValue={setComments}
             />
-            <Button prompt="Finished?" clickHandler={() => verifyForm()} />
+            <Button 
+                prompt="Finished?" 
+                clickHandler={() => {
+                    verifyForm(
+                        snakeErrors,
+                        {
+                            speciesCode,
+                            trap,
+                            mass,
+                            svl,
+                            vtl,
+                            sex
+                        },
+                        setNotification,
+                        setConfirmationModalIsOpen,
+                        setErrors
+                    )
+                }}
+            />
             {confirmationModalIsOpen && (
                 <ConfirmationModal
                     data={{
