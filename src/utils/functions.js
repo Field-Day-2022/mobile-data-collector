@@ -227,45 +227,37 @@ export const downloadLatestLizardDataFromServer = async (latestClientTime, envir
     }
 };
 
-const fetchDocFromServer = async (
-    entryId,
-    collectionId
-) => {
-    console.log(`Syncing ${entryId} with server...`)
+const fetchDocFromServer = async (entryId, collectionId) => {
+    console.log(`Syncing ${entryId} with server...`);
     try {
         const docSnap = await getDocFromServer(doc(db, collectionId, entryId));
         if (docSnap.exists()) {
             console.log(
-                `Unexpected: document ${
-                    docSnap.id
-                } exists on server, removing from deletedEntries`);
+                `Unexpected: document ${docSnap.id} exists on server, removing from deletedEntries`
+            );
             await updateDoc(doc(db, 'Metadata', 'LizardData'), {
                 deletedEntries: arrayRemove({
                     entryId,
-                    collectionId
-                })
-            }).then(() => console.log('Success!'))
-            .catch(err => console.error(`Error: ${err}`));
+                    collectionId,
+                }),
+            })
+                .then(() => console.log('Success!'))
+                .catch((err) => console.error(`Error: ${err}`));
         } else {
-            console.log(
-                `${entryId} does not exist on server, local db is now synced`);
+            console.log(`${entryId} does not exist on server, local db is now synced`);
         }
     } catch (exc) {
         console.error(exc);
     }
-}
+};
 
-export const syncDeletedEntries = async (
-    deletedEntries, 
-    setLizardDataLoaded
-) => {
+export const syncDeletedEntries = async (deletedEntries, setLizardDataLoaded) => {
     for (const { entryId, collectionId } of deletedEntries) {
         let entryData = null;
         try {
             entryData = await getDocFromCache(doc(db, collectionId, entryId));
         } catch (e) {
-            if (e.toString().includes('Failed to get document from cache'))
-                continue;
+            if (e.toString().includes('Failed to get document from cache')) continue;
             else console.error(e);
         }
         if (entryData === null) continue;
@@ -317,7 +309,7 @@ export const verifyForm = (
             tempErrors[key] = 'Required';
             errorExists = true;
         } else if (entryData[key] === '0') {
-            tempErrors[key] = 'Must not be 0'
+            tempErrors[key] = 'Must not be 0';
         }
     }
     if (errorExists) {
@@ -326,7 +318,7 @@ export const verifyForm = (
         setConfirmationModalIsOpen(true);
     }
     setErrors(tempErrors);
-}
+};
 
 export const verifyArthropodForm = (
     trap,
