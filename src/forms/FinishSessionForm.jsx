@@ -227,23 +227,25 @@ export const FinishSessionForm = () => {
                 ) || ['N/A', 'N/A'];
                 const entryDate = new Date(dataEntry.dateTime);
                 const year = entryDate.getFullYear();
-                const obj = structuredClone(dataObjTemplate);
-                obj.array = currentData.array;
-                obj.dateTime = dataEntry.dateTime;
-                obj.lastEdit = entryDate.getTime();
-                obj.dead = dataEntry.isDead;
-                obj.fenceTrap = dataEntry.trap;
-                obj.genus = genus;
-                obj.hdBody = dataEntry.hdBody;
-                obj.massG = dataEntry.massG;
-                obj.sessionDateTime = sessionDateTime;
-                obj.sex = dataEntry.sex.charAt(0);
-                obj.site = currentData.site;
-                obj.species = species;
-                obj.speciesCode = dataEntry.speciesCode;
-                obj.taxa = 'Amphibian';
-                obj.year = year;
-                obj.comments = dataEntry.comments;
+                const obj = Object.assign(structuredClone(dataObjTemplate), {
+                    array: currentData.array,
+                    dateTime: dataEntry.dateTime,
+                    lastEdit: entryDate.getTime(),
+                    dead: dataEntry.isDead,
+                    fenceTrap: dataEntry.trap,
+                    genus: genus,
+                    hdBody: dataEntry.hdBody,
+                    massG: dataEntry.massG,
+                    sessionDateTime: sessionDateTime,
+                    sex: dataEntry.sex.charAt(0),
+                    site: currentData.site,
+                    species: species,
+                    speciesCode: dataEntry.speciesCode,
+                    taxa: 'Amphibian',
+                    year: year,
+                    comments: dataEntry.comments
+                });
+
                 dataArray.push(obj);
             }
         }
