@@ -118,6 +118,7 @@ export default function NewData() {
                 captureStatus: 'withCaptures',
                 sessionDateTime: date.toUTCString(),
             });
+            setCurrentForm('New Data Entry');
         } else if (captureStatus === 'withoutCaptures') {
             setCurrentData({
                 arthropod: [],
@@ -133,8 +134,8 @@ export default function NewData() {
                 captureStatus: 'withoutCaptures',
                 sessionDateTime: date.toUTCString(),
             });
+            setCurrentForm('Finish Session');
         }
-        setCurrentForm('New Data Entry');
     };
 
     return (
@@ -192,9 +193,7 @@ export default function NewData() {
           menu 
           p-2 
           shadow 
-          bg-gradient-radial
-          from-white
-          to-white/75
+          bg-white
           rounded-box 
           w-48
           text-asu-maroon
@@ -243,7 +242,6 @@ export default function NewData() {
                     </li>
                 </ul>
             </div>
-            {sites && (
                 <div
                     className="
           dropdown
@@ -257,6 +255,7 @@ export default function NewData() {
                     >
                         {currentSite !== 'Site' ? `Site ${currentSite}` : currentSite}
                     </label>
+                    {sites && 
                     <ul
                         tabIndex={0}
                         className="
@@ -265,9 +264,7 @@ export default function NewData() {
             pl-2
             pr-2
             shadow 
-            bg-gradient-radial
-            from-white
-            to-white/75
+            bg-white
             overflow-y-auto
             max-h-72
             text-asu-maroon 
@@ -291,9 +288,8 @@ export default function NewData() {
                             </li>
                         ))}
                     </ul>
+                    }
                 </div>
-            )}
-            {arrays && (
                 <div className="dropdown flex justify-center">
                     <label
                         tabIndex={0}
@@ -301,6 +297,7 @@ export default function NewData() {
                     >
                         {currentArray !== 'Array' ? `Array ${currentArray}` : currentArray}
                     </label>
+                {arrays && 
                     <ul
                         tabIndex={0}
                         className="
@@ -309,9 +306,7 @@ export default function NewData() {
             -bottom-[25%]
             p-2 
             shadow 
-            bg-gradient-radial
-            from-white
-            to-white/75
+            bg-white
             text-asu-maroon
             rounded-box 
             w-28"
@@ -331,27 +326,25 @@ export default function NewData() {
                             </li>
                         ))}
                     </ul>
+                    }
                 </div>
-            )}
-            {currentArray !== 'Array' && (
                 <div className="flex flex-col justify-center items-center border-black border-0">
                     <p className="text-xl mb-1 text-asu-maroon font-semibold">Any captures?</p>
                     <div className="flex">
                         <button
-                            onClick={() => finishForm('withCaptures')}
+                            onClick={() => currentArray !== 'Array' && finishForm('withCaptures')}
                             className="btn w-28 mr-2 glass text-asu-maroon text-xl capitalize"
                         >
                             Yes
                         </button>
                         <button
-                            onClick={() => finishForm('withoutCaptures')}
+                            onClick={() => currentArray !== 'Array' && finishForm('withoutCaptures')}
                             className="btn w-28 glass text-asu-maroon text-xl capitalize"
                         >
                             No
                         </button>
                     </div>
                 </div>
-            )}
         </div>
     );
 }

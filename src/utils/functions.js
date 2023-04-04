@@ -14,6 +14,9 @@ import {
     setDoc,
     getDocFromCache,
     updateDoc,
+    deleteDoc,
+    getDocFromServer,
+    arrayRemove,
 } from 'firebase/firestore';
 import { db } from '../index';
 
@@ -23,6 +26,15 @@ export const updateData = (species, incomingData, setCurrentData, currentData, s
         [species]: [...currentData[species], incomingData],
     });
     setCurrentForm('New Data Entry');
+};
+
+export const changeStringsToNumbers = (obj) => {
+    console.log('changing strings to numbers');
+    for (const key in obj) {
+        obj[key] = Number(obj[key]);
+    }
+    console.log(obj);
+    return obj;
 };
 
 export const updatePreexistingArthropodData = (
@@ -37,9 +49,11 @@ export const updatePreexistingArthropodData = (
         console.log(`comparing ${arthropodEntry.trap} and ${incomingData.trap}`);
         if (arthropodEntry.trap === incomingData.trap) {
             matchesPreviousFenceTrap = true;
+            console.log(arthropodEntry);
             for (const arthropodSpecies in arthropodEntry.arthropodData) {
-                arthropodEntry.arthropodData[arthropodSpecies] +=
-                    incomingData.arthropodData[arthropodSpecies];
+                arthropodEntry.arthropodData[arthropodSpecies] =
+                    Number(arthropodEntry.arthropodData[arthropodSpecies]) +
+                    Number(incomingData.arthropodData[arthropodSpecies]);
             }
         }
     }
@@ -162,24 +176,100 @@ export const changeLizardDataTimesToEpochTime = async () => {
 export const checkForServerData = async (
     latestClientTime,
     latestServerTime,
-    setLizardDataLoaded
+    setLizardDataLoaded,
+    environment
 ) => {
     console.log(`comparing ${latestClientTime} and ${latestServerTime}`);
-    if (latestClientTime < latestServerTime) {
-        await downloadLatestLizardDataFromServer(latestClientTime);
+    if (latestClientTime === 0) {
+        await downloadAllLizardDataFromServer(environment);
+        setLizardDataLoaded(true);
+    } else if (latestClientTime < latestServerTime) {
+        await downloadLatestLizardDataFromServer(latestClientTime, environment);
         setLizardDataLoaded(true);
     }
 };
 
-export const downloadLatestLizardDataFromServer = async (latestClientTime) => {
-    const incomingLizardData = await getDocsFromServer(
-        query(collection(db, 'TestLizardData'), where('lastEdit', '>=', latestClientTime))
-    );
-    console.log('fresh lizard data downloaded:');
-    console.log(incomingLizardData);
+export const downloadAllLizardDataFromServer = async (environment) => {
+    const collections = ['GatewayData', 'VirginRiverData', 'SanPedroData'];
+    if (environment === 'test') {
+        collections.forEach((value, index) => {
+            collections[index] = `Test${value}`;
+        });
+    }
+    for (const collectionName of collections) {
+        const incomingLizardData = await getDocsFromServer(
+            query(collection(db, collectionName), where('taxa', '==', 'Lizard'))
+        );
+        console.log('fresh lizard data downloaded:');
+        console.log(incomingLizardData);
+    }
 };
 
-export const getAnswerFormDataFromFirestore = async (
+export const downloadLatestLizardDataFromServer = async (latestClientTime, environment) => {
+    const collections = ['GatewayData', 'VirginRiverData', 'SanPedroData'];
+    if (environment === 'test') {
+        collections.forEach((value, index) => {
+            collections[index] = `Test${value}`;
+        });
+    }
+    for (const collectionName of collections) {
+        const incomingLizardData = await getDocsFromServer(
+            query(
+                collection(db, collectionName),
+                where('lastEdit', '>=', latestClientTime),
+                where('taxa', '==', 'Lizard')
+            )
+        );
+        if (!incomingLizardData.empty) {
+            console.log(`fresh lizard data downloaded from ${collectionName}:`);
+            console.log(incomingLizardData);
+        }
+    }
+};
+
+const fetchDocFromServer = async (entryId, collectionId) => {
+    console.log(`Syncing ${entryId} with server...`);
+    try {
+        const docSnap = await getDocFromServer(doc(db, collectionId, entryId));
+        if (docSnap.exists()) {
+            console.log(
+                `Unexpected: document ${docSnap.id} exists on server, removing from deletedEntries`
+            );
+            await updateDoc(doc(db, 'Metadata', 'LizardData'), {
+                deletedEntries: arrayRemove({
+                    entryId,
+                    collectionId,
+                }),
+            })
+                .then(() => console.log('Success!'))
+                .catch((err) => console.error(`Error: ${err}`));
+        } else {
+            console.log(`${entryId} does not exist on server, local db is now synced`);
+        }
+    } catch (exc) {
+        console.error(exc);
+    }
+};
+
+export const syncDeletedEntries = async (deletedEntries, setLizardDataLoaded) => {
+    for (const { entryId, collectionId } of deletedEntries) {
+        let entryData = null;
+        try {
+            entryData = await getDocFromCache(doc(db, collectionId, entryId));
+        } catch (e) {
+            if (e.toString().includes('Failed to get document from cache')) continue;
+            else console.error(e);
+        }
+        if (entryData === null) continue;
+        if (entryData.exists()) {
+            console.log(`${entryId} exists in local db and deletedEntries... `);
+            fetchDocFromServer(entryId, collectionId);
+        }
+    }
+    setLizardDataLoaded(true);
+};
+
+export const getLizardAnswerFormDataFromFirestore = async (
     currentData,
     setLizardSpeciesList,
     setFenceTraps
@@ -205,6 +295,31 @@ export const getAnswerFormDataFromFirestore = async (
     setFenceTraps(fenceTrapsArray);
 };
 
+export const verifyForm = (
+    blankErrors,
+    entryData,
+    setNotification,
+    setConfirmationModalIsOpen,
+    setErrors
+) => {
+    let tempErrors = blankErrors;
+    let errorExists = false;
+    for (const key in entryData) {
+        if (entryData[key] === '') {
+            tempErrors[key] = 'Required';
+            errorExists = true;
+        } else if (entryData[key] === '0') {
+            tempErrors[key] = 'Must not be 0';
+        }
+    }
+    if (errorExists) {
+        setNotification('Errors in form');
+    } else {
+        setConfirmationModalIsOpen(true);
+    }
+    setErrors(tempErrors);
+};
+
 export const verifyArthropodForm = (
     trap,
     setNotification,
@@ -219,7 +334,6 @@ export const verifyArthropodForm = (
     if (tempErrors.trap !== '') errorExists = true;
     if (errorExists) setNotification('Errors in form');
     else {
-        setNotification('Form is valid');
         setConfirmationModalIsOpen(true);
     }
     setErrors(tempErrors);
@@ -253,6 +367,7 @@ export const verifyLizardForm = (
     if (mass === '') tempErrors.mass = 'Required';
     if (speciesCode === '') tempErrors.speciesCode = 'Required';
     if (trap === '') tempErrors.fenceTrap = 'Required';
+
     let errorExists = false;
     for (const key in tempErrors) {
         if (tempErrors[key] !== '') errorExists = true;
@@ -261,7 +376,6 @@ export const verifyLizardForm = (
         setNotification('Errors in form');
     } else {
         setConfirmationModalIsOpen(true);
-        // setNotification('Form is valid');
     }
     setErrors(tempErrors);
     console.log(tempErrors);
@@ -282,9 +396,12 @@ export const completeLizardCapture = async (
         dateTime: date.toISOString(),
         lastEdit: date.getTime(),
     };
-    updateData('lizard', lizardDataWithTimes, setCurrentData, currentData, setCurrentForm);
-    const collectionName = environment === 'live' ? 'LizardData' : 'TestLizardData';
+    const collectionName =
+        environment === 'live'
+            ? `${currentData.project.replace(/\s/g, '')}Data`
+            : `Test${currentData.project.replace(/\s/g, '')}Data`;
     const lizardEntry = await createLizardEntry(currentData, lizardDataWithTimes);
+    updateData('lizard', lizardEntry, setCurrentData, currentData, setCurrentForm);
     await setDoc(
         doc(db, collectionName, `${currentData.site}Lizard${date.getTime()}`),
         lizardEntry
@@ -293,9 +410,11 @@ export const completeLizardCapture = async (
         reloadCachedLizardData(collectionName, `${currentData.site}Lizard${date.getTime()}`);
     });
     setLastEditTime(lizardDataWithTimes.lastEdit);
-    await updateDoc(doc(db, 'Metadata', 'LizardData'), {
-        lastEditTime: lizardDataWithTimes.lastEdit,
-    });
+    setTimeout(async () => {
+        await updateDoc(doc(db, 'Metadata', 'LizardData'), {
+            lastEditTime: lizardDataWithTimes.lastEdit,
+        });
+    }, 1000);
 };
 
 const createLizardEntry = async (currentData, dataEntry) => {
@@ -357,28 +476,28 @@ const createLizardEntry = async (currentData, dataEntry) => {
     const entryDate = new Date(dataEntry.dateTime);
     const year = entryDate.getFullYear();
     const obj = structuredClone(dataObjTemplate);
-    obj.array = currentData.array;
-    obj.dateTime = dataEntry.dateTime;
-    obj.lastEdit = entryDate.getTime();
-    obj.dead = dataEntry.isDead;
-    obj.fenceTrap = dataEntry.trap;
-    obj.genus = genus;
-    obj.hatchling = dataEntry.isHatchling;
-    obj.massG = dataEntry.mass;
-    obj.otlMm = dataEntry.otl;
-    obj.recapture = dataEntry.isRecapture;
-    obj.regenTail = dataEntry.regenTail;
-    obj.sessionDateTime = currentData.sessionDateTime;
-    obj.sex = dataEntry.sex;
-    obj.site = currentData.site;
-    obj.species = species;
-    obj.speciesCode = dataEntry.speciesCode;
-    obj.svlMm = dataEntry.svl;
-    obj.taxa = 'Lizard';
-    obj.toeClipCode = dataEntry.toeCode;
-    obj.vtlMm = dataEntry.vtl;
-    obj.year = year;
-    obj.comments = dataEntry.comments;
+    obj.array = currentData.array || 'N/A';
+    obj.dateTime = dataEntry.dateTime || 'N/A';
+    obj.lastEdit = entryDate.getTime() || 'N/A';
+    obj.dead = dataEntry.isDead || 'N/A';
+    obj.fenceTrap = dataEntry.trap || 'N/A';
+    obj.genus = genus || 'N/A';
+    obj.hatchling = dataEntry.isHatchling || 'N/A';
+    obj.massG = dataEntry.mass || 'N/A';
+    obj.otlMm = dataEntry.otl || 'N/A';
+    obj.recapture = dataEntry.isRecapture || 'N/A';
+    obj.regenTail = dataEntry.regenTail || 'N/A';
+    obj.sessionDateTime = currentData.sessionDateTime || 'N/A';
+    obj.sex = dataEntry.sex || 'N/A';
+    obj.site = currentData.site || 'N/A';
+    obj.species = species || 'N/A';
+    obj.speciesCode = dataEntry.speciesCode || 'N/A';
+    obj.svlMm = dataEntry.svl || 'N/A';
+    obj.taxa = 'Lizard' || 'N/A';
+    obj.toeClipCode = dataEntry.toeCode || 'N/A';
+    obj.vtlMm = dataEntry.vtl || 'N/A';
+    obj.year = year || 'N/A';
+    obj.comments = dataEntry.comments || 'N/A';
     return obj;
 };
 

@@ -27,7 +27,7 @@ export const pastEntryIndex = atomWithStorage('pastEntryIndex', -1);
 
 export const notificationText = atomWithStorage('notificationText', '');
 
-export const appMode = atomWithStorage('appMode', 'test');
+export const appMode = atomWithStorage('appMode', 'live');
 
 export const toeCodeLoadedAtom = atom(false);
 

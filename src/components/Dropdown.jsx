@@ -36,9 +36,7 @@ export default function Dropdown
           pl-2
           pr-2 
           shadow
-          bg-gradient-radial
-          from-white
-          to-white/90
+          bg-white
           rounded-box 
           text-xl
           text-black

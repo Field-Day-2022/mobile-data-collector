@@ -53,7 +53,7 @@ export const amphibianFenceTraps = [
 
 export const amphibianSpecies = ['BUAL', 'BUCD', 'BUPU', 'BUWU', 'INAL', 'SCCO', 'UNKA'];
 
-export const sexOptions = ['Male', 'Female', 'Undefined'];
+export const sexOptions = ['Male', 'Female', 'Unknown'];
 
 export const lizardSpeciesList = ['ASTI', 'CADR', 'COVA', 'ASSO'];
 
