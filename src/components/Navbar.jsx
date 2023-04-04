@@ -127,7 +127,7 @@ export default function Navbar() {
 
             <MenuToggle isOpen={isOpen} toggle={() => toggleOpen()} />
 
-            <motion.div className="text-lg breadcrumbs ml-2 overflow-hidden">
+            <motion.div className="text-lg breadcrumbs text-black ml-2 overflow-hidden">
                 <ul>
                     <li>{currentPage}</li>
                     <li>{currentForm || ''}</li>
@@ -147,9 +147,9 @@ const ListItem = ({
         <motion.li
             className={
                 menuLabel === activeMenuLabel ? 
-                "text-2xl px-2 py-6 bg-white border-4 border-asu-gold mx-2 mb-8 shadow-asu-gold shadow-xl"
+                "text-2xl px-2 py-6 bg-white border-4 border-asu-gold mx-2 mb-8 shadow-asu-gold shadow-lg"
                 :
-                "text-2xl px-2 py-6 bg-white border-2 border-asu-gold mx-2 mb-8"}
+                "text-2xl px-2 py-6 bg-white border-2 border-asu-gold mx-2 mb-8 text-black"}
             variants={variant}
             onClick={() => clickHandler()}
         >

@@ -19,7 +19,7 @@ export default function NumberInput({
     };
 
     return (
-        <div className={error ? 'w-36 my-2 border-2 border-red-600 p-2 rounded-xl' : 'w-36 mb-2'}>
+        <div className={error ? 'w-36 my-2 border-2 border-red-600 p-2 rounded-xl' : 'w-36 my-2'}>
             <p className="text-red-600 font-bold">{error}</p>
             <label className="label pb-0 mt-0 pt-0">
                 <span className="label-text text-black">{label}</span>

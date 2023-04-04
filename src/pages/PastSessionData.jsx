@@ -122,7 +122,7 @@ export default function PastSessionData() {
                     return (
                         <motion.li
                             key={index}
-                            className="bg-white/90 p-4 border-2 border-asu-maroon m-2 rounded-2xl w-5/6"
+                            className="bg-white/90 p-4 border-[1px] border-asu-maroon m-2 rounded-2xl w-5/6"
                             variants={liVariant}
                             initial={false}
                             animate={isOpen[index] ? 'open' : 'closed'}

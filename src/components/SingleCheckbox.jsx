@@ -5,7 +5,7 @@ export default function SingleCheckbox({ prompt, value, setValue }) {
                 className="
           label-text 
           text-xl 
-          text-asu-maroon mr-2
+          text-black mr-2
           "
             >
                 {prompt}
