@@ -247,41 +247,6 @@ export const FinishSessionForm = () => {
                 dataArray.push(obj);
             }
         }
-        if (currentData.lizard) {
-            for (const dataEntry of currentData.lizard) {
-                const [genus, species] = getGenusSpecies(
-                    currentData.project,
-                    'Lizard',
-                    dataEntry.speciesCode
-                ) || ['N/A', 'N/A'];
-                const entryDate = new Date(dataEntry.dateTime);
-                const year = entryDate.getFullYear();
-                const obj = structuredClone(dataObjTemplate);
-                obj.array = currentData.array;
-                obj.dateTime = dataEntry.dateTime;
-                obj.lastEdit = entryDate.getTime();
-                obj.dead = dataEntry.isDead;
-                obj.fenceTrap = dataEntry.trap;
-                obj.genus = genus;
-                obj.hatchling = dataEntry.isHatchling;
-                obj.massG = dataEntry.massG;
-                obj.otlMm = dataEntry.otl;
-                obj.recapture = dataEntry.isRecapture;
-                obj.regenTail = dataEntry.regenTail;
-                obj.sessionDateTime = sessionDateTime;
-                obj.sex = dataEntry.sex.charAt(0);
-                obj.site = currentData.site;
-                obj.species = species;
-                obj.speciesCode = dataEntry.speciesCode;
-                obj.svlMm = dataEntry.svl;
-                obj.taxa = 'Lizard';
-                obj.toeClipCode = dataEntry.toeClipCode;
-                obj.vtlMm = dataEntry.vtl;
-                obj.year = year;
-                obj.comments = dataEntry.comments;
-                dataArray.push(obj);
-            }
-        }
         if (currentData.snake) {
             for (const dataEntry of currentData.snake) {
                 const [genus, species] = getGenusSpecies(
