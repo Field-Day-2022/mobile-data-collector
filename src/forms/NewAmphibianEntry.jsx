@@ -115,7 +115,7 @@ export default function NewAmphibianEntry() {
                 label="Mass (g)"
                 value={mass}
                 setValue={setMass}
-                placeholder="ex: 1.2"
+                placeholder="0.0 g"
                 inputValidation="mass"
                 error={errors.mass}
             />

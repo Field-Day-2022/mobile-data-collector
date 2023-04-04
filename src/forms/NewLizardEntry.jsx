@@ -112,14 +112,14 @@ export default function NewLizardEntry() {
                 label="SVL (mm)" 
                 value={svl} 
                 setValue={setSvl} 
-                placeholder="0.0 mm" 
+                placeholder="0 mm" 
                 error={errors.svl}
             />
             <NumberInput 
                 label="VTL (mm)" 
                 value={vtl} 
                 setValue={setVtl} 
-                placeholder="0.0 mm" 
+                placeholder="0 mm" 
                 error={errors.svl}
             />
             <SingleCheckbox prompt="Regen tail?" value={regenTail} setValue={setRegenTail} />
@@ -128,7 +128,7 @@ export default function NewLizardEntry() {
                 label="OTL (mm)"
                 value={otl}
                 setValue={setOtl}
-                placeholder="0.0 mm"
+                placeholder="0 mm"
                 inputValidation="vtl"
                 upperBound={vtl}
                 error={errors.otl}
@@ -143,6 +143,7 @@ export default function NewLizardEntry() {
                 label="Mass (g)"
                 value={mass}
                 setValue={setMass}
+                placeholder={'0.0 g'}
                 inputValidation='mass'
             />
             <Dropdown

@@ -139,21 +139,21 @@ export default function NewSnakeEntry() {
                 label="SVL (mm)"
                 value={svl}
                 setValue={setSvl}
-                placeholder="ex: 1"
+                placeholder="0 mm"
             />
             <NumberInput
                 error={errors.vtl}
                 label="VTL (mm)"
                 value={vtl}
                 setValue={setVtl}
-                placeholder="ex: 1"
+                placeholder="0 mm"
             />
             <NumberInput
                 error={errors.mass}
                 label="Mass (g)"
                 value={mass}
                 setValue={setMass}
-                placeholder="ex: 1.2"
+                placeholder="0.0 g"
                 inputValidation='mass'
             />
             <Dropdown

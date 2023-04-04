@@ -455,7 +455,7 @@ export default function ToeCodeInput({
                         </div>
                     </div>
                     <motion.div
-                        className="toast toast-top left-0 w-full"
+                        className="toast top-10 toast-top left-0 w-full"
                         animate={errorMsgControls}
                         variants={errorMsgVariant}
                         initial="hidden"

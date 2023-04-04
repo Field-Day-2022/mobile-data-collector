@@ -117,7 +117,7 @@ export default function NewMammalEntry() {
                 label="Mass (g)" 
                 value={mass} 
                 setValue={setMass} 
-                placeholder="ex: 1.2"
+                placeholder="0.0 g"
                 error={errors.mass}
             />
             <Dropdown 
