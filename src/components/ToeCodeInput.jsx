@@ -290,30 +290,28 @@ export default function ToeCodeInput({
 
     const lizardHistoryLabelArray = [
         'Date',
-        'Mass',
-        'SVL',
-        'OTL',
-        'VTL',
-        'Recapture',
-        'Dead',
-        'Hatchling',
-        'Regen Tail',
         'Array',
+        'Recapture',
+        'SVL',
+        'VTL',
+        'OTL',
+        'Mass',
         'Sex',
+        'Dead',
+        'Comments',
     ];
     
     const lizardHistoryLabelKeys = [
         'dateTime',
-        'massG',
-        'svlMm',
-        'otlMm',
-        'vtlMm',
-        'recapture',
-        'dead',
-        'hatchling',
-        'regenTail',
         'array',
+        'recapture',
+        'svlMm',
+        'vtlMm',
+        'otlMm',
+        'massG',
         'sex',
+        'dead',
+        'comments'
     ]
 
     return (
@@ -328,244 +326,24 @@ export default function ToeCodeInput({
                             animate="visible"
                             exit="hidden"
                         >
-                            <motion.div
-                                className="absolute h-[calc(100%-2.5rem)] w-[calc(100%-2.5rem)] shadow-2xl top-0 left-0 bg-white border-2 border-asu-maroon rounded-2xl m-5 p-1 flex flex-col items-center landscape:hidden"
-                                variants={recaptureHistoryVariant}
-                                initial="hidden"
-                                animate="visible"
-                                exit="hidden"
-                            >
-                                <h1 className="text-3xl">Recapture History</h1>
-
-                                <motion.div className="flex items-center space-x-2 justify-center w-full border-black border-0 justify-items-center max-w-md">
-                                    <motion.div className="flex w-16 flex-col items-center">
-                                        <p className="text-sm text-black/75 italic leading-none">
-                                            Site
-                                        </p>
-                                        <motion.div className="w-full bg-black h-[1px]" />
-                                        <p className="text-md text-black font-semibold leading-tight">
-                                            {currentData.site}
-                                        </p>
-                                    </motion.div>
-                                    <motion.div className="flex w-20 flex-col items-center">
-                                        <p className="text-sm text-black/75 italic leading-none">
-                                            Species
-                                        </p>
-                                        <motion.div className="w-full bg-black h-[1px]" />
-                                        <p className="text-md text-black font-semibold leading-tight">
-                                            {speciesCode ?? 'N/A'}
-                                        </p>
-                                    </motion.div>
-                                    <motion.div className="flex w-28 flex-col items-center">
-                                        <p className="text-sm text-black/75 italic leading-none">
-                                            Toe Clip Code
-                                        </p>
-                                        <motion.div className="w-full bg-black h-[1px]" />
-                                        <p className="text-md text-black font-semibold leading-tight">
-                                            {toeCode}
-                                        </p>
-                                    </motion.div>
-                                </motion.div>
-
-                                <motion.div className="flex flex-row border-2 border-black w-full h-full mb-2 rounded-xl shadow-lg">
-                                    <table className="text-left text-sm h-full border-r-[2px] border-black table-auto border-collapse">
-                                        <thead>
-                                            {lizardHistoryLabelArray.map((item, index, array) => {
-                                                return (
-                                                    <tr key={item}>
-                                                        <td
-                                                            className={`${
-                                                                index < array.length - 1
-                                                                    ? 'border-b border-black whitespace-nowrap'
-                                                                    : ''
-                                                            }`}
-                                                        >
-                                                            {item}
-                                                        </td>
-                                                    </tr>
-                                                );
-                                            })}
-                                        </thead>
-                                    </table>
-                                    <div className="overflow-x-auto">
-                                        <table className="text-center text-sm h-full border-black table-auto border-collapse">
-                                            <tbody>
-                                                {lizardHistoryLabelArray.map(
-                                                    (item, labelIndex, array) => {
-                                                        let key = '';
-                                                        if (item === 'Date') key = 'dateTime';
-                                                        if (item === 'Mass') key = 'massG';
-                                                        if (item === 'SVL') key = 'svlMm';
-                                                        if (item === 'OTL') key = 'otlMm';
-                                                        if (item === 'VTL') key = 'vtlMm';
-                                                        if (item === 'Recapture') key = 'recapture';
-                                                        if (item === 'Dead') key = 'dead';
-                                                        if (item === 'Hatchling') key = 'hatchling';
-                                                        if (item === 'Regen Tail')
-                                                            key = 'regenTail';
-                                                        if (item === 'Array') key = 'array';
-                                                        if (item === 'Sex') key = 'sex';
-                                                        let tdArray = [];
-                                                        for (
-                                                            let i = 0;
-                                                            i < previousLizardEntries.length;
-                                                            i++
-                                                        ) {
-                                                            let itemToDisplay = '';
-                                                            if (key === 'dateTime') {
-                                                                const date = new Date(
-                                                                    previousLizardEntries[i][key]
-                                                                ).toLocaleDateString();
-                                                                itemToDisplay = date;
-                                                            } else {
-                                                                itemToDisplay =
-                                                                    previousLizardEntries[i][key] ??
-                                                                    'N/A';
-                                                                if (itemToDisplay === 'false')
-                                                                    itemToDisplay = 'No';
-                                                                if (itemToDisplay === 'true')
-                                                                    itemToDisplay = 'Yes';
-                                                            }
-
-                                                            if (
-                                                                i <
-                                                                previousLizardEntries.length - 1
-                                                            ) {
-                                                                tdArray.push(
-                                                                    <td
-                                                                        key={`${itemToDisplay}${i}`}
-                                                                        className={`${
-                                                                            labelIndex <
-                                                                            array.length - 1
-                                                                                ? 'border-b border-r border-black'
-                                                                                : 'border-r border-black'
-                                                                        }`}
-                                                                    >
-                                                                        {itemToDisplay}
-                                                                    </td>
-                                                                );
-                                                            } else {
-                                                                tdArray.push(
-                                                                    <td
-                                                                        key={`${itemToDisplay}${i}`}
-                                                                        className={`${
-                                                                            labelIndex <
-                                                                            array.length - 1
-                                                                                ? 'border-b border-black'
-                                                                                : 'border-black'
-                                                                        }`}
-                                                                    >
-                                                                        {itemToDisplay}
-                                                                    </td>
-                                                                );
-                                                            }
-                                                        }
-                                                        return (
-                                                            <tr key={`${labelIndex}label`}>
-                                                                {tdArray}
-                                                            </tr>
-                                                        );
-                                                    }
-                                                )}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </motion.div>
-
-                                <button
-                                    className="border-2 text-xl border-asu-maroon rounded-xl w-1/2 px-4 py-1 mb-2 mt-auto"
-                                    onClick={() => setRecaptureHistoryIsOpen(false)}
-                                >
-                                    Close
-                                </button>
-                            </motion.div>
-                            <motion.div className="absolute h-[calc(100%-2.5rem)] w-[calc(100%-2.5rem)] shadow-2xl top-0 left-0 bg-white border-2 border-asu-maroon rounded-2xl m-5 p-1 flex flex-col items-center portrait:hidden">
-                                <h1 className="text-3xl">Recapture History</h1>
-
-                                <motion.div className="flex items-center space-x-2 justify-center w-full border-black border-0 justify-items-center max-w-md">
-                                    <motion.div className="flex w-16 flex-col items-center">
-                                        <p className="text-sm text-black/75 italic leading-none">
-                                            Site
-                                        </p>
-                                        <motion.div className="w-full bg-black h-[1px]" />
-                                        <p className="text-md text-black font-semibold leading-tight">
-                                            {currentData.site}
-                                        </p>
-                                    </motion.div>
-                                    <motion.div className="flex w-20 flex-col items-center">
-                                        <p className="text-sm text-black/75 italic leading-none">
-                                            Species
-                                        </p>
-                                        <motion.div className="w-full bg-black h-[1px]" />
-                                        <p className="text-md text-black font-semibold leading-tight">
-                                            {speciesCode ?? 'N/A'}
-                                        </p>
-                                    </motion.div>
-                                    <motion.div className="flex w-28 flex-col items-center">
-                                        <p className="text-sm text-black/75 italic leading-none">
-                                            Toe Clip Code
-                                        </p>
-                                        <motion.div className="w-full bg-black h-[1px]" />
-                                        <p className="text-md text-black font-semibold leading-tight">
-                                            {toeCode}
-                                        </p>
-                                    </motion.div>
-                                </motion.div>
-
-                                <motion.div className="border-2 border-black w-full h-full mb-2 rounded-xl shadow-lg overflow-y-auto">
-                                    <table className="text-center text-sm w-full table-auto border-collapse">
-                                        <thead>
-                                            <tr>
-                                                {lizardHistoryLabelArray.map(((label, index, array) => (
-                                                    <td key={label} className={index < array.length - 1 ? 
-                                                                                'border-r-[1px] border-b-2 border-black'
-                                                                                :
-                                                                                'border-r-0 border-b-2 border-black'
-                                                        }>{label}</td>
-                                                )))}
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {previousLizardEntries.map((entry, index, array) => {
-                                                return (
-                                                    <tr key={index}>
-                                                        {lizardHistoryLabelKeys.map((key, index, array) => {
-                                                            let itemToDisplay = entry[key] ?? 'N/A';
-                                                            if (key === 'dateTime') {
-                                                                const date = new Date(entry[key]).toLocaleDateString();
-                                                                itemToDisplay = date;
-                                                            } 
-                                                            if (itemToDisplay  === 'false') {
-                                                                itemToDisplay = 'No';
-                                                            }
-                                                            if (itemToDisplay === 'true') {
-                                                                itemToDisplay = 'Yes';
-                                                            }
-                                                            return (
-                                                                <td 
-                                                                    key={`${itemToDisplay}${index}`} 
-                                                                    className={
-                                                                        index < array.length - 1 ? 
-                                                                        'border-r-[1px] border-b-[1px] border-black'
-                                                                        :
-                                                                        'border-b-[1px] border-black'
-                                                                    }
-                                                                >{itemToDisplay}</td>
-                                                            )
-                                                        })}
-                                                    </tr>
-                                                )
-                                            })}
-                                        </tbody>
-                                    </table>
-                                </motion.div>
-                                <button
-                                    className="border-2 text-xl border-asu-maroon rounded-xl w-1/2 px-4 py-1 mb-2 mt-auto"
-                                    onClick={() => setRecaptureHistoryIsOpen(false)}
-                                >
-                                    Close
-                                </button>
-                            </motion.div>
+                            <PortraitTable 
+                                recaptureHistoryVariant={recaptureHistoryVariant}
+                                currentData={currentData}
+                                speciesCode={speciesCode}
+                                toeCode={toeCode}
+                                lizardHistoryLabelArray={lizardHistoryLabelArray}
+                                previousLizardEntries={previousLizardEntries}
+                                setRecaptureHistoryIsOpen={setRecaptureHistoryIsOpen}
+                            />
+                            <LandscapeTable 
+                                currentData={currentData}
+                                speciesCode={speciesCode}
+                                toeCode={toeCode}
+                                lizardHistoryLabelArray={lizardHistoryLabelArray}
+                                previousLizardEntries={previousLizardEntries}
+                                lizardHistoryLabelKeys={lizardHistoryLabelKeys}
+                                setRecaptureHistoryIsOpen={setRecaptureHistoryIsOpen}
+                            />
                         </motion.div>
                     )}
                 </AnimatePresence>
@@ -693,6 +471,269 @@ export default function ToeCodeInput({
         </AnimatePresence>
     );
 }
+
+const PortraitTable = ({
+    recaptureHistoryVariant,
+    currentData,
+    speciesCode,
+    toeCode,
+    lizardHistoryLabelArray,
+    previousLizardEntries,
+    setRecaptureHistoryIsOpen
+}) => {
+    return (
+        <motion.div
+            className="absolute h-[calc(100%-2.5rem)] w-[calc(100%-2.5rem)] shadow-2xl top-0 left-0 bg-white border-2 border-asu-maroon rounded-2xl m-5 p-1 flex flex-col items-center landscape:hidden"
+            variants={recaptureHistoryVariant}
+            initial="hidden"
+            animate="visible"
+            exit="hidden"
+        >
+            <h1 className="text-3xl">Recapture History</h1>
+
+            <motion.div className="flex items-center space-x-2 justify-center w-full border-black border-0 justify-items-center max-w-md">
+                <motion.div className="flex w-16 flex-col items-center">
+                    <p className="text-sm text-black/75 italic leading-none">
+                        Site
+                    </p>
+                    <motion.div className="w-full bg-black h-[1px]" />
+                    <p className="text-md text-black font-semibold leading-tight">
+                        {currentData.site}
+                    </p>
+                </motion.div>
+                <motion.div className="flex w-20 flex-col items-center">
+                    <p className="text-sm text-black/75 italic leading-none">
+                        Species
+                    </p>
+                    <motion.div className="w-full bg-black h-[1px]" />
+                    <p className="text-md text-black font-semibold leading-tight">
+                        {speciesCode ?? 'N/A'}
+                    </p>
+                </motion.div>
+                <motion.div className="flex w-28 flex-col items-center">
+                    <p className="text-sm text-black/75 italic leading-none">
+                        Toe Clip Code
+                    </p>
+                    <motion.div className="w-full bg-black h-[1px]" />
+                    <p className="text-md text-black font-semibold leading-tight">
+                        {toeCode}
+                    </p>
+                </motion.div>
+            </motion.div>
+
+            <motion.div className="flex flex-row border-2 border-black w-full h-full mb-2 rounded-xl shadow-lg">
+                <table className="text-left text-sm h-full border-r-[2px] border-black table-auto border-collapse">
+                    <thead>
+                        {lizardHistoryLabelArray.map((item, index, array) => {
+                            return (
+                                <tr key={item}>
+                                    <td
+                                        className={`${
+                                            index < array.length - 1
+                                                ? 'border-b border-black whitespace-nowrap'
+                                                : ''
+                                        }`}
+                                    >
+                                        {item}
+                                    </td>
+                                </tr>
+                            );
+                        })}
+                    </thead>
+                </table>
+                <div className="overflow-x-auto">
+                    <table className="text-center text-sm h-full border-black table-auto border-collapse">
+                        <tbody>
+                            {lizardHistoryLabelArray.map(
+                                (item, labelIndex, array) => {
+                                    let key = '';
+                                    if (item === 'Date') key = 'dateTime';
+                                    if (item === 'Mass') key = 'massG';
+                                    if (item === 'SVL') key = 'svlMm';
+                                    if (item === 'OTL') key = 'otlMm';
+                                    if (item === 'VTL') key = 'vtlMm';
+                                    if (item === 'Recapture') key = 'recapture';
+                                    if (item === 'Dead') key = 'dead';
+                                    if (item === 'Hatchling') key = 'hatchling';
+                                    if (item === 'Regen Tail')
+                                        key = 'regenTail';
+                                    if (item === 'Array') key = 'array';
+                                    if (item === 'Sex') key = 'sex';
+                                    if (item === 'Comments') key = 'comments';
+                                    let tdArray = [];
+                                    for (
+                                        let i = 0;
+                                        i < previousLizardEntries.length;
+                                        i++
+                                    ) {
+                                        let itemToDisplay = '';
+                                        if (key === 'dateTime') {
+                                            const date = new Date(
+                                                previousLizardEntries[i][key]
+                                            ).toLocaleDateString();
+                                            itemToDisplay = date;
+                                        } else {
+                                            itemToDisplay =
+                                                previousLizardEntries[i][key] ??
+                                                'N/A';
+                                            if (itemToDisplay === 'false')
+                                                itemToDisplay = 'No';
+                                            if (itemToDisplay === 'true')
+                                                itemToDisplay = 'Yes';
+                                        }
+
+                                        if (
+                                            i <
+                                            previousLizardEntries.length - 1
+                                        ) {
+                                            tdArray.push(
+                                                <td
+                                                    key={`${itemToDisplay}${i}`}
+                                                    className={`${
+                                                        labelIndex <
+                                                        array.length - 1
+                                                            ? 'border-b border-r border-black'
+                                                            : 'border-r border-black'
+                                                    }`}
+                                                >
+                                                    {itemToDisplay}
+                                                </td>
+                                            );
+                                        } else {
+                                            tdArray.push(
+                                                <td
+                                                    key={`${itemToDisplay}${i}`}
+                                                    className={`${
+                                                        labelIndex <
+                                                        array.length - 1
+                                                            ? 'border-b border-black'
+                                                            : 'border-black'
+                                                    }`}
+                                                >
+                                                    {itemToDisplay}
+                                                </td>
+                                            );
+                                        }
+                                    }
+                                    return (
+                                        <tr key={`${labelIndex}label`}>
+                                            {tdArray}
+                                        </tr>
+                                    );
+                                }
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            </motion.div>
+
+            <button
+                className="border-2 text-xl border-asu-maroon rounded-xl w-1/2 px-4 py-1 mb-2 mt-auto"
+                onClick={() => setRecaptureHistoryIsOpen(false)}
+            >
+                Close
+            </button>
+        </motion.div>
+    )
+}
+
+const LandscapeTable = ({
+    currentData,
+    speciesCode,
+    toeCode,
+    lizardHistoryLabelArray,
+    previousLizardEntries,
+    lizardHistoryLabelKeys,
+    setRecaptureHistoryIsOpen
+}) => (
+    <motion.div className="absolute h-[calc(100%-2.5rem)] w-[calc(100%-2.5rem)] shadow-2xl top-0 left-0 bg-white border-2 border-asu-maroon rounded-2xl m-5 p-1 flex flex-col items-center portrait:hidden">
+        <h1 className="text-3xl">Recapture History</h1>
+
+        <motion.div className="flex items-center space-x-2 justify-center w-full border-black border-0 justify-items-center max-w-md">
+            <motion.div className="flex w-16 flex-col items-center">
+                <p className="text-sm text-black/75 italic leading-none">
+                    Site
+                </p>
+                <motion.div className="w-full bg-black h-[1px]" />
+                <p className="text-md text-black font-semibold leading-tight">
+                    {currentData.site}
+                </p>
+            </motion.div>
+            <motion.div className="flex w-20 flex-col items-center">
+                <p className="text-sm text-black/75 italic leading-none">
+                    Species
+                </p>
+                <motion.div className="w-full bg-black h-[1px]" />
+                <p className="text-md text-black font-semibold leading-tight">
+                    {speciesCode ?? 'N/A'}
+                </p>
+            </motion.div>
+            <motion.div className="flex w-28 flex-col items-center">
+                <p className="text-sm text-black/75 italic leading-none">
+                    Toe Clip Code
+                </p>
+                <motion.div className="w-full bg-black h-[1px]" />
+                <p className="text-md text-black font-semibold leading-tight">
+                    {toeCode}
+                </p>
+            </motion.div>
+        </motion.div>
+
+        <motion.div className="border-2 border-black w-full h-full mb-2 rounded-xl shadow-lg overflow-y-auto">
+            <table className="text-center text-sm w-full table-auto border-collapse">
+                <thead>
+                    <tr>
+                        {lizardHistoryLabelArray.map(((label, index, array) => (
+                            <td key={label} className={index < array.length - 1 ? 
+                                                        'border-r-[1px] border-b-2 border-black'
+                                                        :
+                                                        'border-r-0 border-b-2 border-black'
+                                }>{label}</td>
+                        )))}
+                    </tr>
+                </thead>
+                <tbody>
+                    {previousLizardEntries.map((entry, index, array) => {
+                        return (
+                            <tr key={index}>
+                                {lizardHistoryLabelKeys.map((key, index, array) => {
+                                    let itemToDisplay = entry[key] ?? 'N/A';
+                                    if (key === 'dateTime') {
+                                        const date = new Date(entry[key]).toLocaleDateString();
+                                        itemToDisplay = date;
+                                    } 
+                                    if (itemToDisplay  === 'false') {
+                                        itemToDisplay = 'No';
+                                    }
+                                    if (itemToDisplay === 'true') {
+                                        itemToDisplay = 'Yes';
+                                    }
+                                    return (
+                                        <td 
+                                            key={`${itemToDisplay}${index}`} 
+                                            className={
+                                                index < array.length - 1 ? 
+                                                'border-r-[1px] border-b-[1px] border-black'
+                                                :
+                                                'border-b-[1px] border-black'
+                                            }
+                                        >{itemToDisplay}</td>
+                                    )
+                                })}
+                            </tr>
+                        )
+                    })}
+                </tbody>
+            </table>
+        </motion.div>
+        <button
+            className="border-2 text-xl border-asu-maroon rounded-xl w-1/2 px-4 py-1 mb-2 mt-auto"
+            onClick={() => setRecaptureHistoryIsOpen(false)}
+        >
+            Close
+        </button>
+    </motion.div>
+)
 
 function Button({ prompt, handler, isSelected }) {
     return (
