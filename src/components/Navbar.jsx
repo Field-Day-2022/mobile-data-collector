@@ -32,7 +32,7 @@ export default function Navbar() {
             opacity: 0,
             x: '-10%',
             transition: {
-                duration: .5,
+                duration: .1,
             }
         },
     };
@@ -41,8 +41,7 @@ export default function Navbar() {
         open: {
             opacity: 1,
             transition: { 
-                staggerChildren: 0.1, 
-                delayChildren: 0.05 
+                staggerChildren: 0.08, 
             },
         },
         closed: {
@@ -154,7 +153,7 @@ const ListItem = ({
             variants={variant}
             onClick={() => clickHandler()}
         >
-            <p className={menuLabel === activeMenuLabel ? "font-bold underline" : ""}>{menuLabel}</p>
+            <p className={menuLabel === activeMenuLabel ? "font-bold" : ""}>{menuLabel}</p>
         </motion.li>
     )
 }
