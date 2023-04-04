@@ -10,7 +10,7 @@ import {
     where,
     doc,
 } from 'firebase/firestore';
-import { motion, useAnimationControls, AnimatePresence } from 'framer-motion';
+import { motion, useAnimationControls, AnimatePresence, useCycle } from 'framer-motion';
 import SingleCheckbox from './SingleCheckbox';
 
 export default function ToeCodeInput({
@@ -472,6 +472,43 @@ export default function ToeCodeInput({
     );
 }
 
+const Comments = ({
+    commentText
+}) => {
+    const [isExpanded, setIsExpanded] = useState(false);
+    return (
+        <motion.div 
+            className=''
+            onClick={() => setIsExpanded(!isExpanded)}
+        >
+            <AnimatePresence>{isExpanded && 
+            <motion.div 
+                initial={{opacity: 0}}
+                animate={{
+                    opacity: 1,
+                    y: '-100%',
+                }}
+                exit={{
+                    opacity: 0,
+                    y: '-50%',
+                    transition: {
+                        y: {
+                            duration: .3
+                        },
+                        opacity: {
+                            duration: .2
+                        }
+                    }
+                }}
+                className='absolute border-[1px] border-asu-maroon z-10 bg-white rounded-sm p-1'>
+                <p>{commentText}</p>
+            </motion.div>}</AnimatePresence>
+            <p>{`${commentText.slice(0, 5)}...`}</p>
+            
+        </motion.div>
+    )
+}
+
 const PortraitTable = ({
     recaptureHistoryVariant,
     currentData,
@@ -580,6 +617,10 @@ const PortraitTable = ({
                                                 itemToDisplay = 'No';
                                             if (itemToDisplay === 'true')
                                                 itemToDisplay = 'Yes';
+                                        }
+                                        
+                                        if (item === 'Comments') {
+                                            itemToDisplay = <Comments commentText={previousLizardEntries[i][key] ?? 'N/A'}/>
                                         }
 
                                         if (
