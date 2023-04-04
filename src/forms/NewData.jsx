@@ -118,6 +118,7 @@ export default function NewData() {
                 captureStatus: 'withCaptures',
                 sessionDateTime: date.toUTCString(),
             });
+            setCurrentForm('New Data Entry');
         } else if (captureStatus === 'withoutCaptures') {
             setCurrentData({
                 arthropod: [],
@@ -133,8 +134,8 @@ export default function NewData() {
                 captureStatus: 'withoutCaptures',
                 sessionDateTime: date.toUTCString(),
             });
+            setCurrentForm('Finish Session');
         }
-        setCurrentForm('Finish Session');
     };
 
     return (
