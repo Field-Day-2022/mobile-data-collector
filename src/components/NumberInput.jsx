@@ -8,40 +8,47 @@ export default function NumberInput({
     error,
     isDisabled,
 }) {
+    const createInputValidator = (value, upperBound) => {
+        const obj = {};
+        obj.generalValidation = value >= 0 && !isNaN(value);
+        obj.oneDecimalPlaceMax =
+            (value.includes('.') && value.split('.')[1].length <= 1) || !value.includes('.');
+        obj.upperBound = Number(value) <= Number(upperBound);
+        obj.integerOnly = !value.includes('.');
+        return obj;
+    };
+
     return (
-        <div className={error ? 'w-36 my-2 border-2 border-red-600 p-2 rounded-xl' : 'w-36 mb-2'}>
-            <p className='text-red-600 font-bold'>{error}</p>
+        <div className={error ? 'w-36 my-2 border-2 border-red-600 p-2 rounded-xl' : 'w-36 my-2'}>
+            <p className="text-red-600 font-bold">{error}</p>
             <label className="label pb-0 mt-0 pt-0">
                 <span className="label-text text-black">{label}</span>
             </label>
             <input
                 disabled={isDisabled}
                 onChange={(e) => {
-                    let decimal;
-                    if (e.target.value.includes('.')) {
-                        decimal = e.target.value.split('.')[1];
-                        // console.log(decimal)
-                        if (e.target.value >= 0 && !isNaN(e.target.value) && decimal.length <= 1) {
-                            if (
-                                inputValidation === 'vtl' &&
-                                Number(e.target.value) <= Number(upperBound)
-                            ) {
-                                setValue(e.target.value);
-                            } else if (inputValidation === undefined) {
-                                setValue(e.target.value);
-                            }
-                        }
-                    } else {
-                        if (e.target.value >= 0 && !isNaN(e.target.value)) {
-                            if (
-                                inputValidation === 'vtl' &&
-                                Number(e.target.value) <= Number(upperBound)
-                            ) {
-                                setValue(e.target.value);
-                            } else if (inputValidation === undefined) {
-                                setValue(e.target.value);
-                            }
-                        }
+                    const value = e.target.value;
+                    const inputValidator = createInputValidator(value, upperBound);
+                    if (inputValidator.generalValidation) {
+                        if (
+                            (
+                                inputValidation === 'mass' || 
+                                inputValidation === 'oneDecimalPlace'
+                            ) &&
+                            inputValidator.oneDecimalPlaceMax
+                        )
+                            setValue(value);
+                        else if (
+                            inputValidation === 'vtl' &&
+                            inputValidator.upperBound &&
+                            inputValidator.integerOnly
+                        )
+                            setValue(value);
+                        else if (
+                            inputValidation === undefined && 
+                            inputValidator.integerOnly
+                        )
+                            setValue(value);
                     }
                 }}
                 value={value ?? ''}

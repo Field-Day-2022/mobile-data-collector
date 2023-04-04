@@ -19,19 +19,16 @@ import {
 import { 
     updateData, 
     updatePreexistingArthropodData,
-    verifyArthropodForm
+    verifyArthropodForm,
+    changeStringsToNumbers
 } from '../utils/functions';
 import {
     collection,
-    setDoc,
     query,
     where,
-    doc,
     getDocsFromCache,
-    getDocFromCache,
 } from 'firebase/firestore';
 import { db } from '../index';
-import { current } from 'daisyui/src/colors';
 
 export default function NewArthropodEntry() {
     const [trap, setTrap] = useState('');
@@ -46,11 +43,9 @@ export default function NewArthropodEntry() {
     })
 
     const [currentData, setCurrentData] = useAtom(currentSessionData);
-    const [currentForm, setCurrentForm] = useAtom(currentFormName);
+    const setCurrentForm = useSetAtom(currentFormName);
     const isEditingPrevious = useAtomValue(editingPrevious);
     const setNotification  = useSetAtom(notificationText);
-
-    // todo: input validation
 
     useEffect(() => {
         const getAnswerFormDataFromFirestore = async () => {
@@ -61,7 +56,7 @@ export default function NewArthropodEntry() {
             let tempArthropodData = {};
             for (const arthropodSpecies of speciesSnapshot.docs[0].data().answers) {
                 tempArthropodSpeciesArray.push(arthropodSpecies.primary.toLowerCase());
-                tempArthropodData[arthropodSpecies.primary.toLowerCase()] = 0;
+                tempArthropodData[arthropodSpecies.primary.toLowerCase()] = '';
             }
             setArthropodSpeciesList(tempArthropodSpeciesArray);
             setArthropodData(tempArthropodData);
@@ -79,12 +74,13 @@ export default function NewArthropodEntry() {
 
     const completeCapture = () => {
         const date = new Date();
+        const formattedArthropodData = changeStringsToNumbers(arthropodData);
         if (isEditingPrevious || currentData.arthropod) {
             updatePreexistingArthropodData(
                 {
                     trap,
                     predator,
-                    arthropodData,
+                    arthropodData: formattedArthropodData,
                     comments,
                     dateTime: date.toISOString(),
                 },
@@ -98,7 +94,7 @@ export default function NewArthropodEntry() {
                 {
                     trap,
                     predator,
-                    arthropodData,
+                    arthropodData: formattedArthropodData,
                     comments,
                     dateTime: date.toISOString(),
                 },

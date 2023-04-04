@@ -109,16 +109,19 @@ export default function ConfirmationModal({
 
     return (
         <motion.div
-            className="absolute h-full w-full flex justify-center"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            className="absolute h-full w-full flex justify-center bg-black/90 z-50 top-0"
+            initial={{ opacity: 0}}
+            animate={{ opacity: 1}}
         >
-            <div className="relative flex flex-col bg-white/95 h-5/6 w-3/4">
-                <p className="text-2xl mt-2 mb-2">Verify</p>
-                <div className='overflow-y-auto mb-20'>
+            <motion.div className="relative flex flex-col justify-between bg-white h-5/6 w-full border-2 border-asu-maroon overflow-y-auto"
+                initial={{y: '100%', scale: 0}}
+                animate={{y: 0, scale: 1, transition: { duration: .25 } }}
+            >
+                <div className='overflow-y-auto text-2xl'>
+                    <p className="text-4xl mt-2 mb-2">Verify</p>
                     {displayData()}
                 </div>
-                <div className="absolute bottom-0 w-full flex justify-between">
+                <div className="w-full flex justify-between">
                     <button
                         className="active:scale-90 transition bg-asu-maroon text-asu-gold p-3 rounded-xl m-2 w-1/2 font-bold text-xl"
                         onClick={() => {
@@ -136,7 +139,7 @@ export default function ConfirmationModal({
                         Confirm
                     </button>
                 </div>
-            </div>
+            </motion.div>
         </motion.div>
     );
 }

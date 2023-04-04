@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import { useAtom } from 'jotai';
 import { currentFormName, currentSessionData } from '../utils/jotai';
 
@@ -56,13 +57,13 @@ export default function NewDataEntry() {
                 <div className="dropdown dropdown-bottom justify-center items-center">
                     <label
                         tabIndex={0}
-                        className="btn glass m-1 text-asu-maroon text-xl capitalize font-medium"
+                        className="btn m-1 text-black text-xl capitalize font-medium bg-white border-asu-maroon border-[1px] hover:border-asu-maroon hover:bg-white"
                     >
                         Select Form
                     </label>
                     <ul
                         tabIndex={0}
-                        className="dropdown-content menu p-2 shadow bg-gradient-radial from-white to-white/75 rounded-box text-xl"
+                        className="dropdown-content menu items-center p-2 shadow bg-white rounded-box text-xl border-asu-maroon border-[1px]"
                     >
                         {entryTypes.map((entry, index) => (
                             <li
@@ -71,20 +72,18 @@ export default function NewDataEntry() {
                                     goToForm(`New ${entry} Entry`);
                                 }}
                                 className={
-                                    index < entryTypes.length - 1
-                                        ? 'border-b-2 border-black/50'
-                                        : ''
+                                   "w-full"
                                 }
                                 key={entry}
                             >
-                                <a>{entry}</a>
+                                <p className="border-[1px] border-asu-maroon m-1 p-2 flex flex-col items-center">{entry}</p>
                             </li>
                         ))}
                     </ul>
                 </div>
                 <label
                     htmlFor="my-modal-6"
-                    className="btn glass m-1 text-asu-maroon capitalize text-xl font-normal"
+                    className="btn m-1 text-black capitalize text-xl font-normal border-asu-maroon border-[1px] bg-white hover:bg-white hover:border-asu-maroon"
                 >
                     End Session
                 </label>
@@ -132,12 +131,11 @@ export default function NewDataEntry() {
             )}
             <input type="checkbox" id="my-modal-6" className="modal-toggle" />
             <div className="modal modal-bottom sm:modal-middle">
-                <div className="modal-box bg-asu-gold/90">
-                    <h3 className="text-3xl font-normal text-asu-maroon mb-2">Are you sure?</h3>
-                    <p className="text-asu-maroon text-lg">
-                        This will send the session data to the server. To add to this session after
-                        clicking yes, go to the edit previous sessions screen (can only add to
-                        sessions created on that device that same day).
+                <div className="modal-box bg-white">
+                    <h3 className="text-3xl font-bold text-black mb-2">Are you sure?</h3>
+                    <p className="text-black text-md">
+                        This will send the session data to the server and close it to further data collection.
+                        If you want to add to this session after closing, go to the "History" page and select it.
                     </p>
                     <div className="modal-action m-1 flex flex-col items-center">
                         <label
@@ -145,15 +143,15 @@ export default function NewDataEntry() {
                             onClick={() => {
                                 setCurrentForm('Finish Session');
                             }}
-                            className="btn p-2 h-min glass text-asu-maroon normal-case mb-2 font-normal text-lg"
+                            className="btn w-full px-2 py-3 h-min text-black normal-case my-4 font-semibold text-lg border-asu-maroon border-[1px] bg-white"
                         >
                             Yes, I'm done with this session
                         </label>
                         <label
                             htmlFor="my-modal-6"
-                            className="btn p-2 h-min glass text-asu-maroon normal-case font-normal text-lg"
+                            className="btn w-full px-2 py-3 h-min text-black normal-case font-semibold text-lg border-asu-maroon border-[1px] bg-white hover:bg-white hover:border-asu-maroon"
                         >
-                            No, I'm not finished with this session
+                            No, I'm not finished yet
                         </label>
                     </div>
                 </div>
