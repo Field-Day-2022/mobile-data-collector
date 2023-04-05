@@ -258,25 +258,26 @@ export const FinishSessionForm = () => {
                 ) || ['N/A', 'N/A'];
                 const entryDate = new Date(dataEntry.dateTime);
                 const year = entryDate.getFullYear();
-                const obj = structuredClone(dataObjTemplate);
-                obj.array = currentData.array;
-                obj.comments = dataEntry.comments;
-                obj.dateTime = dataEntry.dateTime;
-                obj.lastEdit = entryDate.getTime();
-                obj.dead = dataEntry.isDead;
-                obj.fenceTrap = dataEntry.trap;
-                obj.genus = genus;
-                obj.massG = dataEntry.mass;
-                obj.sessionDateTime = sessionDateTime;
-                obj.sex = dataEntry.sex.charAt(0);
-                obj.site = currentData.site;
-                obj.species = species;
-                obj.speciesCode = dataEntry.speciesCode;
-                obj.svlMm = dataEntry.svl;
-                obj.taxa = 'Snake';
-                obj.vtlMm = dataEntry.vtl;
-                obj.year = year;
-                obj.noCapture = dataEntry.noCapture;
+                const obj = Object.assign(structuredClone(dataObjTemplate), {
+                    array: currentData.array,
+                    comments: dataEntry.comments,
+                    dateTime: dataEntry.dateTime,
+                    lastEdit: entryDate.getTime(),
+                    dead: dataEntry.isDead,
+                    fenceTrap: dataEntry.trap,
+                    genus: genus,
+                    massG: dataEntry.mass,
+                    sessionDateTime: sessionDateTime,
+                    sex: dataEntry.sex.charAt(0),
+                    site: currentData.site,
+                    species: species,
+                    speciesCode: dataEntry.speciesCode,
+                    svlMm: dataEntry.svl,
+                    taxa: 'Snake',
+                    vtlMm: dataEntry.vtl,
+                    year: year,
+                    noCapture: dataEntry.noCapture
+                });
                 dataArray.push(obj);
             }
         }
