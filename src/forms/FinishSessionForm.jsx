@@ -298,7 +298,7 @@ export const FinishSessionForm = () => {
                 obj.lastEdit = entryDate.getTime();
                 obj.sessionDateTime = sessionDateTime;
                 obj.year = year;
-                obj.comments = currentData.comments;
+                obj.comments = dataEntry.comments;
                 for (const key in dataEntry.arthropodData) {
                     obj[key] = String(dataEntry.arthropodData[key]);
                 }
