@@ -52,7 +52,7 @@ export default function ToeCodeInput({
 
     const errorMsgVariant = {
         visible: {
-            y: 0,
+            y: '0',
             scale: 1,
             opacity: 1,
             transition: {
@@ -74,8 +74,11 @@ export default function ToeCodeInput({
 
     const triggerErrorMsgAnimation = async (msg) => {
         setErrorMsg(msg);
-        await errorMsgControls.start('visible');
-        await errorMsgControls.start('hidden');
+        errorMsgControls.set('hidden');
+        errorMsgControls.start('visible')
+        .then(() => {
+            errorMsgControls.start('hidden');
+        })
     };
 
     const letters = ['A', 'B', 'C', 'D'];
