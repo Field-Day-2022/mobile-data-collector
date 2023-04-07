@@ -93,7 +93,7 @@ export default function ToeCodeInput({
 
     const generateNewToeCode = async () => {
         if (toeCode.includes('C4') || toeCode.includes('D4')) {
-            setNotification('App does not generate toe clip codes with C4 or D4');
+            triggerErrorMsgAnimation('App does not generate toe clip codes with C4 or D4');
         }
         console.log(`Environment: ${environment}`)
         const collectionName = environment === 'live' ? 
