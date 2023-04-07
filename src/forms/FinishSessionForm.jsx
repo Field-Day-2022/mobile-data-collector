@@ -290,23 +290,24 @@ export const FinishSessionForm = () => {
                 ) || ['N/A', 'N/A'];
                 const entryDate = new Date(dataEntry.dateTime);
                 const year = entryDate.getFullYear();
-                const obj = structuredClone(dataObjTemplate);
-                obj.trap = dataEntry.trap;
-                obj.predator = dataEntry.predator;
-                obj.genus = genus;
-                obj.species = species;
-                obj.site = currentData.site;
-                obj.array = currentData.array;
-                obj.dateTime = dataEntry.dateTime;
-                obj.lastEdit = entryDate.getTime();
-                obj.sessionDateTime = sessionDateTime;
-                obj.year = year;
-                obj.comments = dataEntry.comments;
+                const obj = Object.assign(structuredClone(dataObjTemplate), {
+                    trap: dataEntry.trap,
+                    predator: dataEntry.predator,
+                    genus: genus,
+                    species: species,
+                    site: currentData.site,
+                    array: currentData.array,
+                    dateTime: dataEntry.dateTime,
+                    lastEdit: entryDate.getTime(),
+                    sessionDateTime: sessionDateTime,
+                    year: year,
+                    comments: dataEntry.comments,
+                    fenceTrap: dataEntry.trap,
+                    taxa: 'N/A'
+                });
                 for (const key in dataEntry.arthropodData) {
                     obj[key] = String(dataEntry.arthropodData[key]);
                 }
-                obj.fenceTrap = dataEntry.trap;
-                obj.taxa = 'N/A';
                 dataArray.push(obj);
             }
         }
