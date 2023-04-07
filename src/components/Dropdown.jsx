@@ -4,30 +4,24 @@ export default function Dropdown
     setValue, 
     placeholder, 
     options, 
-    toeCode, 
     error,
     clickHandler, 
 }) {
     return (
         <div
             className={
-                toeCode
-                    ? 'dropdown dropdown-top flex justify-center'
-                    : error
-                    ? 'dropdown flex flex-col items-center my-2 border-2 border-red-600 rounded-xl p-2'
-                    : 'dropdown flex flex-col items-center mt-2'
+                error ? 
+                'dropdown flex flex-col items-center my-2 border-2 border-red-600 rounded-xl p-2'
+                :
+                'dropdown flex flex-col items-center mt-2'
             }
         >
             <p className="text-red-600 font-bold">{error}</p>
             <label
                 tabIndex={0}
-                className={
-                    toeCode
-                        ? 'brightness-100 active:brightness-50 active:scale-90 transition select-none rounded-xl m-1 text-black bg-asu-maroon text-2xl p-5 capitalize font-medium'
-                        : 'btn bg-white border-[1px] border-asu-maroon focus:border-asu-maroon hover:bg-white/50 m-1 text-black text-xl capitalize font-medium'
-                }
+                className={'btn bg-white border-[1px] border-asu-maroon focus:border-asu-maroon hover:bg-white/50 m-1 text-black text-xl capitalize font-medium'}
             >
-                {toeCode ? placeholder : value ? `${placeholder}: ${value}` : placeholder}
+                {value ? `${placeholder}: ${value}` : placeholder}
             </label>
             <ul
                 tabIndex={0}

@@ -19,8 +19,7 @@ import Button from '../components/Button';
 import ConfirmationModal from '../components/ConfirmationModal';
 import { ScaleLoader } from 'react-spinners';
 import { 
-    getLizardAnswerFormDataFromFirestore, 
-    verifyLizardForm,
+    getLizardAnswerFormDataFromFirestore,
     completeLizardCapture,
     verifyForm
 } from '../utils/functions'
