@@ -200,7 +200,7 @@ export const downloadAllLizardDataFromServer = async (environment) => {
         const incomingLizardData = await getDocsFromServer(
             query(collection(db, collectionName), where('taxa', '==', 'Lizard'))
         );
-        console.log('fresh lizard data downloaded:');
+        console.log(`fresh lizard data downloaded from ${collectionName}:`);
         console.log(incomingLizardData);
     }
 };
