@@ -189,6 +189,7 @@ export const FinishSessionForm = () => {
             hdBody: 'N/A',
             hete: 'N/A',
             hyma: 'N/A',
+            hymb: 'N/A',
             lepi: 'N/A',
             mant: 'N/A',
             massG: 'N/A',
