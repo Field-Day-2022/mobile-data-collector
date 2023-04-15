@@ -78,7 +78,7 @@ export default function Home() {
                 prompt={"Logout"}
                 clickHandler={() => signOut(auth)}
             />
-            {/* <Dropdown 
+            <Dropdown 
                 placeholder={"App mode"}
                 value={environment}
                 setValue={setEnvironment}
@@ -101,7 +101,7 @@ export default function Home() {
                     setIsEditingPrevious(false);
                     setPastEntryIndex(-1);
                 }}
-            /> */}
+            />
             <Button 
                 prompt='Clear current session data?'
                 clickHandler={() => {

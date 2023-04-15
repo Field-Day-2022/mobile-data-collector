@@ -311,7 +311,7 @@ export const completeLizardCapture = async (
     const date = new Date();
     const lizardDataWithTimes = {
         ...lizardData,
-        dateTime: date.toISOString(),
+        dateTime: date.getTime(),
         lastEdit: date.getTime(),
     };
     const collectionName =

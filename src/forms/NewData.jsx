@@ -116,7 +116,7 @@ export default function NewData() {
                 site: currentSite,
                 array: currentArray,
                 captureStatus: 'withCaptures',
-                sessionDateTime: date.toUTCString(),
+                sessionDateTime: date.getTime(),
             });
             setCurrentForm('New Data Entry');
         } else if (captureStatus === 'withoutCaptures') {
@@ -132,7 +132,7 @@ export default function NewData() {
                 site: currentSite,
                 array: currentArray,
                 captureStatus: 'withoutCaptures',
-                sessionDateTime: date.toUTCString(),
+                sessionDateTime: date.getTime(),
             });
             setCurrentForm('Finish Session');
         }

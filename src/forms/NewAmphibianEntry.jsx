@@ -79,7 +79,7 @@ export default function NewAmphibianEntry() {
                 sex,
                 isDead,
                 comments,
-                dateTime: date.toISOString(),
+                dateTime: date.getTime(),
             },
             setCurrentData,
             currentData,

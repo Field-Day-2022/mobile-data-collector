@@ -89,7 +89,7 @@ export default function NewMammalEntry() {
                 sex,
                 isDead,
                 comments,
-                dateTime: date.toISOString(),
+                dateTime: date.getTime(),
             },
             setCurrentData,
             currentData,

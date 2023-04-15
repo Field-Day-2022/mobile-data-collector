@@ -109,7 +109,7 @@ export default function NewSnakeEntry() {
                 sex,
                 isDead,
                 comments,
-                dateTime: date.toISOString(),
+                dateTime: date.getTime(),
                 noCapture,
             },
             setCurrentData,

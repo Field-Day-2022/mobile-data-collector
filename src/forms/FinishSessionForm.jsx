@@ -155,7 +155,7 @@ export const FinishSessionForm = () => {
     // TODO: consider fine tuning the data that is uploaded to eliminate N/A fields where they aren't needed
 
     const finishSession = () => {
-        const sessionDateTime = new Date().toISOString();
+        const sessionDateTime = new Date().getTime();
         const sessionObj = {
             array: currentData.array,
             commentsAboutTheArray: comments,
