@@ -15,7 +15,7 @@ import TextInput from '../components/TextInput';
 import Button from '../components/Button';
 
 import { currentFormName, currentSessionData, notificationText } from '../utils/jotai';
-import { updateData, verifyForm } from '../utils/functions';
+import { getStandardizedDateTimeString, updateData, verifyForm } from '../utils/functions';
 import { sexOptions } from '../utils/hardCodedData';
 import ConfirmationModal from '../components/ConfirmationModal';
 
@@ -109,7 +109,7 @@ export default function NewSnakeEntry() {
                 sex,
                 isDead,
                 comments,
-                dateTime: date.toISOString(),
+                dateTime: getStandardizedDateTimeString(date),
                 noCapture,
             },
             setCurrentData,

@@ -20,7 +20,8 @@ import {
     updateData, 
     updatePreexistingArthropodData,
     verifyArthropodForm,
-    changeStringsToNumbers
+    changeStringsToNumbers,
+    getStandardizedDateTimeString
 } from '../utils/functions';
 import {
     collection,
@@ -82,7 +83,7 @@ export default function NewArthropodEntry() {
                     predator,
                     arthropodData: formattedArthropodData,
                     comments,
-                    dateTime: date.toISOString(),
+                    dateTime: getStandardizedDateTimeString(date),
                 },
                 setCurrentData,
                 currentData,
@@ -96,7 +97,7 @@ export default function NewArthropodEntry() {
                     predator,
                     arthropodData: formattedArthropodData,
                     comments,
-                    dateTime: date.toISOString(),
+                    dateTime: getStandardizedDateTimeString(date),
                 },
                 setCurrentData,
                 currentData,

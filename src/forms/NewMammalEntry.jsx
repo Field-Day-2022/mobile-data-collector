@@ -24,7 +24,7 @@ import {
     currentSessionData,
     notificationText,
 } from '../utils/jotai';
-import { updateData, verifyForm } from '../utils/functions';
+import { getStandardizedDateTimeString, updateData, verifyForm } from '../utils/functions';
 
 // TODO: dynamic answer set loading, test everything
 
@@ -89,7 +89,7 @@ export default function NewMammalEntry() {
                 sex,
                 isDead,
                 comments,
-                dateTime: date.toISOString(),
+                dateTime: getStandardizedDateTimeString(date),
             },
             setCurrentData,
             currentData,

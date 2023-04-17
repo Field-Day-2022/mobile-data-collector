@@ -6,7 +6,7 @@ import {
     currentSessionData,
     notificationText
 } from '../utils/jotai';
-import { updateData, verifyForm } from '../utils/functions';
+import { getStandardizedDateTimeString, updateData, verifyForm } from '../utils/functions';
 import { sexOptions } from '../utils/hardCodedData';
 import NumberInput from '../components/NumberInput';
 import FormWrapper from '../components/FormWrapper';
@@ -68,7 +68,6 @@ export default function NewAmphibianEntry() {
     }, []);
 
     const completeCapture = () => {
-        const date = new Date();
         updateData(
             'amphibian',
             {
@@ -79,7 +78,7 @@ export default function NewAmphibianEntry() {
                 sex,
                 isDead,
                 comments,
-                dateTime: date.toISOString(),
+                dateTime: getStandardizedDateTimeString(new Date())
             },
             setCurrentData,
             currentData,
