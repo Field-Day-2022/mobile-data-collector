@@ -32,6 +32,7 @@ import FormWrapper from '../components/FormWrapper';
 import Dropdown from '../components/Dropdown';
 import TextInput from '../components/TextInput';
 import Button from '../components/Button';
+import { getStandardizedDateTimeString } from '../utils/functions';
 
 export const FinishSessionForm = () => {
     const [currentData, setCurrentData] = useAtom(currentSessionData);
@@ -155,17 +156,17 @@ export const FinishSessionForm = () => {
     // TODO: consider fine tuning the data that is uploaded to eliminate N/A fields where they aren't needed
 
     const finishSession = () => {
-        const sessionDateTime = new Date().getTime();
+        const sessionDateTime = new Date()
         const sessionObj = {
             array: currentData.array,
             commentsAboutTheArray: comments,
-            dateTime: sessionDateTime,
+            dateTime: getStandardizedDateTimeString(sessionDateTime),
             handler: currentData.handler,
             noCaptures: currentData.captureStatus === 'withCaptures' ? 'TRUE' : 'FALSE',
             recorder: currentData.recorder,
             site: currentData.site,
             trapStatus: trapStatus,
-            year: new Date(sessionDateTime).getFullYear()
+            year: sessionDateTime.getFullYear()
         };
         console.log(sessionObj);
         const dataObjTemplate = {
