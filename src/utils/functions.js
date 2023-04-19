@@ -336,17 +336,16 @@ export const completeLizardCapture = async (
 };
 
 export const getStandardizedDateTimeString = (dateString) => {
-    const tempDate = new Date(dateString)
-    return `${
-        tempDate.getFullYear()
-    }/${
-        (tempDate.getMonth() + 1).toString().padStart(2, '0')
-    }/${
-        tempDate.getDate().toString().padStart(2, '0')
-    } ${tempDate.toLocaleTimeString('en-US', {
-        hourCycle: 'h24'
-    })}`
-}
+    const tempDate = new Date(dateString);
+    return `${tempDate.getFullYear()}/${(tempDate.getMonth() + 1)
+        .toString()
+        .padStart(2, '0')}/${tempDate
+        .getDate()
+        .toString()
+        .padStart(2, '0')} ${tempDate.toLocaleTimeString('en-US', {
+        hourCycle: 'h24',
+    })}`;
+};
 
 const createLizardEntry = async (currentData, dataEntry) => {
     const dataObjTemplate = {
