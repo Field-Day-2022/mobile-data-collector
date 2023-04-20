@@ -6,6 +6,7 @@ import { useAtom } from 'jotai';
 import { currentFormName, currentSessionData, notificationText } from '../utils/jotai';
 import TextInput from '../components/TextInput';
 import { error } from 'daisyui/src/colors/colorNames';
+import { getStandardizedDateTimeString } from '../utils/functions';
 
 export default function NewData() {
     const [currentProject, setCurrentProject] = useState('Project');
@@ -38,6 +39,7 @@ export default function NewData() {
             mammal: [],
             snake: [],
         });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const getSites = async (projectName) => {
@@ -102,7 +104,6 @@ export default function NewData() {
             setErrors(tempErrors);
         }
 
-        const date = new Date();
         if (captureStatus === 'withCaptures') {
             setCurrentData({
                 arthropod: [],
@@ -116,7 +117,7 @@ export default function NewData() {
                 site: currentSite,
                 array: currentArray,
                 captureStatus: 'withCaptures',
-                sessionDateTime: date.getTime(),
+                sessionDateTime: getStandardizedDateTimeString(new Date()),
             });
             setCurrentForm('New Data Entry');
         } else if (captureStatus === 'withoutCaptures') {
@@ -132,7 +133,7 @@ export default function NewData() {
                 site: currentSite,
                 array: currentArray,
                 captureStatus: 'withoutCaptures',
-                sessionDateTime: date.getTime(),
+                sessionDateTime: getStandardizedDateTimeString(new Date())
             });
             setCurrentForm('Finish Session');
         }
