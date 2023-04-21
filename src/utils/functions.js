@@ -108,12 +108,7 @@ export const checkForServerData = async (
 };
 
 export const downloadAllLizardDataFromServer = async (environment) => {
-    const collections = ['GatewayData', 'VirginRiverData', 'SanPedroData'];
-    if (environment === 'test') {
-        collections.forEach((value, index) => {
-            collections[index] = `Test${value}`;
-        });
-    }
+    const collections = ['GatewayData', 'VirginRiverData', 'SanPedroData', 'TestGatewayData', 'TestVirginRiverData', 'TestSanPedroData'];
     for (const collectionName of collections) {
         const incomingLizardData = await getDocsFromServer(
             query(collection(db, collectionName), where('taxa', '==', 'Lizard'))
@@ -124,12 +119,7 @@ export const downloadAllLizardDataFromServer = async (environment) => {
 };
 
 export const downloadLatestLizardDataFromServer = async (latestClientTime, environment) => {
-    const collections = ['GatewayData', 'VirginRiverData', 'SanPedroData'];
-    if (environment === 'test') {
-        collections.forEach((value, index) => {
-            collections[index] = `Test${value}`;
-        });
-    }
+    const collections = ['GatewayData', 'VirginRiverData', 'SanPedroData', 'TestGatewayData', 'TestVirginRiverData', 'TestSanPedroData'];
     for (const collectionName of collections) {
         const incomingLizardData = await getDocsFromServer(
             query(
