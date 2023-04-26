@@ -144,7 +144,7 @@ export default function Home() {
                         const today = new Date();
                         if (date.getDate() === today.getDate()) {
                             return (
-                                <tr key={session.sessionData.sessionDateTime} >
+                                <tr key={session.sessionData.sessionEpochTime} >
                                     <td className="flex justify-center">
                                         {session.uploaded ? (
                                             <svg

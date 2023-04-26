@@ -30,7 +30,7 @@ export const LoginWrapper = ({ children }) => {
                     Login with your ASU Google account to continue
                 </motion.p>
                 <motion.button
-                    className="text-black border-asu-maroon text-2xl w-1/2 py-2 border-[1px] rounded-2xl"
+                    className="text-black border-asu-maroon text-2xl w-1/2 py-2 border-2 rounded-2xl"
                     onClick={() => signInWithRedirect(auth, new GoogleAuthProvider())}
                 >
                     Login

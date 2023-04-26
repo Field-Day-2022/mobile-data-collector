@@ -15,6 +15,8 @@ export const currentSessionData = atomWithStorage('currentSessionData', {
     snake: [],
 });
 
+export const sessionObject = atomWithStorage('sessionObject', {})
+
 export const currentFormName = atomWithStorage('currentFormName', 'New Data');
 
 export const pastSessionData = atomWithStorage('pastSessionData', []);

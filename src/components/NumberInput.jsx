@@ -36,7 +36,7 @@ export default function NumberInput({
                                 inputValidation === 'oneDecimalPlace'
                             ) &&
                             inputValidator.oneDecimalPlaceMax
-                        )
+                    )
                             setValue(value);
                         else if (
                             inputValidation === 'vtl' &&
@@ -54,7 +54,7 @@ export default function NumberInput({
                 value={value ?? ''}
                 type="text"
                 placeholder={placeholder}
-                className="placeholder:text-gray-400 placeholder:font-light  text-black  input  bg-white/25  input-bordered  input-secondary  text-xl  w-full  max-w-xs disabled:bg-gray-600"
+                className="border-2 placeholder:text-gray-400 placeholder:font-light  text-black  input  bg-white/25  input-bordered  input-secondary  text-xl  w-full  max-w-xs disabled:bg-gray-600"
             />
         </div>
     );

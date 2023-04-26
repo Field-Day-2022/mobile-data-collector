@@ -52,6 +52,27 @@ export default function NewMammalEntry() {
     const [currentData, setCurrentData] = useAtom(currentSessionData);
     const setCurrentForm = useSetAtom(currentFormName);
     const setNotification = useSetAtom(notificationText);
+    const [continueAnyways, setContinueAnyways] = useState(false);
+
+    useEffect(() => {
+        sex === 'Male' && setSex('M');
+        sex === 'Female' && setSex('F');
+        sex === 'Unknown' && setSex('U');
+    }, [sex])
+    
+    useEffect(() => {
+        if (
+            continueAnyways &&
+            mass &&
+            sex
+        ) {
+            setConfirmationModalIsOpen(true);
+        }
+    }, [
+        continueAnyways, 
+        mass, 
+        sex
+    ])
 
     useEffect(() => {
         const getAnswerFormDataFromFirestore = async () => {
@@ -89,7 +110,7 @@ export default function NewMammalEntry() {
                 sex,
                 isDead,
                 comments,
-                dateTime: getStandardizedDateTimeString(date),
+                dateTime: getStandardizedDateTimeString(currentData.sessionEpochTime),
                 entryId: new Date().getTime(),
             },
             setCurrentData,
@@ -122,7 +143,12 @@ export default function NewMammalEntry() {
                 error={errors.mass}
             />
             <Dropdown 
-                value={sex} 
+                value={`${
+                    sex === 'M' || sex === 'Male' ? 'Male' :
+                    sex === 'F' || sex === 'Female' ? 'Female' :
+                    sex === 'U' || sex === 'Unknown' ? 'Unknown' :
+                    sex
+                }`}
                 setValue={setSex} 
                 placeholder="Sex" 
                 options={sexOptions}
@@ -152,10 +178,22 @@ export default function NewMammalEntry() {
                         },
                         setNotification,
                         setConfirmationModalIsOpen,
-                        setErrors
+                        setErrors,
+                        setContinueAnyways
                     )
                 }}
             />
+            {continueAnyways && 
+                <div>
+                    <p className='text-xl'>Form has incomplete data, continue anyways?</p>
+                    <Button 
+                        prompt='Submit incomplete form'
+                        clickHandler={() => {
+                            if (mass === '') setMass('N/A');
+                            if (sex === '') setSex('U');
+                        }}
+                    />
+                </div>}
             {confirmationModalIsOpen && (
                 <ConfirmationModal
                     data={{
@@ -169,6 +207,10 @@ export default function NewMammalEntry() {
                     completeCapture={completeCapture}
                     setConfirmationModalIsOpen={setConfirmationModalIsOpen}
                     modalType="mammal"
+                    resetFields={() => {
+                        mass === 'N/A' && setMass('');
+                        sex ===  'U' && setSex('');
+                    }}
                 />
             )}
         </FormWrapper>

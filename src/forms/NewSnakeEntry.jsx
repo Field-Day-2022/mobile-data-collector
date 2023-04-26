@@ -42,10 +42,35 @@ export default function NewSnakeEntry() {
     const [confirmationModalIsOpen, setConfirmationModalIsOpen] = useState(false);
     const [errors, setErrors] = useState(snakeErrors);
     const [noCapture, setNoCapture] = useState(false);
+    const [continueAnyways, setContinueAnyways] = useState(false);
 
     const [currentData, setCurrentData] = useAtom(currentSessionData);
     const [currentForm, setCurrentForm] = useAtom(currentFormName);
     const [notification, setNotification] = useAtom(notificationText);
+
+    useEffect(() => {
+        sex === 'Male' && setSex('M');
+        sex === 'Female' && setSex('F');
+        sex === 'Unknown' && setSex('U');
+    }, [sex])
+
+    useEffect(() => {
+        if (
+            continueAnyways &&
+            mass &&
+            svl &&
+            vtl &&
+            sex
+        ) {
+            setConfirmationModalIsOpen(true);
+        }
+    }, [
+        continueAnyways,  
+        mass,
+        svl,
+        vtl, 
+        sex
+    ])
 
     useEffect(() => {
         const getAnswerFormDataFromFirestore = async () => {
@@ -109,7 +134,7 @@ export default function NewSnakeEntry() {
                 sex,
                 isDead,
                 comments,
-                dateTime: getStandardizedDateTimeString(date),
+                dateTime: getStandardizedDateTimeString(currentData.sessionEpochTime),
                 entryId: new Date().getTime(),
                 noCapture,
             },
@@ -159,7 +184,12 @@ export default function NewSnakeEntry() {
             />
             <Dropdown
                 error={errors.sex}
-                value={sex}
+                value={`${
+                    sex === 'M' || sex === 'Male' ? 'Male' :
+                    sex === 'F' || sex === 'Female' ? 'Female' :
+                    sex === 'U' || sex === 'Unknown' ? 'Unknown' :
+                    sex
+                }`}
                 setValue={setSex}
                 placeholder="Sex"
                 options={sexOptions}
@@ -186,10 +216,24 @@ export default function NewSnakeEntry() {
                         },
                         setNotification,
                         setConfirmationModalIsOpen,
-                        setErrors
+                        setErrors,
+                        setContinueAnyways
                     )
                 }}
             />
+            {continueAnyways && 
+                <div>
+                    <p className='text-xl'>Form has incomplete data, continue anyways?</p>
+                    <Button 
+                        prompt='Submit incomplete form'
+                        clickHandler={() => {
+                            svl === '' && setSvl('N/A');
+                            vtl === '' && setVtl('N/A');
+                            mass === '' && setMass('N/A');
+                            sex ===  '' && setSex('U');
+                        }}
+                    />
+                </div>}
             {confirmationModalIsOpen && (
                 <ConfirmationModal
                     data={{
@@ -205,6 +249,12 @@ export default function NewSnakeEntry() {
                     completeCapture={completeCapture}
                     setConfirmationModalIsOpen={setConfirmationModalIsOpen}
                     modalType="snake"
+                    resetFields={() => {
+                        svl === 'N/A' && setSvl('');
+                        vtl === 'N/A' && setVtl('');
+                        mass === 'N/A' && setMass('');
+                        sex ===  'U' && setSex('');
+                    }}
                 />
             )}
         </FormWrapper>

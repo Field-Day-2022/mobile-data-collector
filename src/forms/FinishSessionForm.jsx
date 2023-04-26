@@ -9,6 +9,7 @@ import {
     currentPageName,
     notificationText,
     appMode,
+    sessionObject,
 } from '../utils/jotai';
 
 import { useCollectionData } from 'react-firebase-hooks/firestore';
@@ -46,6 +47,7 @@ export const FinishSessionForm = () => {
     const [comments, setComments] = useState('');
     const [environment, setEnvironment] = useAtom(appMode);
     const [answerSet, setAnswerSet] = useState([]);
+    const [pastSessionObj, setPastSessionObj] = useAtom(sessionObject)
 
     useEffect(() => {
         const getAnswerSet = async () => {
@@ -56,8 +58,14 @@ export const FinishSessionForm = () => {
             })
             setAnswerSet(tempAnswerSetArray);
         }
-        
     }, [])
+
+    useEffect(() => {
+        if (isEditingPrevious) {
+            setComments(pastSessionObj.commentsAboutTheArray)
+            setTrapStatus(pastSessionObj.trapStatus)
+        }
+    }, [isEditingPrevious])    
 
     const uploadSessionData = async (sessionObj) => {
         if (isEditingPrevious) {
@@ -78,6 +86,7 @@ export const FinishSessionForm = () => {
                             uploaded: true,
                             sessionId,
                             sessionData: currentData,
+                            sessionObj
                         };
                     } else {
                         return session;
@@ -91,6 +100,7 @@ export const FinishSessionForm = () => {
                 {
                     uploaded: false,
                     sessionData: currentData,
+                    sessionObj
                 }
             ])
             let collectionName = `Test${currentData.project.replace(/\s/g, '')}Session`;
@@ -108,6 +118,7 @@ export const FinishSessionForm = () => {
                             uploaded: true,
                             sessionId: docRef.id,
                             sessionData: currentData,
+                            sessionObj
                         };
                     } else {
                         return session;
@@ -360,6 +371,7 @@ export const FinishSessionForm = () => {
             mammal: [],
             snake: [],
         });
+        setPastSessionObj({})
     };
 
     const getGenusSpecies = (project, taxa, speciesCode) => {

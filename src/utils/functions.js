@@ -222,7 +222,8 @@ export const verifyForm = (
     entryData,
     setNotification,
     setConfirmationModalIsOpen,
-    setErrors
+    setErrors,
+    setContinueAnyways
 ) => {
     let tempErrors = blankErrors;
     let errorExists = false;
@@ -233,6 +234,12 @@ export const verifyForm = (
         } else if (entryData[key] === '0') {
             tempErrors[key] = 'Must not be 0';
         }
+    }
+    if (
+        entryData.speciesCode !== '' &&
+        entryData.trap !== ''
+    ) {
+        setContinueAnyways(true);
     }
     if (errorExists) {
         setNotification('Errors in form');
@@ -315,7 +322,7 @@ export const completeLizardCapture = async (
     const date = new Date();
     const lizardDataWithTimes = {
         ...lizardData,
-        dateTime: getStandardizedDateTimeString(date),
+        dateTime: getStandardizedDateTimeString(currentData.sessionEpochTime),
         lastEdit: date.getTime(),
     };
     const collectionName =
