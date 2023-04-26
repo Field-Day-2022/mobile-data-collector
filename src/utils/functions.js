@@ -235,10 +235,7 @@ export const verifyForm = (
             tempErrors[key] = 'Must not be 0';
         }
     }
-    if (
-        entryData.speciesCode !== '' &&
-        entryData.trap !== ''
-    ) {
+    if (entryData.speciesCode !== '' && entryData.trap !== '') {
         setContinueAnyways(true);
     }
     if (errorExists) {
