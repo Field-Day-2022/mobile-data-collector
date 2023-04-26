@@ -90,6 +90,7 @@ export default function NewMammalEntry() {
                 isDead,
                 comments,
                 dateTime: getStandardizedDateTimeString(date),
+                entryId: new Date().getTime(),
             },
             setCurrentData,
             currentData,

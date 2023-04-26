@@ -131,12 +131,11 @@ export const FinishSessionForm = () => {
                     entryObject[key] = 'N/A';
                 }
             }
-            const timestamp = new Date(entryObject.dateTime);
             let taxa = entryObject.taxa;
             if (entryObject.taxa === 'N/A') {
                 taxa = 'Arthropod'
             }
-            const entryId = `${currentData.site}${taxa}${timestamp.getTime()}`;
+            const entryId = `${currentData.site}${taxa}${entryObject.entryId}`;
             console.log(entryId)
             dataBatch.set(doc(db, collectionName, entryId), entryObject);
             if (taxa === 'Lizard') {
@@ -156,7 +155,7 @@ export const FinishSessionForm = () => {
     // TODO: consider fine tuning the data that is uploaded to eliminate N/A fields where they aren't needed
 
     const finishSession = () => {
-        const sessionDateTime = new Date(currentData.sessionDateTime);
+        const sessionDateTime = new Date(currentData.sessionEpochTime);
         const sessionObj = {
             array: currentData.array,
             commentsAboutTheArray: comments,
@@ -166,7 +165,8 @@ export const FinishSessionForm = () => {
             recorder: currentData.recorder,
             site: currentData.site,
             trapStatus: trapStatus,
-            year: sessionDateTime.getFullYear()
+            year: sessionDateTime.getFullYear(),
+            sessionId: currentData.sessionEpochTime
         };
         console.log(sessionObj);
         const dataObjTemplate = {
@@ -218,6 +218,7 @@ export const FinishSessionForm = () => {
             year: 'N/A',
             noCapture: 'N/A',
             lastEdit: 'N/A',
+            sessionId: currentData.sessionEpochTime,
         };
         let dataArray = [];
         if (currentData.amphibian) {
@@ -246,6 +247,7 @@ export const FinishSessionForm = () => {
                 obj.taxa = 'Amphibian';
                 obj.year = year;
                 obj.comments = dataEntry.comments;
+                obj.entryId = dataEntry.entryId;
                 dataArray.push(obj);
             }
         }
@@ -277,6 +279,7 @@ export const FinishSessionForm = () => {
                 obj.vtlMm = dataEntry.vtl;
                 obj.year = year;
                 obj.noCapture = dataEntry.noCapture;
+                obj.entryId = dataEntry.entryId;
                 dataArray.push(obj);
             }
         }
@@ -306,6 +309,7 @@ export const FinishSessionForm = () => {
                 }
                 obj.fenceTrap = dataEntry.trap;
                 obj.taxa = 'N/A';
+                obj.entryId = dataEntry.entryId;
                 dataArray.push(obj);
             }
         }
@@ -334,6 +338,7 @@ export const FinishSessionForm = () => {
                 obj.dead = dataEntry.isDead;
                 obj.massG = dataEntry.mass;
                 obj.sex = dataEntry.sex.charAt(0);
+                obj.entryId = dataEntry.entryId;
                 dataArray.push(obj);
             }
         }

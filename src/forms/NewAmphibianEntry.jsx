@@ -78,7 +78,8 @@ export default function NewAmphibianEntry() {
                 sex,
                 isDead,
                 comments,
-                dateTime: getStandardizedDateTimeString(new Date())
+                dateTime: getStandardizedDateTimeString(currentData.sessionEpochTime),
+                entryId: new Date().getTime(),
             },
             setCurrentData,
             currentData,

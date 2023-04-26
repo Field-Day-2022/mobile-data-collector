@@ -110,6 +110,7 @@ export default function NewSnakeEntry() {
                 isDead,
                 comments,
                 dateTime: getStandardizedDateTimeString(date),
+                entryId: new Date().getTime(),
                 noCapture,
             },
             setCurrentData,

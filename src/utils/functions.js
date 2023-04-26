@@ -400,6 +400,8 @@ const createLizardEntry = async (currentData, dataEntry) => {
         year: 'N/A',
         noCapture: 'N/A',
         lastEdit: 'N/A',
+        sessionId: currentData.sessionEpochTime,
+        entryId: new Date().getTime(),
     };
     const { genus, species } = await getGenusSpecies(
         currentData.project,
@@ -421,7 +423,7 @@ const createLizardEntry = async (currentData, dataEntry) => {
     obj.otlMm = dataEntry.otl || 'N/A';
     obj.recapture = dataEntry.isRecapture || 'N/A';
     obj.regenTail = dataEntry.regenTail || 'N/A';
-    obj.sessionDateTime = getStandardizedDateTimeString(currentData.sessionDateTime) || 'N/A';
+    obj.sessionDateTime = getStandardizedDateTimeString(currentData.sessionEpochTime) || 'N/A';
     obj.sex = dataEntry.sex || 'N/A';
     obj.site = currentData.site || 'N/A';
     obj.species = species || 'N/A';
