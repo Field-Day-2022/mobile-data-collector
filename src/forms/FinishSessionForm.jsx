@@ -176,7 +176,7 @@ export const FinishSessionForm = () => {
             recorder: currentData.recorder,
             site: currentData.site,
             trapStatus: trapStatus,
-            year: sessionDateTime.getFullYear(),
+            year: sessionDateTime.getFullYear().toString(),
             sessionId: currentData.sessionEpochTime
         };
         console.log(sessionObj);
@@ -256,7 +256,7 @@ export const FinishSessionForm = () => {
                 obj.species = species;
                 obj.speciesCode = dataEntry.speciesCode;
                 obj.taxa = 'Amphibian';
-                obj.year = year;
+                obj.year = year.toString();
                 obj.comments = dataEntry.comments;
                 obj.entryId = dataEntry.entryId;
                 dataArray.push(obj);
@@ -288,7 +288,7 @@ export const FinishSessionForm = () => {
                 obj.svlMm = dataEntry.svl;
                 obj.taxa = 'Snake';
                 obj.vtlMm = dataEntry.vtl;
-                obj.year = year;
+                obj.year = year.toString();
                 obj.noCapture = dataEntry.noCapture;
                 obj.entryId = dataEntry.entryId;
                 dataArray.push(obj);
@@ -313,7 +313,7 @@ export const FinishSessionForm = () => {
                 obj.dateTime = dataEntry.dateTime;
                 obj.lastEdit = entryDate.getTime();
                 obj.sessionDateTime = getStandardizedDateTimeString(sessionDateTime);
-                obj.year = year;
+                obj.year = year.toString();
                 obj.comments = dataEntry.comments;
                 for (const key in dataEntry.arthropodData) {
                     obj[key] = String(dataEntry.arthropodData[key]);
@@ -344,7 +344,7 @@ export const FinishSessionForm = () => {
                 obj.species = species;
                 obj.speciesCode = dataEntry.speciesCode;
                 obj.taxa = 'Mammal';
-                obj.year = year;
+                obj.year = year.toString();
                 obj.comments = dataEntry.comments;
                 obj.dead = dataEntry.isDead ? 'true' : 'false';
                 obj.massG = dataEntry.mass;

@@ -415,7 +415,7 @@ const createLizardEntry = async (currentData, dataEntry) => {
     );
     // console.log(genus, species)
     const entryDate = new Date(dataEntry.dateTime);
-    const year = entryDate.getFullYear();
+    const year = entryDate.getFullYear().toString();
     const obj = structuredClone(dataObjTemplate);
     obj.array = currentData.array || 'N/A';
     obj.dateTime = dataEntry.dateTime || 'N/A';
