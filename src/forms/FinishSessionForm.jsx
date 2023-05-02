@@ -166,18 +166,26 @@ export const FinishSessionForm = () => {
     // TODO: consider fine tuning the data that is uploaded to eliminate N/A fields where they aren't needed
 
     const finishSession = () => {
+<<<<<<< HEAD
+        const sessionDateObject = new Date(currentData.sessionDateTime)
+=======
         const sessionDateTime = new Date(currentData.sessionEpochTime);
+>>>>>>> main
         const sessionObj = {
             array: currentData.array,
             commentsAboutTheArray: comments,
-            dateTime: getStandardizedDateTimeString(sessionDateTime),
+            dateTime: currentData.sessionDateTime,
             handler: currentData.handler,
             noCaptures: currentData.captureStatus === 'withCaptures' ? 'true' : 'false',
             recorder: currentData.recorder,
             site: currentData.site,
             trapStatus: trapStatus,
+<<<<<<< HEAD
+            year: sessionDateObject.getFullYear()
+=======
             year: sessionDateTime.getFullYear(),
             sessionId: currentData.sessionEpochTime
+>>>>>>> main
         };
         console.log(sessionObj);
         const dataObjTemplate = {
@@ -250,7 +258,11 @@ export const FinishSessionForm = () => {
                 obj.genus = genus;
                 obj.hdBody = dataEntry.hdBody;
                 obj.massG = dataEntry.massG;
+<<<<<<< HEAD
+                obj.sessionDateTime = currentData.sessionDateTime;
+=======
                 obj.sessionDateTime = getStandardizedDateTimeString(sessionDateTime);
+>>>>>>> main
                 obj.sex = dataEntry.sex.charAt(0);
                 obj.site = currentData.site;
                 obj.species = species;
@@ -280,7 +292,11 @@ export const FinishSessionForm = () => {
                 obj.fenceTrap = dataEntry.trap;
                 obj.genus = genus;
                 obj.massG = dataEntry.mass;
+<<<<<<< HEAD
+                obj.sessionDateTime = currentData.sessionDateTime;
+=======
                 obj.sessionDateTime = getStandardizedDateTimeString(sessionDateTime);
+>>>>>>> main
                 obj.sex = dataEntry.sex.charAt(0);
                 obj.site = currentData.site;
                 obj.species = species;
@@ -312,7 +328,11 @@ export const FinishSessionForm = () => {
                 obj.array = currentData.array;
                 obj.dateTime = dataEntry.dateTime;
                 obj.lastEdit = entryDate.getTime();
+<<<<<<< HEAD
+                obj.sessionDateTime = currentData.sessionDateTime;
+=======
                 obj.sessionDateTime = getStandardizedDateTimeString(sessionDateTime);
+>>>>>>> main
                 obj.year = year;
                 obj.comments = dataEntry.comments;
                 for (const key in dataEntry.arthropodData) {
@@ -339,7 +359,11 @@ export const FinishSessionForm = () => {
                 obj.lastEdit = entryDate.getTime();
                 obj.fenceTrap = dataEntry.trap;
                 obj.genus = genus;
+<<<<<<< HEAD
+                obj.sessionDateTime = currentData.sessionDateTime;
+=======
                 obj.sessionDateTime = getStandardizedDateTimeString(sessionDateTime);
+>>>>>>> main
                 obj.site = currentData.site;
                 obj.species = species;
                 obj.speciesCode = dataEntry.speciesCode;
