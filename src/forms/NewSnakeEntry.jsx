@@ -122,7 +122,6 @@ export default function NewSnakeEntry() {
     }, [noCapture])
 
     const completeCapture = () => {
-        const date = new Date();
         updateData(
             'snake',
             {

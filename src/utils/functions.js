@@ -320,6 +320,7 @@ export const completeLizardCapture = async (
     const lizardDataWithTimes = {
         ...lizardData,
         dateTime: getStandardizedDateTimeString(currentData.sessionEpochTime),
+        sessionDateTime: getStandardizedDateTimeString(currentData.sessionEpochTime),
         lastEdit: date.getTime(),
     };
     const collectionName =
