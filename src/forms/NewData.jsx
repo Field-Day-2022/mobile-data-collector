@@ -103,6 +103,7 @@ export default function NewData() {
         } else {
             setErrors(tempErrors);
         }
+        const date = new Date();
 
         if (captureStatus === 'withCaptures') {
             setCurrentData({
@@ -117,11 +118,8 @@ export default function NewData() {
                 site: currentSite,
                 array: currentArray,
                 captureStatus: 'withCaptures',
-<<<<<<< HEAD
-                sessionDateTime: getStandardizedDateTimeString(new Date()),
-=======
+                sessionDateTime: getStandardizedDateTimeString(date),
                 sessionEpochTime: date.getTime(),
->>>>>>> main
             });
             setCurrentForm('New Data Entry');
         } else if (captureStatus === 'withoutCaptures') {
@@ -137,11 +135,8 @@ export default function NewData() {
                 site: currentSite,
                 array: currentArray,
                 captureStatus: 'withoutCaptures',
-<<<<<<< HEAD
-                sessionDateTime: getStandardizedDateTimeString(new Date())
-=======
+                sessionDateTime: getStandardizedDateTimeString(date),
                 sessionEpochTime: date.getTime(),
->>>>>>> main
             });
             setCurrentForm('Finish Session');
         }
