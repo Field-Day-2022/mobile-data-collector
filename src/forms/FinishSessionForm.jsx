@@ -172,7 +172,7 @@ export const FinishSessionForm = () => {
             commentsAboutTheArray: comments,
             dateTime: currentData.sessionDateTime,
             handler: currentData.handler,
-            noCaptures: currentData.captureStatus === 'withCaptures' ? 'true' : 'false',
+            noCaptures: currentData.captureStatus === 'withCaptures' ? 'false' : 'true',
             recorder: currentData.recorder,
             site: currentData.site,
             trapStatus: trapStatus,
