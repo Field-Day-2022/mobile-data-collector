@@ -100,7 +100,6 @@ export default function NewMammalEntry() {
     }, []);
 
     const completeCapture = () => {
-        const date = new Date();
         updateData(
             'mammal',
             {
