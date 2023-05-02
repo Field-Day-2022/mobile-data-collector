@@ -245,7 +245,7 @@ export const FinishSessionForm = () => {
                 obj.array = currentData.array;
                 obj.dateTime = dataEntry.dateTime;
                 obj.lastEdit = entryDate.getTime();
-                obj.dead = dataEntry.isDead;
+                obj.dead = dataEntry.isDead ? 'true' : 'false';
                 obj.fenceTrap = dataEntry.trap;
                 obj.genus = genus;
                 obj.hdBody = dataEntry.hdBody;
@@ -276,7 +276,7 @@ export const FinishSessionForm = () => {
                 obj.comments = dataEntry.comments;
                 obj.dateTime = dataEntry.dateTime;
                 obj.lastEdit = entryDate.getTime();
-                obj.dead = dataEntry.isDead;
+                obj.dead = dataEntry.isDead ? 'true' : 'false';
                 obj.fenceTrap = dataEntry.trap;
                 obj.genus = genus;
                 obj.massG = dataEntry.mass;
@@ -346,7 +346,7 @@ export const FinishSessionForm = () => {
                 obj.taxa = 'Mammal';
                 obj.year = year;
                 obj.comments = dataEntry.comments;
-                obj.dead = dataEntry.isDead;
+                obj.dead = dataEntry.isDead ? 'true' : 'false';
                 obj.massG = dataEntry.mass;
                 obj.sex = dataEntry.sex.charAt(0);
                 obj.entryId = dataEntry.entryId;
