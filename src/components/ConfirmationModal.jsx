@@ -5,6 +5,7 @@ export default function ConfirmationModal({
     completeCapture,
     setConfirmationModalIsOpen,
     modalType,
+    resetFields
 }) {
     const displayData = () => {
         let outputArray = [];
@@ -125,6 +126,7 @@ export default function ConfirmationModal({
                     <button
                         className="active:scale-90 transition bg-asu-maroon text-asu-gold p-3 rounded-xl m-2 w-1/2 font-bold text-xl"
                         onClick={() => {
+                            resetFields();
                             setConfirmationModalIsOpen(false);
                         }}
                     >

@@ -50,7 +50,7 @@ export default function Notification() {
         p-4
         rounded-2xl
         mt-1
-        border-[1px]
+        border-2
         border-asu-maroon
       '
       variants={containerVariant}

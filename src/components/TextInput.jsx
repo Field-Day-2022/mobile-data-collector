@@ -14,7 +14,7 @@ export default function TextInput({ prompt, placeholder, value, setValue, onChan
                 }}
                 type="text"
                 placeholder={placeholder}
-                className="text-xl placeholder:text-gray-500 text-asu-maroon input bg-white/25 input-bordered input-secondary w-full max-w-xs mb-5"
+                className="border-2 text-xl placeholder:text-gray-500 text-asu-maroon input bg-white/25 input-bordered input-secondary w-full max-w-xs mb-5"
             />
         </div>
     );

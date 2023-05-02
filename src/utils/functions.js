@@ -108,12 +108,14 @@ export const checkForServerData = async (
 };
 
 export const downloadAllLizardDataFromServer = async (environment) => {
-    const collections = ['GatewayData', 'VirginRiverData', 'SanPedroData'];
-    if (environment === 'test') {
-        collections.forEach((value, index) => {
-            collections[index] = `Test${value}`;
-        });
-    }
+    const collections = [
+        'GatewayData',
+        'VirginRiverData',
+        'SanPedroData',
+        'TestGatewayData',
+        'TestVirginRiverData',
+        'TestSanPedroData',
+    ];
     for (const collectionName of collections) {
         const incomingLizardData = await getDocsFromServer(
             query(collection(db, collectionName), where('taxa', '==', 'Lizard'))
@@ -124,12 +126,14 @@ export const downloadAllLizardDataFromServer = async (environment) => {
 };
 
 export const downloadLatestLizardDataFromServer = async (latestClientTime, environment) => {
-    const collections = ['GatewayData', 'VirginRiverData', 'SanPedroData'];
-    if (environment === 'test') {
-        collections.forEach((value, index) => {
-            collections[index] = `Test${value}`;
-        });
-    }
+    const collections = [
+        'GatewayData',
+        'VirginRiverData',
+        'SanPedroData',
+        'TestGatewayData',
+        'TestVirginRiverData',
+        'TestSanPedroData',
+    ];
     for (const collectionName of collections) {
         const incomingLizardData = await getDocsFromServer(
             query(
@@ -218,7 +222,8 @@ export const verifyForm = (
     entryData,
     setNotification,
     setConfirmationModalIsOpen,
-    setErrors
+    setErrors,
+    setContinueAnyways
 ) => {
     let tempErrors = blankErrors;
     let errorExists = false;
@@ -229,6 +234,9 @@ export const verifyForm = (
         } else if (entryData[key] === '0') {
             tempErrors[key] = 'Must not be 0';
         }
+    }
+    if (entryData.speciesCode !== '' && entryData.trap !== '') {
+        setContinueAnyways(true);
     }
     if (errorExists) {
         setNotification('Errors in form');
@@ -311,7 +319,7 @@ export const completeLizardCapture = async (
     const date = new Date();
     const lizardDataWithTimes = {
         ...lizardData,
-        dateTime: getStandardizedDateTimeString(date),
+        dateTime: getStandardizedDateTimeString(currentData.sessionEpochTime),
         lastEdit: date.getTime(),
     };
     const collectionName =
@@ -336,17 +344,16 @@ export const completeLizardCapture = async (
 };
 
 export const getStandardizedDateTimeString = (dateString) => {
-    const tempDate = new Date(dateString)
-    return `${
-        tempDate.getFullYear()
-    }/${
-        (tempDate.getMonth() + 1).toString().padStart(2, '0')
-    }/${
-        tempDate.getDate().toString().padStart(2, '0')
-    } ${tempDate.toLocaleTimeString('en-US', {
-        hourCycle: 'h24'
-    })}`
-}
+    const tempDate = new Date(dateString);
+    return `${tempDate.getFullYear()}/${(tempDate.getMonth() + 1)
+        .toString()
+        .padStart(2, '0')}/${tempDate
+        .getDate()
+        .toString()
+        .padStart(2, '0')} ${tempDate.toLocaleTimeString('en-US', {
+        hourCycle: 'h24',
+    })}`;
+};
 
 const createLizardEntry = async (currentData, dataEntry) => {
     const dataObjTemplate = {
@@ -397,6 +404,8 @@ const createLizardEntry = async (currentData, dataEntry) => {
         year: 'N/A',
         noCapture: 'N/A',
         lastEdit: 'N/A',
+        sessionId: currentData.sessionEpochTime,
+        entryId: new Date().getTime(),
     };
     const { genus, species } = await getGenusSpecies(
         currentData.project,
@@ -418,7 +427,7 @@ const createLizardEntry = async (currentData, dataEntry) => {
     obj.otlMm = dataEntry.otl || 'N/A';
     obj.recapture = dataEntry.isRecapture || 'N/A';
     obj.regenTail = dataEntry.regenTail || 'N/A';
-    obj.sessionDateTime = currentData.sessionDateTime || 'N/A';
+    obj.sessionDateTime = getStandardizedDateTimeString(currentData.sessionEpochTime) || 'N/A';
     obj.sex = dataEntry.sex || 'N/A';
     obj.site = currentData.site || 'N/A';
     obj.species = species || 'N/A';

@@ -140,11 +140,11 @@ export default function Home() {
                 </thead>
                 <tbody>
                     {pastSessions.map((session) => {
-                        const date = new Date(session.sessionData.sessionDateTime);
+                        const date = new Date(session.sessionData.sessionEpochTime);
                         const today = new Date();
                         if (date.getDate() === today.getDate()) {
                             return (
-                                <tr key={session.sessionData.sessionDateTime} >
+                                <tr key={session.sessionData.sessionEpochTime} >
                                     <td className="flex justify-center">
                                         {session.uploaded ? (
                                             <svg

@@ -19,7 +19,7 @@ export default function Dropdown
             <p className="text-red-600 font-bold">{error}</p>
             <label
                 tabIndex={0}
-                className={'btn bg-white border-[1px] border-asu-maroon focus:border-asu-maroon hover:bg-white/50 m-1 text-black text-xl capitalize font-medium'}
+                className={'btn bg-white border-2 border-asu-maroon focus:border-asu-maroon hover:bg-white/50 m-1 text-black text-xl capitalize font-medium'}
             >
                 {value ? `${placeholder}: ${value}` : placeholder}
             </label>
@@ -37,7 +37,7 @@ export default function Dropdown
           overflow-y-auto
           max-h-96
           border-asu-maroon
-          border-[1px]
+          border-2
           "
             >
                 {options.length ? (

@@ -57,13 +57,13 @@ export default function NewDataEntry() {
                 <div className="dropdown dropdown-bottom justify-center items-center">
                     <label
                         tabIndex={0}
-                        className="btn m-1 text-black text-xl capitalize font-medium bg-white border-asu-maroon border-[1px] hover:border-asu-maroon hover:bg-white"
+                        className="btn m-1 text-black text-xl capitalize font-medium bg-white border-asu-maroon border-2 hover:border-asu-maroon hover:bg-white"
                     >
                         Select Form
                     </label>
                     <ul
                         tabIndex={0}
-                        className="dropdown-content menu items-center p-2 shadow bg-white rounded-box text-xl border-asu-maroon border-[1px]"
+                        className="dropdown-content menu items-center p-2 shadow bg-white rounded-box text-xl border-asu-maroon border-2"
                     >
                         {entryTypes.map((entry, index) => (
                             <li
@@ -76,14 +76,14 @@ export default function NewDataEntry() {
                                 }
                                 key={entry}
                             >
-                                <p className="border-[1px] border-asu-maroon m-1 p-2 flex flex-col items-center">{entry}</p>
+                                <p className="border-2 border-asu-maroon m-1 p-2 flex flex-col items-center">{entry}</p>
                             </li>
                         ))}
                     </ul>
                 </div>
                 <label
                     htmlFor="my-modal-6"
-                    className="btn m-1 text-black capitalize text-xl font-normal border-asu-maroon border-[1px] bg-white hover:bg-white hover:border-asu-maroon"
+                    className="btn m-1 text-black capitalize text-xl font-normal border-asu-maroon border-2 bg-white hover:bg-white hover:border-asu-maroon"
                 >
                     End Session
                 </label>
@@ -143,13 +143,13 @@ export default function NewDataEntry() {
                             onClick={() => {
                                 setCurrentForm('Finish Session');
                             }}
-                            className="btn w-full px-2 py-3 h-min text-black normal-case my-4 font-semibold text-lg border-asu-maroon border-[1px] bg-white"
+                            className="btn w-full px-2 py-3 h-min text-black normal-case my-4 font-semibold text-lg border-asu-maroon border-2 bg-white"
                         >
                             Yes, I'm done with this session
                         </label>
                         <label
                             htmlFor="my-modal-6"
-                            className="btn w-full px-2 py-3 h-min text-black normal-case font-semibold text-lg border-asu-maroon border-[1px] bg-white hover:bg-white hover:border-asu-maroon"
+                            className="btn w-full px-2 py-3 h-min text-black normal-case font-semibold text-lg border-asu-maroon border-2 bg-white hover:bg-white hover:border-asu-maroon"
                         >
                             No, I'm not finished yet
                         </label>

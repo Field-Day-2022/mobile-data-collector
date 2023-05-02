@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useAtom, useSetAtom } from 'jotai';
 import { 
     currentFormName, 
@@ -40,8 +40,26 @@ export default function NewAmphibianEntry() {
     const [currentData, setCurrentData] = useAtom(currentSessionData);
     const setCurrentForm = useSetAtom(currentFormName);
     const setNotification  = useSetAtom(notificationText);
+    const [continueAnyways, setContinueAnyways] = useState(false);
 
     // todo: input validation
+
+    useEffect(() => {
+        sex === 'Male' && setSex('M');
+        sex === 'Female' && setSex('F');
+        sex === 'Unknown' && setSex('U');
+    }, [sex])
+
+    useEffect(() => {
+        if (
+            continueAnyways &&
+            hdBody &&
+            mass &&
+            sex
+        ) {
+            setConfirmationModalIsOpen(true);
+        }
+    }, [continueAnyways, hdBody, mass, sex])
 
     useEffect(() => {
         const getAnswerFormDataFromFirestore = async () => {
@@ -78,7 +96,8 @@ export default function NewAmphibianEntry() {
                 sex,
                 isDead,
                 comments,
-                dateTime: getStandardizedDateTimeString(new Date())
+                dateTime: getStandardizedDateTimeString(currentData.sessionEpochTime),
+                entryId: new Date().getTime(),
             },
             setCurrentData,
             currentData,
@@ -119,7 +138,12 @@ export default function NewAmphibianEntry() {
                 error={errors.mass}
             />
             <Dropdown 
-                value={sex} 
+                value={`${
+                    sex === 'M' || sex === 'Male' ? 'Male' :
+                    sex === 'F' || sex === 'Female' ? 'Female' :
+                    sex === 'U' || sex === 'Unknown' ? 'Unknown' :
+                    sex
+                }`}
                 setValue={setSex} 
                 placeholder="Sex" 
                 options={sexOptions} 
@@ -148,9 +172,22 @@ export default function NewAmphibianEntry() {
                     },
                     setNotification,
                     setConfirmationModalIsOpen,
-                    setErrors
+                    setErrors,
+                    setContinueAnyways,
                 )
             }/>
+            {continueAnyways && 
+                <div>
+                    <p className='text-xl'>Form has incomplete data, continue anyways?</p>
+                    <Button 
+                        prompt='Submit incomplete form'
+                        clickHandler={() => {
+                            if (hdBody === '') setHdBody('N/A');
+                            if (mass === '') setMass('N/A');
+                            if (sex === '') setSex('U');
+                        }}
+                    />
+                </div>}
             {confirmationModalIsOpen && (
                 <ConfirmationModal
                     data={{
@@ -165,6 +202,11 @@ export default function NewAmphibianEntry() {
                     completeCapture={completeCapture}
                     setConfirmationModalIsOpen={setConfirmationModalIsOpen}
                     modalType="amphibian"
+                    resetFields={() => {
+                        hdBody === 'N/A' && setHdBody('');
+                        mass === 'N/A' && setMass('');
+                        sex ===  'U' && setSex('');
+                    }}
                 />
             )}
         </FormWrapper>

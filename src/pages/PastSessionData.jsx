@@ -5,8 +5,9 @@ import {
     currentPageName,
     currentFormName,
     pastEntryIndex,
+    sessionObject,
 } from '../utils/jotai';
-import { useAtom } from 'jotai';
+import { useAtom, useSetAtom } from 'jotai';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 
@@ -17,7 +18,7 @@ export default function PastSessionData() {
     const [currentForm, setCurrentForm] = useAtom(currentFormName);
     const [currentPage, setCurrentPage] = useAtom(currentPageName);
     const [entryIndex, setEntryIndex] = useAtom(pastEntryIndex);
-
+    const setCurrentSessionObject = useSetAtom(sessionObject)
     const [isOpen, setIsOpen] = useState([]);
     const [openEntry, setOpenEntry] = useState();
 
@@ -35,7 +36,7 @@ export default function PastSessionData() {
         const nowDateCode = `${now.getDate()}${now.getMonth()}${now.getFullYear()}`;
         setPastData(
             pastData.filter((value) => {
-                const sessionDate = new Date(value.sessionData.sessionDateTime);
+                const sessionDate = new Date(value.sessionData.sessionEpochTime);
                 const sessionDateCode = `${sessionDate.getDate()}${sessionDate.getMonth()}${sessionDate.getFullYear()}`;
                 return (nowDateCode === sessionDateCode);
             })
@@ -114,15 +115,16 @@ export default function PastSessionData() {
         >
             <h1 className="text-xl">{`All previous sessions from today (${new Date().getMonth() + 1}-${new Date().getDate()})`}</h1>
             {pastData.map((sessionEntry, index) => {
-                const date = new Date(sessionEntry.sessionData.sessionDateTime);
+                const date = new Date(sessionEntry.sessionData.sessionEpochTime);
                 const displayDate = date.toLocaleTimeString();
                 const displayString = `${displayDate} - ${sessionEntry.sessionData.site}`
                 const today = new Date();
+                console.log(sessionEntry);
                 if (today.getDate() === date.getDate()) {
                     return (
                         <motion.li
                             key={index}
-                            className="bg-white/90 p-4 border-[1px] border-asu-maroon m-2 rounded-2xl w-5/6"
+                            className="bg-white/90 p-4 border-2 border-asu-maroon m-2 rounded-2xl w-5/6"
                             variants={liVariant}
                             initial={false}
                             animate={isOpen[index] ? 'open' : 'closed'}
@@ -208,6 +210,7 @@ export default function PastSessionData() {
                                             onClick={() => {
                                                 setIsEditingPrevious(true);
                                                 setCurrentData(pastData[openEntry].sessionData);
+                                                setCurrentSessionObject(pastData[openEntry].sessionObj)
                                                 setCurrentPage('Collect Data');
                                                 setCurrentForm('New Data Entry');
                                                 setEntryIndex(index);

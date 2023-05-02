@@ -9,6 +9,7 @@ import {
     currentPageName,
     notificationText,
     appMode,
+    sessionObject,
 } from '../utils/jotai';
 
 import { useCollectionData } from 'react-firebase-hooks/firestore';
@@ -46,6 +47,7 @@ export const FinishSessionForm = () => {
     const [comments, setComments] = useState('');
     const [environment, setEnvironment] = useAtom(appMode);
     const [answerSet, setAnswerSet] = useState([]);
+    const [pastSessionObj, setPastSessionObj] = useAtom(sessionObject)
 
     useEffect(() => {
         const getAnswerSet = async () => {
@@ -56,8 +58,14 @@ export const FinishSessionForm = () => {
             })
             setAnswerSet(tempAnswerSetArray);
         }
-        
     }, [])
+
+    useEffect(() => {
+        if (isEditingPrevious) {
+            setComments(pastSessionObj.commentsAboutTheArray)
+            setTrapStatus(pastSessionObj.trapStatus)
+        }
+    }, [isEditingPrevious])    
 
     const uploadSessionData = async (sessionObj) => {
         if (isEditingPrevious) {
@@ -78,6 +86,7 @@ export const FinishSessionForm = () => {
                             uploaded: true,
                             sessionId,
                             sessionData: currentData,
+                            sessionObj
                         };
                     } else {
                         return session;
@@ -91,6 +100,7 @@ export const FinishSessionForm = () => {
                 {
                     uploaded: false,
                     sessionData: currentData,
+                    sessionObj
                 }
             ])
             let collectionName = `Test${currentData.project.replace(/\s/g, '')}Session`;
@@ -108,6 +118,7 @@ export const FinishSessionForm = () => {
                             uploaded: true,
                             sessionId: docRef.id,
                             sessionData: currentData,
+                            sessionObj
                         };
                     } else {
                         return session;
@@ -131,12 +142,11 @@ export const FinishSessionForm = () => {
                     entryObject[key] = 'N/A';
                 }
             }
-            const timestamp = new Date(entryObject.dateTime);
             let taxa = entryObject.taxa;
             if (entryObject.taxa === 'N/A') {
                 taxa = 'Arthropod'
             }
-            const entryId = `${currentData.site}${taxa}${timestamp.getTime()}`;
+            const entryId = `${currentData.site}${taxa}${entryObject.entryId}`;
             console.log(entryId)
             dataBatch.set(doc(db, collectionName, entryId), entryObject);
             if (taxa === 'Lizard') {
@@ -156,17 +166,26 @@ export const FinishSessionForm = () => {
     // TODO: consider fine tuning the data that is uploaded to eliminate N/A fields where they aren't needed
 
     const finishSession = () => {
+<<<<<<< HEAD
         const sessionDateObject = new Date(currentData.sessionDateTime)
+=======
+        const sessionDateTime = new Date(currentData.sessionEpochTime);
+>>>>>>> main
         const sessionObj = {
             array: currentData.array,
             commentsAboutTheArray: comments,
             dateTime: currentData.sessionDateTime,
             handler: currentData.handler,
-            noCaptures: currentData.captureStatus === 'withCaptures' ? 'TRUE' : 'FALSE',
+            noCaptures: currentData.captureStatus === 'withCaptures' ? 'true' : 'false',
             recorder: currentData.recorder,
             site: currentData.site,
             trapStatus: trapStatus,
+<<<<<<< HEAD
             year: sessionDateObject.getFullYear()
+=======
+            year: sessionDateTime.getFullYear(),
+            sessionId: currentData.sessionEpochTime
+>>>>>>> main
         };
         console.log(sessionObj);
         const dataObjTemplate = {
@@ -218,6 +237,7 @@ export const FinishSessionForm = () => {
             year: 'N/A',
             noCapture: 'N/A',
             lastEdit: 'N/A',
+            sessionId: currentData.sessionEpochTime,
         };
         let dataArray = [];
         if (currentData.amphibian) {
@@ -238,7 +258,11 @@ export const FinishSessionForm = () => {
                 obj.genus = genus;
                 obj.hdBody = dataEntry.hdBody;
                 obj.massG = dataEntry.massG;
+<<<<<<< HEAD
                 obj.sessionDateTime = currentData.sessionDateTime;
+=======
+                obj.sessionDateTime = getStandardizedDateTimeString(sessionDateTime);
+>>>>>>> main
                 obj.sex = dataEntry.sex.charAt(0);
                 obj.site = currentData.site;
                 obj.species = species;
@@ -246,6 +270,7 @@ export const FinishSessionForm = () => {
                 obj.taxa = 'Amphibian';
                 obj.year = year;
                 obj.comments = dataEntry.comments;
+                obj.entryId = dataEntry.entryId;
                 dataArray.push(obj);
             }
         }
@@ -267,7 +292,11 @@ export const FinishSessionForm = () => {
                 obj.fenceTrap = dataEntry.trap;
                 obj.genus = genus;
                 obj.massG = dataEntry.mass;
+<<<<<<< HEAD
                 obj.sessionDateTime = currentData.sessionDateTime;
+=======
+                obj.sessionDateTime = getStandardizedDateTimeString(sessionDateTime);
+>>>>>>> main
                 obj.sex = dataEntry.sex.charAt(0);
                 obj.site = currentData.site;
                 obj.species = species;
@@ -277,6 +306,7 @@ export const FinishSessionForm = () => {
                 obj.vtlMm = dataEntry.vtl;
                 obj.year = year;
                 obj.noCapture = dataEntry.noCapture;
+                obj.entryId = dataEntry.entryId;
                 dataArray.push(obj);
             }
         }
@@ -298,7 +328,11 @@ export const FinishSessionForm = () => {
                 obj.array = currentData.array;
                 obj.dateTime = dataEntry.dateTime;
                 obj.lastEdit = entryDate.getTime();
+<<<<<<< HEAD
                 obj.sessionDateTime = currentData.sessionDateTime;
+=======
+                obj.sessionDateTime = getStandardizedDateTimeString(sessionDateTime);
+>>>>>>> main
                 obj.year = year;
                 obj.comments = dataEntry.comments;
                 for (const key in dataEntry.arthropodData) {
@@ -306,6 +340,7 @@ export const FinishSessionForm = () => {
                 }
                 obj.fenceTrap = dataEntry.trap;
                 obj.taxa = 'N/A';
+                obj.entryId = dataEntry.entryId;
                 dataArray.push(obj);
             }
         }
@@ -324,7 +359,11 @@ export const FinishSessionForm = () => {
                 obj.lastEdit = entryDate.getTime();
                 obj.fenceTrap = dataEntry.trap;
                 obj.genus = genus;
+<<<<<<< HEAD
                 obj.sessionDateTime = currentData.sessionDateTime;
+=======
+                obj.sessionDateTime = getStandardizedDateTimeString(sessionDateTime);
+>>>>>>> main
                 obj.site = currentData.site;
                 obj.species = species;
                 obj.speciesCode = dataEntry.speciesCode;
@@ -334,6 +373,7 @@ export const FinishSessionForm = () => {
                 obj.dead = dataEntry.isDead;
                 obj.massG = dataEntry.mass;
                 obj.sex = dataEntry.sex.charAt(0);
+                obj.entryId = dataEntry.entryId;
                 dataArray.push(obj);
             }
         }
@@ -355,6 +395,7 @@ export const FinishSessionForm = () => {
             mammal: [],
             snake: [],
         });
+        setPastSessionObj({})
     };
 
     const getGenusSpecies = (project, taxa, speciesCode) => {

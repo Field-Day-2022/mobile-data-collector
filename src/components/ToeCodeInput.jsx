@@ -354,7 +354,7 @@ export default function ToeCodeInput({
                 
                     <label
                         htmlFor="my-modal-4"
-                        className="btn capitalize text-xl text-black bg-white border-asu-maroon border-[1px] font-normal hover:bg-white/50"
+                        className="btn capitalize text-xl text-black bg-white border-asu-maroon border-2 font-normal hover:bg-white/50"
                     >
                         {toeCode ? `Toe-Clip Code: ${toeCode}` : 'Toe-Clip Code'}
                     </label>
@@ -368,7 +368,7 @@ export default function ToeCodeInput({
                 />
 
                 <motion.div className="modal z-40">
-                    <div className="modal-box  w-11/12  max-w-sm bg-white border-asu-maroon border-[1px] flex flex-col items-center min-h-screen max-h-screen p-1">
+                    <div className="modal-box  w-11/12  max-w-sm bg-white border-asu-maroon border-2 flex flex-col items-center min-h-screen max-h-screen p-1">
                         <div className="flex flex-row">
                             <div className="flex flex-col">
                                 <p className="text-sm">Toe-Clip Code:</p>
@@ -503,7 +503,7 @@ const Comments = ({
                         }
                     }
                 }}
-                className='absolute border-[1px] border-asu-maroon z-10 bg-white rounded-sm p-1'>
+                className='absolute border-2 border-asu-maroon z-10 bg-white rounded-sm p-1'>
                 <p>{commentText}</p>
             </motion.div>}</AnimatePresence>
             <p>{commentText.length > 5 ? `${commentText.slice(0, 5)}...` : commentText}</p>

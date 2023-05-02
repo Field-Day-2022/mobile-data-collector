@@ -63,6 +63,36 @@ export default function NewLizardEntry() {
     const lizardDataLoaded = useAtomValue(lizardDataLoadedAtom);
     const environment = useAtomValue(appMode)
     const setLastEditTime = useSetAtom(lizardLastEditTime);
+    const [continueAnyways, setContinueAnyways] = useState(false);
+
+    useEffect(() => {
+        sex === 'Male' && setSex('M');
+        sex === 'Female' && setSex('F');
+        sex === 'Unknown' && setSex('U');
+    }, [sex])
+
+    useEffect(() => {
+        if (
+            continueAnyways &&
+            toeCode && 
+            svl &&
+            vtl &&
+            otl &&
+            mass &&
+            sex
+        ) {
+            setConfirmationModalIsOpen(true);
+        }
+    }, [
+        continueAnyways, 
+        toeCode, 
+        svl, 
+        vtl,
+        otl,
+        mass,
+        sex
+    ])
+
 
     const sexOptions = ['Male', 'Female', 'Unknown'];
 
@@ -147,7 +177,12 @@ export default function NewLizardEntry() {
             />
             <Dropdown
                 error={errors.sex}
-                value={sex}
+                value={`${
+                    sex === 'M' || sex === 'Male' ? 'Male' :
+                    sex === 'F' || sex === 'Female' ? 'Female' :
+                    sex === 'U' || sex === 'Unknown' ? 'Unknown' :
+                    sex
+                }`}
                 setValue={setSex}
                 placeholder="Sex"
                 options={sexOptions}
@@ -191,11 +226,27 @@ export default function NewLizardEntry() {
                             },
                             setNotification,
                             setConfirmationModalIsOpen,
-                            setErrors
+                            setErrors,
+                            setContinueAnyways
                         )
                     }
                 }}
             />
+            {continueAnyways && 
+                <div>
+                    <p className='text-xl'>Form has incomplete data, continue anyways?</p>
+                    <Button 
+                        prompt='Submit incomplete form'
+                        clickHandler={() => {
+                            toeCode === '' && setToeCode('N/A');
+                            svl === '' && setSvl('N/A');
+                            vtl === '' && setVtl('N/A');
+                            otl === '' && setOtl('N/A');
+                            mass === '' && setMass('N/A');
+                            sex ===  '' && setSex('U');
+                        }}
+                    />
+                </div>}
             {confirmationModalIsOpen && (
                 <ConfirmationModal
                     data={{
@@ -237,6 +288,13 @@ export default function NewLizardEntry() {
                     )}
                     setConfirmationModalIsOpen={setConfirmationModalIsOpen}
                     modalType="lizard"
+                    resetFields={() => {
+                        svl === 'N/A' && setSvl('');
+                        vtl === 'N/A' && setVtl('');
+                        otl === 'N/A' && setOtl('');
+                        mass === 'N/A' && setMass('');
+                        sex ===  'U' && setSex('');
+                    }}
                 />
             )}
         </FormWrapper>

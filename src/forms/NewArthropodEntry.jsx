@@ -74,7 +74,6 @@ export default function NewArthropodEntry() {
     }, []);
 
     const completeCapture = () => {
-        const date = new Date();
         const formattedArthropodData = changeStringsToNumbers(arthropodData);
         if (isEditingPrevious || currentData.arthropod) {
             updatePreexistingArthropodData(
@@ -83,7 +82,8 @@ export default function NewArthropodEntry() {
                     predator,
                     arthropodData: formattedArthropodData,
                     comments,
-                    dateTime: getStandardizedDateTimeString(date),
+                    dateTime: getStandardizedDateTimeString(currentData.sessionEpochTime),
+                    entryId: new Date().getTime(),
                 },
                 setCurrentData,
                 currentData,
@@ -97,7 +97,8 @@ export default function NewArthropodEntry() {
                     predator,
                     arthropodData: formattedArthropodData,
                     comments,
-                    dateTime: getStandardizedDateTimeString(date),
+                    dateTime: getStandardizedDateTimeString(currentData.sessionEpochTime),
+                    entryId: new Date().getTime(),
                 },
                 setCurrentData,
                 currentData,

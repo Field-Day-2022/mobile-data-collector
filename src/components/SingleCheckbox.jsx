@@ -16,7 +16,7 @@ export default function SingleCheckbox({ prompt, value, setValue }) {
                     setValue(!value);
                 }}
                 type="checkbox"
-                className="checkbox checkbox-secondary"
+                className="checkbox border-2 checkbox-secondary"
             />
         </label>
     );
