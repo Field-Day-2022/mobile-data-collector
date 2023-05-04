@@ -22,8 +22,13 @@ function App() {
     const environment = useAtomValue(appMode);
     const dataFetchedRef = useRef(false);
 
+    useEffect(() => {
+        console.log(`lastEditTime changed to ${lastEditTime}`)
+    }, [lastEditTime])
+
     const createFirestoreListeners = () => {
         onSnapshot(doc(db, 'Metadata', 'LizardData'), (snapshot) => {
+            console.log(`server: ${snapshot.data().lastEditTime}; local: ${lastEditTime}`)
             if (snapshot.data().lastEditTime !== lastEditTime) {
                 console.log(
                     `fetching new/modified lizard data from ${new Date(

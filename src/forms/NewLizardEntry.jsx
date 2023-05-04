@@ -62,7 +62,7 @@ export default function NewLizardEntry() {
     const setNotification = useSetAtom(notificationText);
     const lizardDataLoaded = useAtomValue(lizardDataLoadedAtom);
     const environment = useAtomValue(appMode)
-    const setLastEditTime = useSetAtom(lizardLastEditTime);
+    const [lastEditTime, setLastEditTime] = useAtom(lizardLastEditTime);
     const [continueAnyways, setContinueAnyways] = useState(false);
 
     useEffect(() => {
@@ -285,7 +285,8 @@ export default function NewLizardEntry() {
                             comments,
                         },
                         environment,
-                        setLastEditTime
+                        lastEditTime,
+                        setLastEditTime,
                     )}
                     setConfirmationModalIsOpen={setConfirmationModalIsOpen}
                     modalType="lizard"

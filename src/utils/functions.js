@@ -17,6 +17,7 @@ import {
     deleteDoc,
     getDocFromServer,
     arrayRemove,
+    arrayUnion,
 } from 'firebase/firestore';
 import { db } from '../index';
 
@@ -143,8 +144,8 @@ export const downloadLatestLizardDataFromServer = async (latestClientTime, envir
             )
         );
         if (!incomingLizardData.empty) {
-            console.log(`fresh lizard data downloaded from ${collectionName}:`);
-            console.log(incomingLizardData);
+            // console.log(`fresh lizard data downloaded from ${collectionName}:`);
+            // console.log(incomingLizardData);
         }
     }
 };
@@ -314,14 +315,18 @@ export const completeLizardCapture = async (
     setCurrentForm,
     lizardData,
     environment,
+    lastEditTime,
     setLastEditTime
 ) => {
     const date = new Date();
+    const initialLastEditTime = lastEditTime;
+    setLastEditTime(date.getTime());
     const lizardDataWithTimes = {
         ...lizardData,
         dateTime: getStandardizedDateTimeString(currentData.sessionEpochTime),
         sessionDateTime: getStandardizedDateTimeString(currentData.sessionEpochTime),
         lastEdit: date.getTime(),
+        entryId: date.getTime(),
     };
     const collectionName =
         environment === 'live'
@@ -332,16 +337,25 @@ export const completeLizardCapture = async (
     await setDoc(
         doc(db, collectionName, `${currentData.site}Lizard${date.getTime()}`),
         lizardEntry
-    ).then((docRef) => {
-        console.log('successfully added new lizard entry:');
-        reloadCachedLizardData(collectionName, `${currentData.site}Lizard${date.getTime()}`);
-    });
-    setLastEditTime(lizardDataWithTimes.lastEdit);
-    setTimeout(async () => {
-        await updateDoc(doc(db, 'Metadata', 'LizardData'), {
-            lastEditTime: lizardDataWithTimes.lastEdit,
-        });
-    }, 1000);
+    )
+    console.log('added new lizard')
+    console.log(`setting last edit to ${lizardDataWithTimes.lastEdit}`)
+    // todo: find out why the local storage isn't updating here
+    while (true) {
+        if (initialLastEditTime < lastEditTime) {
+            console.log(`${initialLastEditTime} < ${lastEditTime}, setting metadata`)
+            await updateDoc(doc(db, 'Metadata', 'LizardData'), {
+                lastEditTime,
+            }); 
+            break;
+        }
+    }
+    console.log('and out of loop')
+    // setTimeout(async () => {
+    //     await updateDoc(doc(db, 'Metadata', 'LizardData'), {
+    //         lastEditTime: lizardDataWithTimes.lastEdit,
+    //     });
+    // }, 5000);
 };
 
 export const getStandardizedDateTimeString = (dateString) => {
@@ -406,7 +420,6 @@ const createLizardEntry = async (currentData, dataEntry) => {
         noCapture: 'N/A',
         lastEdit: 'N/A',
         sessionId: currentData.sessionEpochTime,
-        entryId: new Date().getTime(),
     };
     const { genus, species } = await getGenusSpecies(
         currentData.project,
@@ -419,7 +432,8 @@ const createLizardEntry = async (currentData, dataEntry) => {
     const obj = structuredClone(dataObjTemplate);
     obj.array = currentData.array || 'N/A';
     obj.dateTime = dataEntry.dateTime || 'N/A';
-    obj.lastEdit = entryDate.getTime() || 'N/A';
+    obj.lastEdit = dataEntry.lastEdit;
+    obj.entryId = dataEntry.entryId;
     obj.dead = dataEntry.isDead ? 'true' : 'false';
     obj.fenceTrap = dataEntry.trap || 'N/A';
     obj.genus = genus || 'N/A';
@@ -428,7 +442,7 @@ const createLizardEntry = async (currentData, dataEntry) => {
     obj.otlMm = dataEntry.otl || 'N/A';
     obj.recapture = dataEntry.isRecapture ? 'true' : 'false';
     obj.regenTail = dataEntry.regenTail ? 'true' : 'false';
-    obj.sessionDateTime = getStandardizedDateTimeString(currentData.sessionEpochTime) || 'N/A';
+    obj.sessionDateTime = dataEntry.sessionDateTime;
     obj.sex = dataEntry.sex || 'N/A';
     obj.site = currentData.site || 'N/A';
     obj.species = species || 'N/A';
@@ -441,6 +455,39 @@ const createLizardEntry = async (currentData, dataEntry) => {
     obj.comments = dataEntry.comments || 'N/A';
     return obj;
 };
+
+// todo: clear session data should delete recorded lizards
+
+export const deleteLizardEntries = async (currentData, setLastEditTime) => {
+    const idsToDelete = []
+    for (const lizardEntry of currentData.lizard) {
+        const lizardId = `${
+            currentData.site
+        }Lizard${
+            lizardEntry.entryId
+        }`;
+        idsToDelete.push(lizardId)
+    }
+    const lastEditTime = new Date().getTime();
+    setLastEditTime(lastEditTime);
+    for (const lizardId of idsToDelete) {
+        await updateDoc(doc(db, 'Metadata', 'LizardData'), {
+            deletedEntries: arrayUnion({
+                collectionId: `${currentData.project.replace(/\s/g, '')}Data`,
+                entryId: lizardId
+            })
+        })
+        await deleteDoc(doc(
+            db, 
+            `${currentData.project.replace(/\s/g, '')}Data`,
+            lizardId
+        ))
+        
+    }
+    await updateDoc(doc(db, 'Metadata', 'LizardData'), {
+        lastEditTime
+    })
+}
 
 const getGenusSpecies = async (project, taxa, speciesCode) => {
     const docsSnapshot = await getDocsFromCache(

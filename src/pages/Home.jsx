@@ -11,25 +11,27 @@ import {
     currentSessionData,
     editingPrevious,
     pastEntryIndex,
-    currentFormName
+    currentFormName,
+    lizardLastEditTime
 } from '../utils/jotai';
 import { doc, getDoc } from 'firebase/firestore';
 import Dropdown from '../components/Dropdown';
 import Button from '../components/Button';
+import { deleteLizardEntries } from '../utils/functions';
 
 export default function Home() {
     const [user, loading, error] = useAuthState(auth);
     const [pastSessions] = useAtom(pastSessionData);
     const [environment, setEnvironment] = useAtom(appMode);
     const setNotification = useSetAtom(notificationText);
-    const setCurrentSession = useSetAtom(currentSessionData);
+    const [currentData, setCurrentData] = useAtom(currentSessionData);
     const setIsEditingPrevious = useSetAtom(editingPrevious);
     const setPastEntryIndex = useSetAtom(pastEntryIndex);
     const [clearSessionConfirmationOpen, setClearSessionConfirmationOpen] = useState('')
-    const clearSessionControls = useAnimationControls();
+    const setLastEditTime = useSetAtom(lizardLastEditTime);
 
     const clearCurrentSession = () => {
-        setCurrentSession({
+        setCurrentData({
             captureStatus: '',
             array: '',
             project: '',
@@ -42,6 +44,7 @@ export default function Home() {
             mammal: [],
             snake: [],
         });
+        deleteLizardEntries(currentData, setLastEditTime);
         setNotification('Current session cleared!')
         setClearSessionConfirmationOpen(false);
     }
@@ -73,7 +76,7 @@ export default function Home() {
         <motion.div>
             <LayoutGroup>
 
-            <motion.h1 className="text-xl">Hello, {user.displayName}!</motion.h1>
+            <motion.h1 className="text-xl">Hello, {user.displayName || 'Unknown person!'}!</motion.h1>
             <Button 
                 prompt={"Logout"}
                 clickHandler={() => signOut(auth)}
@@ -85,7 +88,7 @@ export default function Home() {
                 options={["test", "live"]}
                 clickHandler={entry => {
                     setNotification(`App is now in ${entry} mode`)
-                    setCurrentSession({
+                    setCurrentData({
                         captureStatus: '',
                         array: '',
                         project: '',
