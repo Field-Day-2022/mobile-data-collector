@@ -1,13 +1,11 @@
 import { auth } from '../index';
-import { GoogleAuthProvider, signInWithPopup, signInWithRedirect } from 'firebase/auth';
+import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { motion } from 'framer-motion';
 
 export const LoginWrapper = ({ children }) => {
     const [user, loading, error] = useAuthState(auth);
 
-    // console.log(user)
-    // if (true) {
     if (user && user.email.slice(-7) === 'asu.edu') {
         return children;
     } else if (loading) {
@@ -26,7 +24,7 @@ export const LoginWrapper = ({ children }) => {
         return (
             <motion.div className="font-openSans absolute bg-white inset-0 flex flex-col items-center justify-around">
                 <motion.h1 className="text-black text-4xl">Welcome to Field Day</motion.h1>
-                <p>Logged in as {user ? user.email : 'none'}</p>
+                <p className='text-black text-xl text-center'>Logged in as {user ? user.email : 'none'}</p>
                 <motion.p className="text-black text-lg text-center">
                     Login with your ASU Google account to continue
                 </motion.p>
