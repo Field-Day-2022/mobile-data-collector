@@ -7,8 +7,8 @@ export const LoginWrapper = ({ children }) => {
     const [user, loading, error] = useAuthState(auth);
 
     // console.log(user)
-    if (true) {
-    // if (user && user.email.slice(-7) === 'asu.edu') {
+    // if (true) {
+    if (user && user.email.slice(-7) === 'asu.edu') {
         return children;
     } else if (loading) {
         return (
