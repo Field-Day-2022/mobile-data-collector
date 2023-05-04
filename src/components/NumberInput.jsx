@@ -52,7 +52,7 @@ export default function NumberInput({
                     }
                 }}
                 value={value ?? ''}
-                type="number"
+                type={value === 'N/A' ? 'text' : 'number'}
                 inputMode="numeric"
                 pattern="[0-9]*"
                 placeholder={placeholder}
