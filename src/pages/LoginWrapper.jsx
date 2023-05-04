@@ -26,6 +26,7 @@ export const LoginWrapper = ({ children }) => {
         return (
             <motion.div className="font-openSans absolute bg-white inset-0 flex flex-col items-center justify-around">
                 <motion.h1 className="text-black text-4xl">Welcome to Field Day</motion.h1>
+                <p>Logged in as {user ? user.email : 'none'}</p>
                 <motion.p className="text-black text-lg text-center">
                     Login with your ASU Google account to continue
                 </motion.p>
