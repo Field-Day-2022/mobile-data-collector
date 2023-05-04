@@ -62,18 +62,21 @@ function App() {
         createFirestoreListeners();
     }, []);
 
+    /* <AppWrapper>
+        {currentPage === 'Home' && <Home />}
+        {currentPage === 'History' && <PastSessionData />}
+        {currentPage === 'Collect Data' && <CollectData />}
+    </AppWrapper> */
+
     return (
         <motion.div className="font-openSans overflow-hidden absolute flex flex-col items-center text-center justify-start inset-0 bg-white">
             <AnimatePresence mode="wait">
                 {answerSetLoading ? (
                     <LoadingScreen />
-                ) : (
-                    <AppWrapper>
-                        {currentPage === 'Home' && <Home />}
-                        {currentPage === 'History' && <PastSessionData />}
-                        {currentPage === 'Collect Data' && <CollectData />}
-                    </AppWrapper>
-                )}
+                ) : 
+                    <h1>Hello world</h1>
+                    
+                }
             </AnimatePresence>
         </motion.div>
     );
