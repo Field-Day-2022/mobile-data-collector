@@ -211,7 +211,8 @@ export default function NewLizardEntry() {
                             },
                             setNotification,
                             setConfirmationModalIsOpen,
-                            setErrors
+                            setErrors,
+                            setContinueAnyways
                         )
                     } else {
                         verifyForm(
