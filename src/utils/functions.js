@@ -341,15 +341,18 @@ export const completeLizardCapture = async (
     console.log('added new lizard')
     console.log(`setting last edit to ${lizardDataWithTimes.lastEdit}`)
     // todo: find out why the local storage isn't updating here
-    while (true) {
-        if (initialLastEditTime < lastEditTime) {
-            console.log(`${initialLastEditTime} < ${lastEditTime}, setting metadata`)
-            await updateDoc(doc(db, 'Metadata', 'LizardData'), {
-                lastEditTime,
-            }); 
-            break;
-        }
-    }
+    await updateDoc(doc(db, 'Metadata', 'LizardData'), {
+        lastEditTime,
+    })
+    // while (true) {
+    //     if (initialLastEditTime < lastEditTime) {
+    //         console.log(`${initialLastEditTime} < ${lastEditTime}, setting metadata`)
+    //         await updateDoc(doc(db, 'Metadata', 'LizardData'), {
+    //             lastEditTime,
+    //         }); 
+    //         break;
+    //     }
+    // }
     console.log('and out of loop')
     // setTimeout(async () => {
     //     await updateDoc(doc(db, 'Metadata', 'LizardData'), {
