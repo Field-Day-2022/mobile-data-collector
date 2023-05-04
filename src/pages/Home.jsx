@@ -76,7 +76,7 @@ export default function Home() {
         <motion.div>
             <LayoutGroup>
 
-            <motion.h1 className="text-xl">Hello, {user.email || 'Unknown person!'}!</motion.h1>
+            <motion.h1 className="text-xl">Hello, {user ? user.email : 'unknown person!'}!</motion.h1>
             <Button 
                 prompt={"Logout"}
                 clickHandler={() => signOut(auth)}

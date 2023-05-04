@@ -74,8 +74,11 @@ function App() {
                 {answerSetLoading ? (
                     <LoadingScreen />
                 ) : 
-                    <h1>Hello world</h1>
-                    
+                     <AppWrapper>
+                        {currentPage === 'Home' && <Home />}
+                        {currentPage === 'History' && <PastSessionData />}
+                        {currentPage === 'Collect Data' && <CollectData />}
+                    </AppWrapper> 
                 }
             </AnimatePresence>
         </motion.div>
