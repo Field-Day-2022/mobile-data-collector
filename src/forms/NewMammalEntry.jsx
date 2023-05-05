@@ -138,6 +138,7 @@ export default function NewMammalEntry() {
                 label="Mass (g)" 
                 value={mass} 
                 setValue={setMass} 
+                inputValidation='mass'
                 placeholder="0.0 g"
                 error={errors.mass}
             />
