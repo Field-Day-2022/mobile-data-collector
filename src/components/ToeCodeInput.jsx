@@ -119,6 +119,37 @@ export default function ToeCodeInput({
             collection(db, 'AnswerSet'),
             where('set_name', '==', 'toe clip codes')
         ));
+
+        // if current toe code is nonempty, then there is a toe that is already gone,
+        // and we would like to utilize the natural toe loss in the toe clip code.
+        // this will also work when toeCode = ''
+        for (const templateToeCode of toeCodesTemplateSnapshot.docs[0].data().answers) {
+            if (
+                templateToeCode.primary.includes(toeCode) && // the template code contains the current toeCode
+                !templateToeCode.primary.includes('C4') && // it does not contain "C4"
+                !templateToeCode.primary.includes('D4') && // it does not contain "C4"
+                !toeCodesArray.includes(templateToeCode.primary) // it has not be already used
+            ) {
+                setToeCode(templateToeCode.primary);
+                setSelected({
+                    a: false,
+                    b: false,
+                    c: false,
+                    d: false,
+                    1: false,
+                    2: false,
+                    3: false,
+                    4: false,
+                    5: false,
+                });
+                return;
+            }
+        }
+
+        console.log('no toe codes available that include what we want, grabbing first available')
+
+        // if we got here then we don't have a template toe code that contains what we want, so just
+        // grab the first available
         for (const templateToeCode of toeCodesTemplateSnapshot.docs[0].data().answers) {
             if (
                 !toeCodesArray.includes(templateToeCode.primary) && 
@@ -368,93 +399,97 @@ export default function ToeCodeInput({
                 />
 
                 <motion.div className="modal z-40">
-                    <div className="modal-box  w-11/12  max-w-sm bg-white border-asu-maroon border-2 flex flex-col items-center min-h-screen max-h-screen p-1">
-                        <div className="flex flex-row">
-                            <div className="flex flex-col">
-                                <p className="text-sm">Toe-Clip Code:</p>
-                                <p className="text-xl">{formattedToeCodes}</p>
+                    <div className="modal-box  w-11/12  max-w-sm bg-white border-asu-maroon border-2 flex flex-col items-center justify-between min-h-screen max-h-screen p-1">
+                        <div className="flex flex-col items-center justify-center">
+                            <div >
+                                <div className="flex flex-col">
+                                    <p className="text-sm">Toe-Clip Code:</p>
+                                    <p className="text-xl">{formattedToeCodes}</p>
+                                </div>
                             </div>
-                        </div>
-                        <div className="w-3/4 relative">
-                            <img
-                                src="./toe-clip-example-img.png"
-                                alt="example toe codes"
-                                className="w-full z-0"
-                            />
-                            <div className="absolute bottom-0 w-1/2 right-0">
-                                <SingleCheckbox
-                                    prompt="Is it a recapture?"
-                                    value={isRecapture}
-                                    setValue={setIsRecapture}
+                            <div className="w-3/4 relative">
+                                <img
+                                    src="./toe-clip-example-img.png"
+                                    alt="example toe codes"
+                                    className="w-full z-0"
                                 />
-                            </div>
-                        </div>
-                        <div className="flex w-full justify-evenly items-center">
-                            {letters.map((letter) => (
-                                <Button
-                                    key={letter}
-                                    prompt={letter}
-                                    handler={() => handleClick(letter)}
-                                    isSelected={selected[letter]}
-                                />
-                            ))}
-                            <div
-                                className="bg-asu-maroon rounded-xl brightness-100 text-2xl  capitalize  text-asu-gold z-10 active:brightness-50 active:scale-90 transition"
-                                onClick={() => handleClick('backspace')}
-                            >
-                                <svg
-                                    height="72"
-                                    width="50"
-                                    viewBox="0 0 500 500"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                >
-                                    <path
-                                        fillRule="nonzero"
-                                        d="M 355.684 68.486 C 359.156 65.197 359.172 59.835 355.716 56.523 C 352.273 53.211 346.62 53.197 343.159 56.493 L 144.317 244.006 C 140.845 247.295 140.828 252.657 144.284 255.969 L 343.159 443.513 C 346.631 446.802 352.26 446.787 355.716 443.475 C 359.172 440.163 359.156 434.809 355.684 431.52 L 163.201 250.003 L 355.684 68.486 Z"
-                                        fill="rgb(255, 198, 39)"
-                                        paintOrder="fill"
-                                        strokeMiterlimit={'11'}
+                                <div className="absolute bottom-0 w-1/2 right-0">
+                                    <SingleCheckbox
+                                        prompt="Is it a recapture?"
+                                        value={isRecapture}
+                                        setValue={setIsRecapture}
                                     />
-                                </svg>
+                                </div>
                             </div>
                         </div>
-                        <div className="flex mt-2 w-full justify-evenly">
-                            {numbers.map((number) => (
-                                <Button
-                                    key={number}
-                                    prompt={number}
-                                    handler={() => handleClick(number)}
-                                    isSelected={selected[number]}
-                                />
-                            ))}
-                        </div>
-                        <div className="flex flex-row items-center ">
-                            {isRecapture ? (
-                                <Button
-                                    prompt={historyButtonText}
-                                    handler={() => {
-                                        findPreviousLizardEntries();
-                                    }}
-                                />
-                            ) : (
-                                <Button
-                                    prompt="Generate New"
-                                    handler={() => generateNewToeCode()}
-                                />
-                            )}
-                            <button
-                                className={`bg-asu-maroon brightness-100 p-5 rounded-xl  text-2xl  capitalize  text-asu-gold z-10 m-1 active:brightness-50 active:scale-90 transition select-none`}
-                            >
-                                {isValid ? (
-                                    <label
-                                        htmlFor="my-modal-4"
+                        <div className="flex flex-col items-center justify-center">
+                            <div className="flex w-full justify-evenly items-center">
+                                {letters.map((letter) => (
+                                    <Button
+                                        key={letter}
+                                        prompt={letter}
+                                        handler={() => handleClick(letter)}
+                                        isSelected={selected[letter]}
+                                    />
+                                ))}
+                                <div
+                                    className="bg-asu-maroon rounded-xl brightness-100 text-2xl  capitalize  text-asu-gold z-10 active:brightness-50 active:scale-90 transition"
+                                    onClick={() => handleClick('backspace')}
+                                >
+                                    <svg
+                                        height="72"
+                                        width="50"
+                                        viewBox="0 0 500 500"
+                                        xmlns="http://www.w3.org/2000/svg"
                                     >
-                                        Close
-                                    </label>
+                                        <path
+                                            fillRule="nonzero"
+                                            d="M 355.684 68.486 C 359.156 65.197 359.172 59.835 355.716 56.523 C 352.273 53.211 346.62 53.197 343.159 56.493 L 144.317 244.006 C 140.845 247.295 140.828 252.657 144.284 255.969 L 343.159 443.513 C 346.631 446.802 352.26 446.787 355.716 443.475 C 359.172 440.163 359.156 434.809 355.684 431.52 L 163.201 250.003 L 355.684 68.486 Z"
+                                            fill="rgb(255, 198, 39)"
+                                            paintOrder="fill"
+                                            strokeMiterlimit={'11'}
+                                        />
+                                    </svg>
+                                </div>
+                            </div>
+                            <div className="flex mt-2 w-full justify-evenly">
+                                {numbers.map((number) => (
+                                    <Button
+                                        key={number}
+                                        prompt={number}
+                                        handler={() => handleClick(number)}
+                                        isSelected={selected[number]}
+                                    />
+                                ))}
+                            </div>
+                            <div className="flex flex-row items-center ">
+                                {isRecapture ? (
+                                    <Button
+                                        prompt={historyButtonText}
+                                        handler={() => {
+                                            findPreviousLizardEntries();
+                                        }}
+                                    />
                                 ) : (
-                                    <p onClick={() => triggerErrorMsgAnimation(errorMsg)}>Close</p>
+                                    <Button
+                                        prompt="Generate New"
+                                        handler={() => generateNewToeCode()}
+                                    />
                                 )}
-                            </button>
+                                <button
+                                    className={`bg-asu-maroon brightness-100 p-5 rounded-xl  text-2xl  capitalize  text-asu-gold z-10 m-1 active:brightness-50 active:scale-90 transition select-none`}
+                                >
+                                    {isValid ? (
+                                        <label
+                                            htmlFor="my-modal-4"
+                                        >
+                                            Close
+                                        </label>
+                                    ) : (
+                                        <p onClick={() => triggerErrorMsgAnimation(errorMsg)}>Close</p>
+                                    )}
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <motion.div
