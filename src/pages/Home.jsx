@@ -29,6 +29,7 @@ export default function Home() {
     const setPastEntryIndex = useSetAtom(pastEntryIndex);
     const [clearSessionConfirmationOpen, setClearSessionConfirmationOpen] = useState('')
     const setLastEditTime = useSetAtom(lizardLastEditTime);
+    const setCurrentForm = useSetAtom(currentFormName);
 
     const clearCurrentSession = () => {
         setCurrentData({
@@ -46,6 +47,8 @@ export default function Home() {
         });
         deleteLizardEntries(currentData, environment);
         setNotification('Current session cleared!')
+        setIsEditingPrevious(false);
+        setCurrentForm('');
         setClearSessionConfirmationOpen(false);
     }
 
