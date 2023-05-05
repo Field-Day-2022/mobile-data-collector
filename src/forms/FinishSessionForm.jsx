@@ -356,8 +356,8 @@ export const FinishSessionForm = () => {
         console.log(dataArray);
         uploadSessionData(sessionObj);
         uploadBatchedEntryData(dataArray);
-        setCurrentPage('Home');
-        setCurrentForm('');
+        setCurrentPage('Collect Data');
+        setCurrentForm('New Data');
         setCurrentData({
             captureStatus: '',
             array: '',
