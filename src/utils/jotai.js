@@ -36,3 +36,5 @@ export const toeCodeLoadedAtom = atom(false);
 export const lizardDataLoadedAtom = atom(false);
 
 export const lizardLastEditTime = atomWithStorage('lizardLastEditTime', 0);
+
+export const triggerUpdateOnLastEditTime = atom(false);

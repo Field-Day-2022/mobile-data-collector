@@ -44,7 +44,7 @@ export default function Home() {
             mammal: [],
             snake: [],
         });
-        deleteLizardEntries(currentData, setLastEditTime);
+        deleteLizardEntries(currentData, environment);
         setNotification('Current session cleared!')
         setClearSessionConfirmationOpen(false);
     }
