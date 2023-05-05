@@ -5,12 +5,12 @@ import { collection, doc, onSnapshot } from 'firebase/firestore';
 import CollectData from './pages/CollectData';
 import { db } from './index';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
-import { 
-    appMode, 
+import {
+    appMode,
     currentPageName,
-    lizardDataLoadedAtom, 
+    lizardDataLoadedAtom,
     lizardLastEditTime,
-    triggerUpdateOnLastEditTime
+    triggerUpdateOnLastEditTime,
 } from './utils/jotai';
 import Home from './pages/Home';
 import PastSessionData from './pages/PastSessionData';
@@ -18,7 +18,11 @@ import Navbar from './components/Navbar';
 import { AnimatePresence, motion } from 'framer-motion';
 import Notification from './components/Notification';
 import { ScaleLoader } from 'react-spinners';
-import { checkForServerData, syncDeletedEntries, updateLizardLastEditTime } from './utils/functions';
+import {
+    checkForServerData,
+    syncDeletedEntries,
+    updateLizardLastEditTime,
+} from './utils/functions';
 
 function App() {
     const [answerSetLoading, setAnswerSetLoading] = useState(true);
@@ -29,29 +33,31 @@ function App() {
     const dataFetchedRef = useRef(false);
     const [lastEditUpdateTrigger, setLastEditUpdateTrigger] = useAtom(triggerUpdateOnLastEditTime);
     const [previousLastEditTime, setPreviousLastEditTime] = useState(null);
-    const lastEditRef = useRef(lastEditTime); 
+    const lastEditRef = useRef(lastEditTime);
 
     useEffect(() => {
-        lastEditRef.current = lastEditTime
-    }, [lastEditTime])
+        lastEditRef.current = lastEditTime;
+    }, [lastEditTime]);
 
     useEffect(() => {
-        if ((previousLastEditTime < lastEditTime) && (lastEditUpdateTrigger === true)) {
+        if (previousLastEditTime < lastEditTime && lastEditUpdateTrigger === true) {
             updateLizardLastEditTime(lastEditTime);
-            setPreviousLastEditTime(lastEditTime)
+            setPreviousLastEditTime(lastEditTime);
             setLastEditUpdateTrigger(false);
         }
-    }, [lastEditUpdateTrigger])
+    }, [lastEditUpdateTrigger]);
 
     const createFirestoreListeners = () => {
         onSnapshot(doc(db, 'Metadata', 'LizardData'), (snapshot) => {
             const lastEditTime = lastEditRef.current; // https://medium.com/geographit/accessing-react-state-in-event-listeners-with-usestate-and-useref-hooks-8cceee73c559
-            console.log(`server: ${snapshot.data().lastEditTime}; local: ${lastEditTime}`)
+            console.log(`server: ${snapshot.data().lastEditTime}; local: ${lastEditTime}`);
             if (snapshot.data().lastEditTime !== lastEditTime) {
                 console.log(
                     `fetching new/modified lizard data from ${new Date(
                         lastEditTime
-                    ).toLocaleString()} to ${new Date(snapshot.data().lastEditTime).toLocaleString()}`
+                    ).toLocaleString()} to ${new Date(
+                        snapshot.data().lastEditTime
+                    ).toLocaleString()}`
                 );
                 setLizardDataLoaded(false);
                 checkForServerData(
@@ -85,13 +91,13 @@ function App() {
             <AnimatePresence mode="wait">
                 {answerSetLoading ? (
                     <LoadingScreen />
-                ) : 
-                     <AppWrapper>
+                ) : (
+                    <AppWrapper>
                         {currentPage === 'Home' && <Home />}
                         {currentPage === 'History' && <PastSessionData />}
                         {currentPage === 'Collect Data' && <CollectData />}
-                    </AppWrapper> 
-                }
+                    </AppWrapper>
+                )}
             </AnimatePresence>
         </motion.div>
     );
