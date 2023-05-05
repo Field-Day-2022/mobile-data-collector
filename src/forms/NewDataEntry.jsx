@@ -88,7 +88,7 @@ export default function NewDataEntry() {
                     End Session
                 </label>
             </div>
-            <p className="text-lg mt-2 ">{`Number of entries recorded:`}</p>
+            <p className="text-lg mt-2 ">{`Number of critters recorded:`}</p>
             {currentData ? (
                 <div className="rounded-3xl">
                     <table className="table table-compact glass rounded-3xl">

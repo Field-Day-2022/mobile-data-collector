@@ -17,6 +17,7 @@ import {
     deleteDoc,
     getDocFromServer,
     arrayRemove,
+    arrayUnion,
 } from 'firebase/firestore';
 import { db } from '../index';
 
@@ -97,7 +98,11 @@ export const checkForServerData = async (
     setLizardDataLoaded,
     environment
 ) => {
-    console.log(`comparing ${latestClientTime} and ${latestServerTime}`);
+    console.log(
+        `comparing local: ${new Date(latestClientTime).toLocaleTimeString()} and ${new Date(
+            latestServerTime
+        ).toLocaleTimeString()}`
+    );
     if (latestClientTime === 0) {
         await downloadAllLizardDataFromServer(environment);
         setLizardDataLoaded(true);
@@ -134,17 +139,20 @@ export const downloadLatestLizardDataFromServer = async (latestClientTime, envir
         'TestVirginRiverData',
         'TestSanPedroData',
     ];
+    console.log(`getting all documents with a lastEdit > ${latestClientTime}`);
     for (const collectionName of collections) {
         const incomingLizardData = await getDocsFromServer(
             query(
                 collection(db, collectionName),
-                where('lastEdit', '>=', latestClientTime),
+                where('lastEdit', '>', latestClientTime),
                 where('taxa', '==', 'Lizard')
             )
         );
         if (!incomingLizardData.empty) {
             console.log(`fresh lizard data downloaded from ${collectionName}:`);
-            console.log(incomingLizardData);
+            incomingLizardData.forEach((documentSnapshot) => {
+                console.log(new Date(documentSnapshot.data().entryId).toLocaleTimeString());
+            });
         }
     }
 };
@@ -314,14 +322,18 @@ export const completeLizardCapture = async (
     setCurrentForm,
     lizardData,
     environment,
+    triggerLastEditUpdate,
     setLastEditTime
 ) => {
     const date = new Date();
+    console.log('setting new last edit time to ', date.getTime());
+    setLastEditTime(date.getTime());
     const lizardDataWithTimes = {
         ...lizardData,
         dateTime: getStandardizedDateTimeString(currentData.sessionEpochTime),
         sessionDateTime: getStandardizedDateTimeString(currentData.sessionEpochTime),
         lastEdit: date.getTime(),
+        entryId: date.getTime(),
     };
     const collectionName =
         environment === 'live'
@@ -332,16 +344,15 @@ export const completeLizardCapture = async (
     await setDoc(
         doc(db, collectionName, `${currentData.site}Lizard${date.getTime()}`),
         lizardEntry
-    ).then((docRef) => {
-        console.log('successfully added new lizard entry:');
-        reloadCachedLizardData(collectionName, `${currentData.site}Lizard${date.getTime()}`);
+    );
+    triggerLastEditUpdate();
+};
+
+export const updateLizardLastEditTime = async (newLastEditTime) => {
+    console.log(`updating server lastEditTime to ${newLastEditTime}`);
+    await updateDoc(doc(db, 'Metadata', 'LizardData'), {
+        lastEditTime: newLastEditTime,
     });
-    setLastEditTime(lizardDataWithTimes.lastEdit);
-    setTimeout(async () => {
-        await updateDoc(doc(db, 'Metadata', 'LizardData'), {
-            lastEditTime: lizardDataWithTimes.lastEdit,
-        });
-    }, 1000);
 };
 
 export const getStandardizedDateTimeString = (dateString) => {
@@ -352,7 +363,7 @@ export const getStandardizedDateTimeString = (dateString) => {
         .getDate()
         .toString()
         .padStart(2, '0')} ${tempDate.toLocaleTimeString('en-US', {
-        hourCycle: 'h24',
+        hourCycle: 'h23',
     })}`;
 };
 
@@ -406,29 +417,28 @@ const createLizardEntry = async (currentData, dataEntry) => {
         noCapture: 'N/A',
         lastEdit: 'N/A',
         sessionId: currentData.sessionEpochTime,
-        entryId: new Date().getTime(),
     };
     const { genus, species } = await getGenusSpecies(
         currentData.project,
         'Lizard',
         dataEntry.speciesCode
     );
-    // console.log(genus, species)
     const entryDate = new Date(dataEntry.dateTime);
-    const year = entryDate.getFullYear();
+    const year = entryDate.getFullYear().toString();
     const obj = structuredClone(dataObjTemplate);
     obj.array = currentData.array || 'N/A';
     obj.dateTime = dataEntry.dateTime || 'N/A';
-    obj.lastEdit = entryDate.getTime() || 'N/A';
-    obj.dead = dataEntry.isDead || 'N/A';
+    obj.lastEdit = dataEntry.lastEdit;
+    obj.entryId = dataEntry.entryId;
+    obj.dead = dataEntry.isDead ? 'true' : 'false';
     obj.fenceTrap = dataEntry.trap || 'N/A';
     obj.genus = genus || 'N/A';
-    obj.hatchling = dataEntry.isHatchling || 'N/A';
+    obj.hatchling = dataEntry.isHatchling ? 'true' : 'false';
     obj.massG = dataEntry.mass || 'N/A';
     obj.otlMm = dataEntry.otl || 'N/A';
-    obj.recapture = dataEntry.isRecapture || 'N/A';
-    obj.regenTail = dataEntry.regenTail || 'N/A';
-    obj.sessionDateTime = getStandardizedDateTimeString(currentData.sessionEpochTime) || 'N/A';
+    obj.recapture = dataEntry.isRecapture ? 'true' : 'false';
+    obj.regenTail = dataEntry.regenTail ? 'true' : 'false';
+    obj.sessionDateTime = dataEntry.sessionDateTime;
     obj.sex = dataEntry.sex || 'N/A';
     obj.site = currentData.site || 'N/A';
     obj.species = species || 'N/A';
@@ -440,6 +450,42 @@ const createLizardEntry = async (currentData, dataEntry) => {
     obj.year = year || 'N/A';
     obj.comments = dataEntry.comments || 'N/A';
     return obj;
+};
+
+export const getCollectionSessionName = (project, environment) => {
+    let collectionName = `Test${project.replace(/\s/g, '')}Session`;
+    if (environment === 'live') collectionName = `${project.replace(/\s/g, '')}Session`;
+    return collectionName;
+};
+
+// todo: clear session data should delete recorded lizards
+export const getCollectionDataName = (project, environment) => {
+    let collectionName = `Test${project.replace(/\s/g, '')}Data`;
+    if (environment === 'live') collectionName = `${project.replace(/\s/g, '')}Data`;
+    return collectionName;
+};
+
+export const deleteLizardEntries = async (currentData, environment) => {
+    const collectionName = getCollectionDataName(currentData.project, environment);
+    console.log(`deleting from ${collectionName}`);
+    const idsToDelete = [];
+    for (const lizardEntry of currentData.lizard) {
+        const lizardId = `${currentData.site}Lizard${lizardEntry.entryId}`;
+        idsToDelete.push(lizardId);
+    }
+    console.log(idsToDelete);
+    const batch = writeBatch(db);
+    for (const lizardId of idsToDelete) {
+        batch.delete(doc(db, collectionName, lizardId));
+        batch.update(doc(db, 'Metadata', 'LizardData'), {
+            deletedEntries: arrayUnion({
+                collectionId: collectionName,
+                entryId: lizardId,
+            }),
+        });
+    }
+    await batch.commit();
+    console.log('complete');
 };
 
 const getGenusSpecies = async (project, taxa, speciesCode) => {
