@@ -23,6 +23,7 @@ import {
     syncDeletedEntries,
     updateLizardLastEditTime,
 } from './utils/functions';
+import AboutUs from './pages/AboutUs';
 
 function App() {
     const [answerSetLoading, setAnswerSetLoading] = useState(true);
@@ -96,6 +97,7 @@ function App() {
                         {currentPage === 'Home' && <Home />}
                         {currentPage === 'History' && <PastSessionData />}
                         {currentPage === 'Collect Data' && <CollectData />}
+                        {currentPage === 'About Us' && <AboutUs />}
                     </AppWrapper>
                 )}
             </AnimatePresence>
