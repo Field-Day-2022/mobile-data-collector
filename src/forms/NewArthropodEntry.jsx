@@ -79,7 +79,7 @@ export default function NewArthropodEntry() {
             updatePreexistingArthropodData(
                 {
                     trap,
-                    predator,
+                    predator: predator ? 'true' : 'false',
                     arthropodData: formattedArthropodData,
                     comments,
                     dateTime: getStandardizedDateTimeString(currentData.sessionEpochTime),
@@ -94,7 +94,7 @@ export default function NewArthropodEntry() {
                 'arthropod',
                 {
                     trap,
-                    predator,
+                    predator: predator ? 'true' : 'false',
                     arthropodData: formattedArthropodData,
                     comments,
                     dateTime: getStandardizedDateTimeString(currentData.sessionEpochTime),

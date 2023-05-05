@@ -13,7 +13,7 @@ export default function Dropdown
                 error ? 
                 'dropdown flex flex-col items-center my-2 border-2 border-red-600 rounded-xl p-2'
                 :
-                'dropdown flex flex-col items-center mt-2'
+                'dropdown flex flex-col items-center my-2'
             }
         >
             <p className="text-red-600 font-bold">{error}</p>

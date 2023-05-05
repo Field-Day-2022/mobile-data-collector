@@ -147,9 +147,9 @@ const ListItem = ({
         <motion.li
             className={
                 menuLabel === activeMenuLabel ? 
-                "text-2xl px-2 py-6 bg-white border-4 border-asu-gold mx-2 mb-8 shadow-asu-gold shadow-lg"
+                "text-2xl px-2 py-6 bg-white border-4 border-asu-gold mx-2 mb-8 shadow-asu-gold shadow-lg rounded-xl"
                 :
-                "text-2xl px-2 py-6 bg-white border-2 border-asu-gold mx-2 mb-8 text-black"}
+                "text-2xl px-2 py-6 bg-white border-2 border-asu-gold mx-2 mb-8 text-black rounded-xl"}
             variants={variant}
             onClick={() => clickHandler()}
         >

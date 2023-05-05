@@ -7,7 +7,8 @@ import {
     notificationText, 
     appMode,
     lizardDataLoadedAtom,
-    lizardLastEditTime
+    lizardLastEditTime,
+    triggerUpdateOnLastEditTime
 } from '../utils/jotai';
 import FormWrapper from '../components/FormWrapper';
 import Dropdown from '../components/Dropdown';
@@ -62,8 +63,9 @@ export default function NewLizardEntry() {
     const setNotification = useSetAtom(notificationText);
     const lizardDataLoaded = useAtomValue(lizardDataLoadedAtom);
     const environment = useAtomValue(appMode)
-    const setLastEditTime = useSetAtom(lizardLastEditTime);
+    const [lastEditTime, setLastEditTime] = useAtom(lizardLastEditTime);
     const [continueAnyways, setContinueAnyways] = useState(false);
+    const setTriggerLastUpdate = useSetAtom(triggerUpdateOnLastEditTime);
 
     useEffect(() => {
         sex === 'Male' && setSex('M');
@@ -92,6 +94,10 @@ export default function NewLizardEntry() {
         mass,
         sex
     ])
+
+    const triggerLastEditUpdate = () => {
+        setTriggerLastUpdate(true);
+    }
 
 
     const sexOptions = ['Male', 'Female', 'Unknown'];
@@ -211,7 +217,8 @@ export default function NewLizardEntry() {
                             },
                             setNotification,
                             setConfirmationModalIsOpen,
-                            setErrors
+                            setErrors,
+                            setContinueAnyways
                         )
                     } else {
                         verifyForm(
@@ -284,7 +291,8 @@ export default function NewLizardEntry() {
                             comments,
                         },
                         environment,
-                        setLastEditTime
+                        triggerLastEditUpdate,
+                        setLastEditTime,
                     )}
                     setConfirmationModalIsOpen={setConfirmationModalIsOpen}
                     modalType="lizard"

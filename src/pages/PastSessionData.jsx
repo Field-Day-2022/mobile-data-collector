@@ -6,6 +6,7 @@ import {
     currentFormName,
     pastEntryIndex,
     sessionObject,
+    notificationText,
 } from '../utils/jotai';
 import { useAtom, useSetAtom } from 'jotai';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -21,10 +22,11 @@ export default function PastSessionData() {
     const setCurrentSessionObject = useSetAtom(sessionObject)
     const [isOpen, setIsOpen] = useState([]);
     const [openEntry, setOpenEntry] = useState();
+    const setNotification = useSetAtom(notificationText);
 
     const liVariant = {
         open: {
-            height: '410px',
+            height: '430px',
         },
         closed: {
             height: '60px',
@@ -45,7 +47,8 @@ export default function PastSessionData() {
 
     useEffect(() => {
         setIsOpen(new Array(pastData.length).fill(false));
-        deleteSessionsBeforeToday();
+        setPastData(pastData.sort((a, b) => b.sessionData.sessionEpochTime - a.sessionData.sessionEpochTime))
+        // deleteSessionsBeforeToday();
     }, []);
 
     // console.log(isOpen)
@@ -113,123 +116,180 @@ export default function PastSessionData() {
         rounded-lg 
       "
         >
-            <h1 className="text-xl">{`All previous sessions from today (${new Date().getMonth() + 1}-${new Date().getDate()})`}</h1>
+            <h1 className="text-2xl underline underline-offset-8 font-bold">Session History</h1>
             {pastData.map((sessionEntry, index) => {
-                const date = new Date(sessionEntry.sessionData.sessionEpochTime);
-                const displayDate = date.toLocaleTimeString();
-                const displayString = `${displayDate} - ${sessionEntry.sessionData.site}`
-                const today = new Date();
-                console.log(sessionEntry);
-                if (today.getDate() === date.getDate()) {
-                    return (
-                        <motion.li
-                            key={index}
-                            className="bg-white/90 p-4 border-2 border-asu-maroon m-2 rounded-2xl w-5/6"
-                            variants={liVariant}
-                            initial={false}
-                            animate={isOpen[index] ? 'open' : 'closed'}
-                            onClick={() => {
-                                setOpenEntry(index);
-                                let array = new Array(pastData.length).fill(false);
-                                array[index] = !isOpen[index];
-                                setIsOpen(array);
-                            }}
-                            custom={index}
-                        >
-                            {displayString}
-                            <AnimatePresence mode='popLayout'>
-                                {isOpen[index] && (
-                                    <motion.div
-                                        variants={container}
-                                        initial="hidden"
-                                        animate="show"
-                                        exit="hidden"
-                                        className="flex flex-col items-center"
-                                    >
-                                        <motion.p
-                                            className="text-lg"
-                                            variants={item}
-                                        >{`Project: ${pastData[openEntry].sessionData.project}`}</motion.p>
-                                        <motion.p
-                                            className="text-lg"
-                                            variants={item}
-                                        >{`Site: ${pastData[openEntry].sessionData.site}`}</motion.p>
-                                        <motion.p
-                                            className="text-lg"
-                                            variants={item}
-                                        >{`Array: ${pastData[openEntry].sessionData.array}`}</motion.p>
-                                        <motion.div className="rounded-3xl" variants={item}>
-                                            <table className="table table-compact glass rounded-3xl">
-                                                <thead className="border-b-[3px] border-slate-200">
-                                                    <tr>
-                                                        <th className="bg-transparent rounded-tl-3xl text-center">
-                                                            Critter
-                                                        </th>
-                                                        <th className="bg-transparent rounded-tr-3xl text-center">
-                                                            Number
-                                                        </th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody className="text-center">
-                                                    <EntryTableRow
-                                                        entryType={'Arthropod'}
-                                                        entryNumber={getNumberCrittersRecorded(
-                                                            'arthropod'
-                                                        )}
-                                                    />
-                                                    <EntryTableRow
-                                                        entryType={'Amphibian'}
-                                                        entryNumber={getNumberCrittersRecorded(
-                                                            'amphibian'
-                                                        )}
-                                                    />
-                                                    <EntryTableRow
-                                                        entryType={'Lizard'}
-                                                        entryNumber={getNumberCrittersRecorded(
-                                                            'lizard'
-                                                        )}
-                                                    />
-                                                    <EntryTableRow
-                                                        entryType={'Mammal'}
-                                                        entryNumber={getNumberCrittersRecorded(
-                                                            'mammal'
-                                                        )}
-                                                    />
-                                                    <EntryTableRow
-                                                        entryType={'Snake'}
-                                                        entryNumber={getNumberCrittersRecorded(
-                                                            'snake'
-                                                        )}
-                                                    />
-                                                </tbody>
-                                            </table>
-                                        </motion.div>
-                                        <motion.button
-                                            className="text-white bg-asu-maroon mt-2 text-lg rounded-xl p-2"
-                                            variants={item}
-                                            onClick={() => {
+                const displayString = `${
+                    new Intl.DateTimeFormat('en-US', {
+                        dateStyle: 'short',
+                        timeStyle: 'short'
+                    }).format(new Date(sessionEntry.sessionData.sessionEpochTime))
+                } - ${sessionEntry.sessionData.site}`
+                return (
+                    <motion.li
+                        key={index}
+                        className="bg-white border-2 border-asu-maroon m-2 rounded-xl w-5/6"
+                        variants={liVariant}
+                        initial={false}
+                        animate={isOpen[index] ? 'open' : 'closed'}
+                        onClick={() => {
+                            setOpenEntry(index);
+                            let array = new Array(pastData.length).fill(false);
+                            array[index] = !isOpen[index];
+                            setIsOpen(array);
+                        }}
+                        custom={index}
+                    >
+                        <div className={!isOpen[index] ? 
+                        'flex flex-row justify-around text-lg text-center items-center transition border-b-0'
+                        :
+                        'flex flex-row justify-around text-lg text-center items-center transition border-b-[1px] border-b-black'}>
+                            <p>Uploaded to server? {sessionEntry.uploaded ? '✔️' : '❌'}</p>
+                            <p>{displayString}</p>
+                        </div>
+                        <AnimatePresence mode='popLayout'>
+                            {isOpen[index] && (
+                                <motion.div
+                                    variants={container}
+                                    initial="hidden"
+                                    animate="show"
+                                    exit="hidden"
+                                    className="flex flex-col items-center"
+                                >
+                                    <motion.p
+                                        className="text-lg"
+                                        variants={item}
+                                    >{`Project: ${pastData[openEntry].sessionData.project}`}</motion.p>
+                                    <motion.p
+                                        className="text-lg"
+                                        variants={item}
+                                    >{`Site: ${pastData[openEntry].sessionData.site}`}</motion.p>
+                                    <motion.p
+                                        className="text-lg"
+                                        variants={item}
+                                    >{`Array: ${pastData[openEntry].sessionData.array}`}</motion.p>
+                                    <motion.div className="rounded-3xl" variants={item}>
+                                        <table className="table table-compact glass rounded-3xl">
+                                            <thead className="border-b-[3px] border-slate-200">
+                                                <tr>
+                                                    <th className="bg-transparent rounded-tl-3xl text-center">
+                                                        Critter
+                                                    </th>
+                                                    <th className="bg-transparent rounded-tr-3xl text-center">
+                                                        Number
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="text-center">
+                                                <EntryTableRow
+                                                    entryType={'Arthropod'}
+                                                    entryNumber={getNumberCrittersRecorded(
+                                                        'arthropod'
+                                                    )}
+                                                />
+                                                <EntryTableRow
+                                                    entryType={'Amphibian'}
+                                                    entryNumber={getNumberCrittersRecorded(
+                                                        'amphibian'
+                                                    )}
+                                                />
+                                                <EntryTableRow
+                                                    entryType={'Lizard'}
+                                                    entryNumber={getNumberCrittersRecorded(
+                                                        'lizard'
+                                                    )}
+                                                />
+                                                <EntryTableRow
+                                                    entryType={'Mammal'}
+                                                    entryNumber={getNumberCrittersRecorded(
+                                                        'mammal'
+                                                    )}
+                                                />
+                                                <EntryTableRow
+                                                    entryType={'Snake'}
+                                                    entryNumber={getNumberCrittersRecorded(
+                                                        'snake'
+                                                    )}
+                                                />
+                                            </tbody>
+                                        </table>
+                                    </motion.div>
+                                    <motion.button
+                                        className="text-white bg-asu-maroon mt-2 text-lg rounded-xl p-2"
+                                        variants={item}
+                                        onClick={() => {
+                                            const currentMonthDay = `${
+                                                new Date().getMonth()
+                                            }${
+                                                new Date().getDate()
+                                            }`
+                                            const sessionMonthDay = `${
+                                                new Date(pastData[openEntry].sessionData.sessionEpochTime).getMonth()
+                                            }${
+                                                new Date(pastData[openEntry].sessionData.sessionEpochTime).getDate()
+                                            }`
+                                            console.log(currentMonthDay, sessionMonthDay)
+                                            if (currentMonthDay === sessionMonthDay) {
                                                 setIsEditingPrevious(true);
                                                 setCurrentData(pastData[openEntry].sessionData);
                                                 setCurrentSessionObject(pastData[openEntry].sessionObj)
                                                 setCurrentPage('Collect Data');
                                                 setCurrentForm('New Data Entry');
                                                 setEntryIndex(index);
-                                            }}
-                                        >
-                                            Reopen this session?
-                                        </motion.button>
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
-                            <div className="h-20"/>
-                        </motion.li>
-                    );
-                } else {
-                    return null;
-                }
+                                            } else {
+                                                setNotification('Can only edit sessions from today')
+                                                setEntryIndex(-1)
+                                            }
+                                        }}
+                                    >
+                                        Reopen this session?
+                                    </motion.button>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                        <div className="h-20"/>
+                    </motion.li>
+                );
             })}
         </motion.ul>
     );
+}
+
+const UploadStatusIndicator = ({session}) => {
+    if (session.uploaded) {
+        return (
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="w-10 h-10 stroke-green-600"
+            >
+                <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M4.5 12.75l6 6 9-13.5"
+                />
+            </svg>
+        ) 
+    } else {
+        return (
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="w-10 h-10 stroke-red-600"
+            >
+                <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 18L18 6M6 6l12 12"
+                />
+            </svg>
+        )
+    }
 }
 
 const EntryTableRow = ({ entryType, entryNumber }) => {

@@ -21,7 +21,7 @@ export const currentFormName = atomWithStorage('currentFormName', 'New Data');
 
 export const pastSessionData = atomWithStorage('pastSessionData', []);
 
-export const currentPageName = atomWithStorage('currentPageName', 'Home');
+export const currentPageName = atomWithStorage('currentPageName', 'Collect Data');
 
 export const editingPrevious = atomWithStorage('editingPrevious', false);
 
@@ -36,3 +36,5 @@ export const toeCodeLoadedAtom = atom(false);
 export const lizardDataLoadedAtom = atom(false);
 
 export const lizardLastEditTime = atomWithStorage('lizardLastEditTime', 0);
+
+export const triggerUpdateOnLastEditTime = atom(false);

@@ -1,12 +1,10 @@
 import { auth } from '../index';
-import { GoogleAuthProvider, signInWithRedirect } from 'firebase/auth';
+import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { motion } from 'framer-motion';
 
 export const LoginWrapper = ({ children }) => {
     const [user, loading, error] = useAuthState(auth);
-
-    // console.log(user)
 
     if (user && user.email.slice(-7) === 'asu.edu') {
         return children;
@@ -26,12 +24,13 @@ export const LoginWrapper = ({ children }) => {
         return (
             <motion.div className="font-openSans absolute bg-white inset-0 flex flex-col items-center justify-around">
                 <motion.h1 className="text-black text-4xl">Welcome to Field Day</motion.h1>
+                <p className='text-black text-xl text-center'>Logged in as {user ? user.email : 'none'}</p>
                 <motion.p className="text-black text-lg text-center">
                     Login with your ASU Google account to continue
                 </motion.p>
                 <motion.button
                     className="text-black border-asu-maroon text-2xl w-1/2 py-2 border-2 rounded-2xl"
-                    onClick={() => signInWithRedirect(auth, new GoogleAuthProvider())}
+                    onClick={() => signInWithPopup(auth, new GoogleAuthProvider())}
                 >
                     Login
                 </motion.button>
