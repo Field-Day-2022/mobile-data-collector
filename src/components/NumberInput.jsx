@@ -51,6 +51,7 @@ export default function NumberInput({
                             setValue(value);
                     }
                 }}
+                step=".1"
                 value={value ?? ''}
                 type={value === 'N/A' ? 'text' : 'number'}
                 inputMode="numeric"
