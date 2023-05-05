@@ -139,13 +139,13 @@ export default function PastSessionData() {
                         }}
                         custom={index}
                     >
-                        <div className={!isOpen[index] ? 
-                        'flex flex-row justify-around text-lg text-center items-center transition border-b-0'
+                        <motion.div className={!isOpen[index] ? 
+                        'flex flex-row justify-around text-lg text-center items-center transition border-b-0 h-full'
                         :
                         'flex flex-row justify-around text-lg text-center items-center transition border-b-[1px] border-b-black'}>
-                            <p>Uploaded to server? {sessionEntry.uploaded ? '✔️' : '❌'}</p>
-                            <p>{displayString}</p>
-                        </div>
+                            <motion.p >Uploaded to server? {sessionEntry.uploaded ? '✔️' : '❌'}</motion.p>
+                            <motion.p >{displayString}</motion.p>
+                        </motion.div>
                         <AnimatePresence mode='popLayout'>
                             {isOpen[index] && (
                                 <motion.div
