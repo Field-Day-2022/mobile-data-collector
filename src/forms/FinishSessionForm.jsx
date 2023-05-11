@@ -163,8 +163,6 @@ export const FinishSessionForm = () => {
         console.log(entryDataArray);
     };
 
-    // TODO: consider fine tuning the data that is uploaded to eliminate N/A fields where they aren't needed
-
     const finishSession = () => {
         const sessionDateTime = new Date(currentData.sessionEpochTime);
         const sessionObj = {
