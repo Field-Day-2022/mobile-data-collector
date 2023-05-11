@@ -42,8 +42,6 @@ export default function NewAmphibianEntry() {
     const setNotification  = useSetAtom(notificationText);
     const [continueAnyways, setContinueAnyways] = useState(false);
 
-    // todo: input validation
-
     useEffect(() => {
         sex === 'Male' && setSex('M');
         sex === 'Female' && setSex('F');

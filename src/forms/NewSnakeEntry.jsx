@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
-// TODO: confirmation modal and dynamic loading, test everything
 
 import { useState, useEffect } from 'react';
 import { useAtom } from 'jotai';

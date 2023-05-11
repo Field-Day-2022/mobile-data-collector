@@ -458,7 +458,6 @@ export const getCollectionSessionName = (project, environment) => {
     return collectionName;
 };
 
-// todo: clear session data should delete recorded lizards
 export const getCollectionDataName = (project, environment) => {
     let collectionName = `Test${project.replace(/\s/g, '')}Data`;
     if (environment === 'live') collectionName = `${project.replace(/\s/g, '')}Data`;

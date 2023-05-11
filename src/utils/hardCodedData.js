@@ -1,5 +1,3 @@
-// TODO: this are for demonstration only, replace with firestore calls in production
-
 export const arthropodSpeciesList = [
     'ARAN',
     'AUCH',

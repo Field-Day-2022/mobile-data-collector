@@ -26,8 +26,6 @@ import {
 } from '../utils/jotai';
 import { getStandardizedDateTimeString, updateData, verifyForm } from '../utils/functions';
 
-// TODO: dynamic answer set loading, test everything
-
 import {
     sexOptions,
 } from '../utils/hardCodedData';
