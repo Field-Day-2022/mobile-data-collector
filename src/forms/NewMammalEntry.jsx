@@ -11,12 +11,9 @@ import Button from '../components/Button';
 import ConfirmationModal from '../components/ConfirmationModal';
 import {
     collection,
-    setDoc,
     query,
     where,
-    doc,
     getDocsFromCache,
-    getDocFromCache,
 } from 'firebase/firestore';
 import { db } from '../index';
 import { 

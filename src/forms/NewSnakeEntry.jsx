@@ -1,9 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-
-
 import { useState, useEffect } from 'react';
-import { useAtom } from 'jotai';
-import { collection, setDoc, query, where, doc, getDocsFromCache } from 'firebase/firestore';
+import { useAtom, useSetAtom } from 'jotai';
+import { collection, query, where, getDocsFromCache } from 'firebase/firestore';
 import { db } from '../index';
 
 import NumberInput from '../components/NumberInput';
@@ -40,12 +38,11 @@ export default function NewSnakeEntry() {
     const [fenceTraps, setFenceTraps] = useState([]);
     const [confirmationModalIsOpen, setConfirmationModalIsOpen] = useState(false);
     const [errors, setErrors] = useState(snakeErrors);
-    const [noCapture, setNoCapture] = useState(false);
     const [continueAnyways, setContinueAnyways] = useState(false);
 
     const [currentData, setCurrentData] = useAtom(currentSessionData);
-    const [currentForm, setCurrentForm] = useAtom(currentFormName);
-    const [notification, setNotification] = useAtom(notificationText);
+    const setCurrentForm = useSetAtom(currentFormName);
+    const setNotification = useSetAtom(notificationText);
 
     useEffect(() => {
         sex === 'Male' && setSex('M');
@@ -96,30 +93,6 @@ export default function NewSnakeEntry() {
         getAnswerFormDataFromFirestore();
     }, []);
 
-    const setFormDataToNoCapture = () => {
-        setSex('N/A');
-        setMass('N/A');
-        setVtl('N/A');
-        setSvl('N/A');
-        setIsDead('N/A');
-    }
-
-    const setFormDataToBlank = () => {
-        setSex('');
-        setMass('');
-        setVtl('');
-        setSvl('');
-        setIsDead('');
-    }
-
-    useEffect(() => {
-        if (noCapture) {
-            setFormDataToNoCapture();
-        } else {
-            setFormDataToBlank();
-        }
-    }, [noCapture])
-
     const completeCapture = () => {
         updateData(
             'snake',
@@ -134,7 +107,6 @@ export default function NewSnakeEntry() {
                 comments,
                 dateTime: getStandardizedDateTimeString(currentData.sessionEpochTime),
                 entryId: new Date().getTime(),
-                noCapture,
             },
             setCurrentData,
             currentData,
@@ -192,7 +164,7 @@ export default function NewSnakeEntry() {
                 placeholder="Sex"
                 options={sexOptions}
             />
-            {!noCapture && <SingleCheckbox prompt="Is it dead?" value={isDead} setValue={setIsDead} />}
+            <SingleCheckbox prompt="Is it dead?" value={isDead} setValue={setIsDead} />
             <TextInput
                 prompt="Comments"
                 placeholder="any thoughts?"

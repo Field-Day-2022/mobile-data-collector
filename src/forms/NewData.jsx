@@ -1,11 +1,10 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import { collection, getDocsFromCache, where, query } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { db } from '../index';
-
-import { useAtom } from 'jotai';
+import { useSetAtom } from 'jotai';
 import { currentFormName, currentSessionData, notificationText } from '../utils/jotai';
 import TextInput from '../components/TextInput';
-import { error } from 'daisyui/src/colors/colorNames';
 import { getStandardizedDateTimeString } from '../utils/functions';
 
 export default function NewData() {
@@ -21,9 +20,9 @@ export default function NewData() {
     const [sites, setSites] = useState();
     const [arrays, setArrays] = useState();
 
-    const [currentData, setCurrentData] = useAtom(currentSessionData);
-    const [currentForm, setCurrentForm] = useAtom(currentFormName);
-    const [notification, setNotification] = useAtom(notificationText);
+    const setCurrentData = useSetAtom(currentSessionData);
+    const setCurrentForm = useSetAtom(currentFormName);
+    const setNotification = useSetAtom(notificationText);
 
     useEffect(() => {
         setCurrentData({

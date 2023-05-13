@@ -63,7 +63,7 @@ export default function NewLizardEntry() {
     const setNotification = useSetAtom(notificationText);
     const lizardDataLoaded = useAtomValue(lizardDataLoadedAtom);
     const environment = useAtomValue(appMode)
-    const [lastEditTime, setLastEditTime] = useAtom(lizardLastEditTime);
+    const setLastEditTime = useSetAtom(lizardLastEditTime);
     const [continueAnyways, setContinueAnyways] = useState(false);
     const setTriggerLastUpdate = useSetAtom(triggerUpdateOnLastEditTime);
 
