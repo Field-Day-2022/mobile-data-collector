@@ -13,12 +13,12 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 
 export default function PastSessionData() {
-    const [currentData, setCurrentData] = useAtom(currentSessionData);
+    const setCurrentData = useSetAtom(currentSessionData);
     const [pastData, setPastData] = useAtom(pastSessionData);
-    const [isEditingPrevious, setIsEditingPrevious] = useAtom(editingPrevious);
-    const [currentForm, setCurrentForm] = useAtom(currentFormName);
-    const [currentPage, setCurrentPage] = useAtom(currentPageName);
-    const [entryIndex, setEntryIndex] = useAtom(pastEntryIndex);
+    const setIsEditingPrevious = useSetAtom(editingPrevious);
+    const setCurrentForm = useSetAtom(currentFormName);
+    const setCurrentPage = useSetAtom(currentPageName);
+    const setEntryIndex = useSetAtom(pastEntryIndex);
     const setCurrentSessionObject = useSetAtom(sessionObject)
     const [isOpen, setIsOpen] = useState([]);
     const [openEntry, setOpenEntry] = useState();
@@ -27,12 +27,25 @@ export default function PastSessionData() {
     const liVariant = {
         open: {
             height: '430px',
+            transition: {
+                type: 'spring',
+                bounce: .25,
+            }
         },
         closed: {
             height: '60px',
+            transition: {
+                type: 'spring',
+                bounce: .25,
+                when: ''
+            }
         },
     };
 
+    // will delete all sessions that have been recorded before today - 
+    // disabled because of case where user might go multiple days without 
+    // syncing, but editing sessions after the initial day is disabled
+    // eslint-disable-next-line no-unused-vars
     const deleteSessionsBeforeToday = () => {
         const now = new Date();
         const nowDateCode = `${now.getDate()}${now.getMonth()}${now.getFullYear()}`;
@@ -49,9 +62,8 @@ export default function PastSessionData() {
         setIsOpen(new Array(pastData.length).fill(false));
         setPastData(pastData.sort((a, b) => b.sessionData.sessionEpochTime - a.sessionData.sessionEpochTime))
         // deleteSessionsBeforeToday();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
-
-    // console.log(isOpen)
 
     const getNumberCrittersRecorded = (critter) => {
         let count = 0;
@@ -67,9 +79,7 @@ export default function PastSessionData() {
             critter === 'mammal' ||
             critter === 'snake'
         ) {
-            for (const dataEntry of pastData[openEntry].sessionData[critter]) {
-                count++;
-            }
+            count += pastData[openEntry].sessionData[critter].length;
         }
         return count;
     };
@@ -129,7 +139,7 @@ export default function PastSessionData() {
                         key={index}
                         className="bg-white border-2 border-asu-maroon m-2 rounded-xl w-5/6"
                         variants={liVariant}
-                        initial={false}
+                        initial={'closed'}
                         animate={isOpen[index] ? 'open' : 'closed'}
                         onClick={() => {
                             setOpenEntry(index);
@@ -146,7 +156,7 @@ export default function PastSessionData() {
                             <motion.p >Uploaded to server? {sessionEntry.uploaded ? '✔️' : '❌'}</motion.p>
                             <motion.p >{displayString}</motion.p>
                         </motion.div>
-                        <AnimatePresence mode='popLayout'>
+                        <AnimatePresence mode='sync'>
                             {isOpen[index] && (
                                 <motion.div
                                     variants={container}

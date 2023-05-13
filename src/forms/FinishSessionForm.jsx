@@ -1,4 +1,4 @@
-import { useAtom, useAtomValue } from 'jotai';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useEffect, useState } from 'react';
 import {
     currentFormName,
@@ -12,16 +12,12 @@ import {
     sessionObject,
 } from '../utils/jotai';
 
-import { useCollectionData } from 'react-firebase-hooks/firestore';
 import { db } from '../index';
 
 import {
     collection,
     setDoc,
-    query,
-    where,
     doc,
-    getDocs,
     addDoc,
     writeBatch,
     getDocsFromCache,
@@ -37,15 +33,15 @@ import { getStandardizedDateTimeString } from '../utils/functions';
 
 export const FinishSessionForm = () => {
     const [currentData, setCurrentData] = useAtom(currentSessionData);
-    const [currentForm, setCurrentForm] = useAtom(currentFormName);
+    const setCurrentForm = useSetAtom(currentFormName);
     const [pastSessions, setPastSessions] = useAtom(pastSessionData);
     const [isEditingPrevious, setIsEditingPrevious] = useAtom(editingPrevious);
-    const [entryIndex, setEntryIndex] = useAtom(pastEntryIndex);
-    const [currentPage, setCurrentPage] = useAtom(currentPageName);
-    const [notification, setNotification] = useAtom(notificationText);
+    const entryIndex = useAtomValue(pastEntryIndex);
+    const setCurrentPage = useSetAtom(currentPageName);
+    const setNotification = useSetAtom(notificationText);
     const [trapStatus, setTrapStatus] = useState('');
     const [comments, setComments] = useState('');
-    const [environment, setEnvironment] = useAtom(appMode);
+    const environment= useAtomValue(appMode);
     const [answerSet, setAnswerSet] = useState([]);
     const [pastSessionObj, setPastSessionObj] = useAtom(sessionObject)
 
@@ -58,13 +54,15 @@ export const FinishSessionForm = () => {
             })
             setAnswerSet(tempAnswerSetArray);
         }
+        getAnswerSet();
     }, [])
 
     useEffect(() => {
         if (isEditingPrevious) {
-            setComments(pastSessionObj.commentsAboutTheArray)
-            setTrapStatus(pastSessionObj.trapStatus)
-        }
+           setComments(pastSessionObj.commentsAboutTheArray)
+           setTrapStatus(pastSessionObj.trapStatus)
+       }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isEditingPrevious])    
 
     const uploadSessionData = async (sessionObj) => {
@@ -326,7 +324,7 @@ export const FinishSessionForm = () => {
             for (const dataEntry of currentData.mammal) {
                 const [genus, species] = getGenusSpecies(
                     currentData.project,
-                    'Amphibian',
+                    'Mammal',
                     dataEntry.speciesCode
                 ) || ['N/A', 'N/A'];
                 const entryDate = new Date(dataEntry.dateTime);
@@ -374,8 +372,9 @@ export const FinishSessionForm = () => {
 
     const getGenusSpecies = (project, taxa, speciesCode) => {
         for (const set of answerSet) {
+            console.log(`${project}${taxa}Species`)
             if (set.set_name === `${project}${taxa}Species`) {
-                // console.log(set)
+                console.log(set)
                 for (const answer of set.answers) {
                     if (answer.primary === speciesCode) {
                         // console.log(answer.secondary.Genus)

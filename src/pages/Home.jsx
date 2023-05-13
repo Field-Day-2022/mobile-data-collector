@@ -1,34 +1,30 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth, db } from '../index';
+import { auth } from '../index';
 import { signOut } from 'firebase/auth';
-import { AnimatePresence, LayoutGroup, motion, useAnimationControls } from 'framer-motion';
+import { AnimatePresence, LayoutGroup, motion, } from 'framer-motion';
 import { useAtom, useSetAtom } from 'jotai';
 import { 
-    pastSessionData, 
     appMode, 
     notificationText,
     currentSessionData,
     editingPrevious,
     pastEntryIndex,
     currentFormName,
-    lizardLastEditTime
 } from '../utils/jotai';
-import { doc, getDoc } from 'firebase/firestore';
 import Dropdown from '../components/Dropdown';
 import Button from '../components/Button';
 import { deleteLizardEntries } from '../utils/functions';
 
 export default function Home() {
+    // eslint-disable-next-line no-unused-vars
     const [user, loading, error] = useAuthState(auth);
-    const [pastSessions] = useAtom(pastSessionData);
     const [environment, setEnvironment] = useAtom(appMode);
     const setNotification = useSetAtom(notificationText);
     const [currentData, setCurrentData] = useAtom(currentSessionData);
     const setIsEditingPrevious = useSetAtom(editingPrevious);
     const setPastEntryIndex = useSetAtom(pastEntryIndex);
     const [clearSessionConfirmationOpen, setClearSessionConfirmationOpen] = useState('')
-    const setLastEditTime = useSetAtom(lizardLastEditTime);
     const setCurrentForm = useSetAtom(currentFormName);
 
     const clearCurrentSession = () => {

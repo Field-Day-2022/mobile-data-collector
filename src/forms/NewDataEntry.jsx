@@ -1,10 +1,10 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import { useAtom } from 'jotai';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { currentFormName, currentSessionData } from '../utils/jotai';
 
 export default function NewDataEntry() {
-    const [currentData, setCurrentData] = useAtom(currentSessionData);
-    const [currentForm, setCurrentForm] = useAtom(currentFormName);
+    const currentData = useAtomValue(currentSessionData);
+    const setCurrentForm = useSetAtom(currentFormName);
 
     const entryTypes = ['Arthropod', 'Amphibian', 'Lizard', 'Mammal', 'Snake'];
 
@@ -26,9 +26,7 @@ export default function NewDataEntry() {
             critter === 'mammal' ||
             critter === 'snake'
         ) {
-            for (const dataEntry of currentData[critter]) {
-                count++;
-            }
+            count += currentData[critter].length;
         }
         return count;
     };
