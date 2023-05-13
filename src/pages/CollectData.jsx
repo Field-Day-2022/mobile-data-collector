@@ -1,4 +1,4 @@
-import { useAtom } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import { currentSessionData, currentFormName, editingPrevious } from '../utils/jotai';
 
 import NewArthropodEntry from '../forms/NewArthropodEntry';
@@ -12,14 +12,15 @@ import { useEffect } from 'react';
 import NewSnakeEntry from '../forms/NewSnakeEntry';
 
 export default function CollectData() {
-  const [currentData, setCurrentData] = useAtom(currentSessionData)
+  const currentData = useAtomValue(currentSessionData)
   const [currentForm, setCurrentForm] = useAtom(currentFormName);
-  const [ isEditingPrevious, setIsEditingPrevious] = useAtom(editingPrevious)
+  const isEditingPrevious = useAtomValue(editingPrevious)
 
   useEffect(() => {
     if (isEditingPrevious) {
       setCurrentForm('New Data Entry')
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (
