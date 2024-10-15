@@ -2,14 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { appMode, currentSessionData, notificationText } from '../utils/jotai';
 import { db } from '../index';
-import {
-    collection,
-    deleteDoc,
-    getDocsFromCache,
-    query,
-    where,
-    doc,
-} from 'firebase/firestore';
+import { collection, deleteDoc, getDocsFromCache, query, where, doc } from 'firebase/firestore';
 import { motion, useAnimationControls, AnimatePresence, useCycle } from 'framer-motion';
 import SingleCheckbox from './SingleCheckbox';
 
@@ -37,18 +30,39 @@ export default function ToeCodeInput({
     const [recaptureHistoryIsOpen, setRecaptureHistoryIsOpen] = useState(false);
     const [historyButtonText, setHistoryButtonText] = useState('History');
     const [previousLizardEntries, setPreviousLizardEntries] = useState([]);
+    const [isAnimating, setIsAnimating] = useState(false);
 
     // const recaptureHistoryControls = useAnimationControls();
     // const recaptureHistoryContainerControls = useAnimationControls();
     const errorMsgControls = useAnimationControls();
 
-    const environment = useAtomValue(appMode)
+    const environment = useAtomValue(appMode);
     const setNotification = useSetAtom(notificationText);
 
     useEffect(() => {
-        checkToeCodeValidity();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        animationTimeout(checkToeCodeValidity);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [toeCode, isRecapture]);
+
+    const animationTimeout = (callback, msg = '') => {
+        let elapsedTime = 0;
+        const checkInterval = 200;
+        const totalDuration = getTotalAnimationDuration(errorMsgVariant);
+      
+        const checkIsAnimating = () => {
+          if (!isAnimating) {
+            callback(msg);
+          } else if (elapsedTime >= totalDuration) {
+            callback(msg);
+          } else {
+            elapsedTime += checkInterval;
+            setTimeout(checkIsAnimating, checkInterval); // Check condition again after interval
+          }
+        };
+      
+        // Start the recursive checking
+        checkIsAnimating();
+      };
 
     const errorMsgVariant = {
         visible: {
@@ -67,18 +81,28 @@ export default function ToeCodeInput({
             transition: {
                 duration: 0.5,
                 type: 'spring',
-                delay: 2,
+                delay: 3,
             },
         },
     };
 
+    const getTotalAnimationDuration = (variant) => {
+        const { visible, hidden } = variant;
+
+        const visibleDuration = visible.transition?.duration || 0;
+        const hiddenDuration = hidden.transition?.duration || 0;
+        const hiddenDelay = hidden.transition?.delay || 0;
+
+        return (visibleDuration + hiddenDelay + hiddenDuration) * 1000;
+    };
+
     const triggerErrorMsgAnimation = async (msg) => {
+        setIsValid(false);
+        setIsAnimating(true);
         setErrorMsg(msg);
-        errorMsgControls.set('hidden');
-        errorMsgControls.start('visible')
-        .then(() => {
-            errorMsgControls.start('hidden');
-        })
+        await errorMsgControls.start('visible');
+        await errorMsgControls.start('hidden');
+        setIsAnimating(false);
     };
 
     const letters = ['A', 'B', 'C', 'D'];
@@ -96,29 +120,32 @@ export default function ToeCodeInput({
 
     const generateNewToeCode = async () => {
         if (toeCode.includes('C4') || toeCode.includes('D4')) {
-            triggerErrorMsgAnimation('App does not generate toe clip codes with C4 or D4');
+            animationTimeout(triggerErrorMsgAnimation, 'App does not generate toe clip codes with C4 or D4');
         }
-        console.log(`Environment: ${environment}`)
-        const collectionName = environment === 'live' ? 
-            `${currentData.project.replace(/\s/g, '')}Data` 
-            : 
-            `Test${currentData.project.replace(/\s/g, '')}Data`;
-        const lizardSnapshot = await getDocsFromCache(query(
-            collection(db, collectionName),
-            where('site', '==', currentData.site),
-            where('array', '==', currentData.array),
-            where('speciesCode', '==', speciesCode)
-        ));
-        console.log(`${collectionName} from site ${currentData.site} and array ${currentData.array} with species code ${speciesCode}`)
+        console.log(`Environment: ${environment}`);
+        const collectionName =
+            environment === 'live'
+                ? `${currentData.project.replace(/\s/g, '')}Data`
+                : `Test${currentData.project.replace(/\s/g, '')}Data`;
+        const lizardSnapshot = await getDocsFromCache(
+            query(
+                collection(db, collectionName),
+                where('site', '==', currentData.site),
+                where('array', '==', currentData.array),
+                where('speciesCode', '==', speciesCode)
+            )
+        );
+        console.log(
+            `${collectionName} from site ${currentData.site} and array ${currentData.array} with species code ${speciesCode}`
+        );
         const toeCodesArray = [];
-        lizardSnapshot.docs.forEach(document => {
-            toeCodesArray.push(document.data().toeClipCode)
-        })
-        console.log(toeCodesArray)
-        const toeCodesTemplateSnapshot = await getDocsFromCache(query(
-            collection(db, 'AnswerSet'),
-            where('set_name', '==', 'toe clip codes')
-        ));
+        lizardSnapshot.docs.forEach((document) => {
+            toeCodesArray.push(document.data().toeClipCode);
+        });
+        console.log(toeCodesArray);
+        const toeCodesTemplateSnapshot = await getDocsFromCache(
+            query(collection(db, 'AnswerSet'), where('set_name', '==', 'toe clip codes'))
+        );
 
         // if current toe code is nonempty, then there is a toe that is already gone,
         // and we would like to utilize the natural toe loss in the toe clip code.
@@ -146,13 +173,13 @@ export default function ToeCodeInput({
             }
         }
 
-        console.log('no toe codes available that include what we want, grabbing first available')
+        console.log('no toe codes available that include what we want, grabbing first available');
 
         // if we got here then we don't have a template toe code that contains what we want, so just
         // grab the first available
         for (const templateToeCode of toeCodesTemplateSnapshot.docs[0].data().answers) {
             if (
-                !toeCodesArray.includes(templateToeCode.primary) && 
+                !toeCodesArray.includes(templateToeCode.primary) &&
                 !templateToeCode.primary.includes('C4') &&
                 !templateToeCode.primary.includes('D4')
             ) {
@@ -181,17 +208,19 @@ export default function ToeCodeInput({
             setIsValid(false);
             setErrorMsg('Toe Clip Code must have an even number of characters');
         } else {
-            const collectionName = environment === 'live' ? 
-                `${currentData.project.replace(/\s/g, '')}Data` 
-                : 
-                `Test${currentData.project.replace(/\s/g, '')}Data`;
-            const lizardSnapshot = await getDocsFromCache(query(
-                collection(db, collectionName),
-                where('toeClipCode', '==', toeCode),
-                where('site', '==', currentData.site),
-                where('array', '==', currentData.array),
-                where('speciesCode', '==', speciesCode)
-            ));
+            const collectionName =
+                environment === 'live'
+                    ? `${currentData.project.replace(/\s/g, '')}Data`
+                    : `Test${currentData.project.replace(/\s/g, '')}Data`;
+            const lizardSnapshot = await getDocsFromCache(
+                query(
+                    collection(db, collectionName),
+                    where('toeClipCode', '==', toeCode),
+                    where('site', '==', currentData.site),
+                    where('array', '==', currentData.array),
+                    where('speciesCode', '==', speciesCode)
+                )
+            );
             if (isRecapture) {
                 if (lizardSnapshot.size > 0) {
                     setIsValid(true);
@@ -215,13 +244,18 @@ export default function ToeCodeInput({
     };
 
     const handleClick = (source) => {
+        setIsValid(false);
         if (source !== 'backspace' && toeCode.length !== 8) {
             if (Number(source)) {
                 if (toeCode.length === 0) {
-                    triggerErrorMsgAnimation('Error: Toe Clip Codes must begin with a letter');
+                    animationTimeout(triggerErrorMsgAnimation, 'Error: Toe Clip Codes must begin with a letter');
                     return;
                 }
                 if (!Number(toeCode.charAt(toeCode.length - 1))) {
+                    if (toeCode.length >= 3 && toeCode.charAt(toeCode.length - 1) == toeCode.charAt(toeCode.length - 3) && source == toeCode.charAt(toeCode.length - 2)) {
+                        animationTimeout(triggerErrorMsgAnimation, 'Error: You entered the same toe twice.');
+                        return;
+                    }
                     setToeCode(`${toeCode}${source}`);
                     setSelected({
                         a: false,
@@ -239,12 +273,12 @@ export default function ToeCodeInput({
                 if (Number(toeCode.charAt(toeCode.length - 1)) || toeCode.length === 0) {
                     // console.log("letter pressed")
                     if (toeCode.length >= 2 && source <= toeCode.charAt(toeCode.length - 2)) {
-                        triggerErrorMsgAnimation(
-                            source < toeCode.charAt(toeCode.length - 2)
-                                ? 'Error: Letters must be in alphabetical order'
-                                : 'Error: Can only clip one toe per foot'
-                        );
-                        return;
+                        if (source < toeCode.charAt(toeCode.length - 2)) {
+                            animationTimeout(triggerErrorMsgAnimation, 'Error: Letters must be in alphabetical order');
+                            return;
+                        } else {
+                            animationTimeout(triggerErrorMsgAnimation, 'Warning: You should only clip one toe per foot. Proceed only if toes are already missing.');
+                        }
                     }
                     setToeCode(`${toeCode}${source}`);
                     setSelected({ ...selected, [source]: !selected[source] });
@@ -271,10 +305,10 @@ export default function ToeCodeInput({
 
     const findPreviousLizardEntries = async () => {
         setHistoryButtonText('Querying...');
-        const collectionName = environment === 'live' ? 
-            `${currentData.project.replace(/\s/g, '')}Data` 
-            : 
-            `Test${currentData.project.replace(/\s/g, '')}Data`;
+        const collectionName =
+            environment === 'live'
+                ? `${currentData.project.replace(/\s/g, '')}Data`
+                : `Test${currentData.project.replace(/\s/g, '')}Data`;
         const lizardDataRef = collection(db, collectionName);
         const q = query(
             lizardDataRef,
@@ -289,7 +323,7 @@ export default function ToeCodeInput({
             console.log(doc.data());
             tempArray.push(doc.data());
         }
-        // for testing scrollability of the table 
+        // for testing scrollability of the table
         // for (let i = 0; i < 50; i++) {
         //     tempArray.push(tempArray[0])
         // }
@@ -334,7 +368,7 @@ export default function ToeCodeInput({
         'Dead',
         'Comments',
     ];
-    
+
     const lizardHistoryLabelKeys = [
         'dateTime',
         'array',
@@ -345,8 +379,8 @@ export default function ToeCodeInput({
         'massG',
         'sex',
         'dead',
-        'comments'
-    ]
+        'comments',
+    ];
 
     return (
         <AnimatePresence>
@@ -360,7 +394,7 @@ export default function ToeCodeInput({
                             animate="visible"
                             exit="hidden"
                         >
-                            <PortraitTable 
+                            <PortraitTable
                                 recaptureHistoryVariant={recaptureHistoryVariant}
                                 currentData={currentData}
                                 speciesCode={speciesCode}
@@ -369,7 +403,7 @@ export default function ToeCodeInput({
                                 previousLizardEntries={previousLizardEntries}
                                 setRecaptureHistoryIsOpen={setRecaptureHistoryIsOpen}
                             />
-                            <LandscapeTable 
+                            <LandscapeTable
                                 currentData={currentData}
                                 speciesCode={speciesCode}
                                 toeCode={toeCode}
@@ -382,14 +416,13 @@ export default function ToeCodeInput({
                     )}
                 </AnimatePresence>
 
-                
-                    <label
-                        htmlFor="my-modal-4"
-                        className="btn capitalize text-xl text-black bg-white border-asu-maroon border-2 font-normal hover:bg-white/50"
-                    >
-                        {toeCode ? `Toe-Clip Code: ${toeCode}` : 'Toe-Clip Code'}
-                    </label>
-                
+                <label
+                    htmlFor="my-modal-4"
+                    className="btn capitalize text-xl text-black bg-white border-asu-maroon border-2 font-normal hover:bg-white/50"
+                >
+                    {toeCode ? `Toe-Clip Code: ${toeCode}` : 'Toe-Clip Code'}
+                </label>
+
                 <input
                     type="checkbox"
                     id="my-modal-4"
@@ -401,7 +434,7 @@ export default function ToeCodeInput({
                 <motion.div className="modal z-40">
                     <div className="modal-box  w-11/12  max-w-sm bg-white border-asu-maroon border-2 flex flex-col items-center justify-between min-h-screen max-h-screen p-1">
                         <div className="flex flex-col items-center justify-center">
-                            <div >
+                            <div>
                                 <div className="flex flex-col">
                                     <p className="text-sm">Toe-Clip Code:</p>
                                     <p className="text-xl">{formattedToeCodes}</p>
@@ -480,13 +513,11 @@ export default function ToeCodeInput({
                                     className={`bg-asu-maroon brightness-100 p-5 rounded-xl  text-2xl  capitalize  text-asu-gold z-10 m-1 active:brightness-50 active:scale-90 transition select-none`}
                                 >
                                     {isValid ? (
-                                        <label
-                                            htmlFor="my-modal-4"
-                                        >
-                                            Close
-                                        </label>
+                                        <label htmlFor="my-modal-4">Close</label>
                                     ) : (
-                                        <p onClick={() => triggerErrorMsgAnimation(errorMsg)}>Close</p>
+                                        <p onClick={() => triggerErrorMsgAnimation(errorMsg)}>
+                                            Close
+                                        </p>
                                     )}
                                 </button>
                             </div>
@@ -510,42 +541,40 @@ export default function ToeCodeInput({
     );
 }
 
-const Comments = ({
-    commentText
-}) => {
+const Comments = ({ commentText }) => {
     const [isExpanded, setIsExpanded] = useState(false);
     return (
-        <motion.div 
-            className=''
-            onClick={() => setIsExpanded(!isExpanded)}
-        >
-            <AnimatePresence>{isExpanded && 
-            <motion.div 
-                initial={{opacity: 0}}
-                animate={{
-                    opacity: 1,
-                    y: '-100%',
-                }}
-                exit={{
-                    opacity: 0,
-                    y: '-50%',
-                    transition: {
-                        y: {
-                            duration: .3
-                        },
-                        opacity: {
-                            duration: .2
-                        }
-                    }
-                }}
-                className='absolute border-2 border-asu-maroon z-10 bg-white rounded-sm p-1'>
-                <p>{commentText}</p>
-            </motion.div>}</AnimatePresence>
+        <motion.div className="" onClick={() => setIsExpanded(!isExpanded)}>
+            <AnimatePresence>
+                {isExpanded && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{
+                            opacity: 1,
+                            y: '-100%',
+                        }}
+                        exit={{
+                            opacity: 0,
+                            y: '-50%',
+                            transition: {
+                                y: {
+                                    duration: 0.3,
+                                },
+                                opacity: {
+                                    duration: 0.2,
+                                },
+                            },
+                        }}
+                        className="absolute border-2 border-asu-maroon z-10 bg-white rounded-sm p-1"
+                    >
+                        <p>{commentText}</p>
+                    </motion.div>
+                )}
+            </AnimatePresence>
             <p>{commentText.length > 5 ? `${commentText.slice(0, 5)}...` : commentText}</p>
-            
         </motion.div>
-    )
-}
+    );
+};
 
 const PortraitTable = ({
     recaptureHistoryVariant,
@@ -554,7 +583,7 @@ const PortraitTable = ({
     toeCode,
     lizardHistoryLabelArray,
     previousLizardEntries,
-    setRecaptureHistoryIsOpen
+    setRecaptureHistoryIsOpen,
 }) => {
     return (
         <motion.div
@@ -568,31 +597,23 @@ const PortraitTable = ({
 
             <motion.div className="flex items-center space-x-2 justify-center w-full border-black border-0 justify-items-center max-w-md">
                 <motion.div className="flex w-16 flex-col items-center">
-                    <p className="text-sm text-black/75 italic leading-none">
-                        Site
-                    </p>
+                    <p className="text-sm text-black/75 italic leading-none">Site</p>
                     <motion.div className="w-full bg-black h-[1px]" />
                     <p className="text-md text-black font-semibold leading-tight">
                         {currentData.site}
                     </p>
                 </motion.div>
                 <motion.div className="flex w-20 flex-col items-center">
-                    <p className="text-sm text-black/75 italic leading-none">
-                        Species
-                    </p>
+                    <p className="text-sm text-black/75 italic leading-none">Species</p>
                     <motion.div className="w-full bg-black h-[1px]" />
                     <p className="text-md text-black font-semibold leading-tight">
                         {speciesCode ?? 'N/A'}
                     </p>
                 </motion.div>
                 <motion.div className="flex w-28 flex-col items-center">
-                    <p className="text-sm text-black/75 italic leading-none">
-                        Toe Clip Code
-                    </p>
+                    <p className="text-sm text-black/75 italic leading-none">Toe Clip Code</p>
                     <motion.div className="w-full bg-black h-[1px]" />
-                    <p className="text-md text-black font-semibold leading-tight">
-                        {toeCode}
-                    </p>
+                    <p className="text-md text-black font-semibold leading-tight">{toeCode}</p>
                 </motion.div>
             </motion.div>
 
@@ -619,88 +640,72 @@ const PortraitTable = ({
                 <div className="overflow-x-auto">
                     <table className="text-center text-sm h-full border-black table-auto border-collapse">
                         <tbody>
-                            {lizardHistoryLabelArray.map(
-                                (item, labelIndex, array) => {
-                                    let key = '';
-                                    if (item === 'Date') key = 'dateTime';
-                                    if (item === 'Mass') key = 'massG';
-                                    if (item === 'SVL') key = 'svlMm';
-                                    if (item === 'OTL') key = 'otlMm';
-                                    if (item === 'VTL') key = 'vtlMm';
-                                    if (item === 'Recapture') key = 'recapture';
-                                    if (item === 'Dead') key = 'dead';
-                                    if (item === 'Hatchling') key = 'hatchling';
-                                    if (item === 'Regen Tail')
-                                        key = 'regenTail';
-                                    if (item === 'Array') key = 'array';
-                                    if (item === 'Sex') key = 'sex';
-                                    if (item === 'Comments') key = 'comments';
-                                    let tdArray = [];
-                                    for (
-                                        let i = 0;
-                                        i < previousLizardEntries.length;
-                                        i++
-                                    ) {
-                                        let itemToDisplay = '';
-                                        if (key === 'dateTime') {
-                                            const date = new Date(
-                                                previousLizardEntries[i][key]
-                                            ).toLocaleDateString();
-                                            itemToDisplay = date;
-                                        } else {
-                                            itemToDisplay =
-                                                previousLizardEntries[i][key] ??
-                                                'N/A';
-                                            if (itemToDisplay === 'false')
-                                                itemToDisplay = 'No';
-                                            if (itemToDisplay === 'true')
-                                                itemToDisplay = 'Yes';
-                                        }
-                                        
-                                        if (item === 'Comments') {
-                                            itemToDisplay = <Comments commentText={previousLizardEntries[i][key] ?? 'N/A'}/>
-                                        }
-
-                                        if (
-                                            i <
-                                            previousLizardEntries.length - 1
-                                        ) {
-                                            tdArray.push(
-                                                <td
-                                                    key={`${itemToDisplay}${i}`}
-                                                    className={`${
-                                                        labelIndex <
-                                                        array.length - 1
-                                                            ? 'border-b border-r border-black'
-                                                            : 'border-r border-black'
-                                                    }`}
-                                                >
-                                                    {itemToDisplay}
-                                                </td>
-                                            );
-                                        } else {
-                                            tdArray.push(
-                                                <td
-                                                    key={`${itemToDisplay}${i}`}
-                                                    className={`${
-                                                        labelIndex <
-                                                        array.length - 1
-                                                            ? 'border-b border-black'
-                                                            : 'border-black'
-                                                    }`}
-                                                >
-                                                    {itemToDisplay}
-                                                </td>
-                                            );
-                                        }
+                            {lizardHistoryLabelArray.map((item, labelIndex, array) => {
+                                let key = '';
+                                if (item === 'Date') key = 'dateTime';
+                                if (item === 'Mass') key = 'massG';
+                                if (item === 'SVL') key = 'svlMm';
+                                if (item === 'OTL') key = 'otlMm';
+                                if (item === 'VTL') key = 'vtlMm';
+                                if (item === 'Recapture') key = 'recapture';
+                                if (item === 'Dead') key = 'dead';
+                                if (item === 'Hatchling') key = 'hatchling';
+                                if (item === 'Regen Tail') key = 'regenTail';
+                                if (item === 'Array') key = 'array';
+                                if (item === 'Sex') key = 'sex';
+                                if (item === 'Comments') key = 'comments';
+                                let tdArray = [];
+                                for (let i = 0; i < previousLizardEntries.length; i++) {
+                                    let itemToDisplay = '';
+                                    if (key === 'dateTime') {
+                                        const date = new Date(
+                                            previousLizardEntries[i][key]
+                                        ).toLocaleDateString();
+                                        itemToDisplay = date;
+                                    } else {
+                                        itemToDisplay = previousLizardEntries[i][key] ?? 'N/A';
+                                        if (itemToDisplay === 'false') itemToDisplay = 'No';
+                                        if (itemToDisplay === 'true') itemToDisplay = 'Yes';
                                     }
-                                    return (
-                                        <tr key={`${labelIndex}label`}>
-                                            {tdArray}
-                                        </tr>
-                                    );
+
+                                    if (item === 'Comments') {
+                                        itemToDisplay = (
+                                            <Comments
+                                                commentText={previousLizardEntries[i][key] ?? 'N/A'}
+                                            />
+                                        );
+                                    }
+
+                                    if (i < previousLizardEntries.length - 1) {
+                                        tdArray.push(
+                                            <td
+                                                key={`${itemToDisplay}${i}`}
+                                                className={`${
+                                                    labelIndex < array.length - 1
+                                                        ? 'border-b border-r border-black'
+                                                        : 'border-r border-black'
+                                                }`}
+                                            >
+                                                {itemToDisplay}
+                                            </td>
+                                        );
+                                    } else {
+                                        tdArray.push(
+                                            <td
+                                                key={`${itemToDisplay}${i}`}
+                                                className={`${
+                                                    labelIndex < array.length - 1
+                                                        ? 'border-b border-black'
+                                                        : 'border-black'
+                                                }`}
+                                            >
+                                                {itemToDisplay}
+                                            </td>
+                                        );
+                                    }
                                 }
-                            )}
+                                return <tr key={`${labelIndex}label`}>{tdArray}</tr>;
+                            })}
                         </tbody>
                     </table>
                 </div>
@@ -713,8 +718,8 @@ const PortraitTable = ({
                 Close
             </button>
         </motion.div>
-    )
-}
+    );
+};
 
 const LandscapeTable = ({
     currentData,
@@ -723,38 +728,28 @@ const LandscapeTable = ({
     lizardHistoryLabelArray,
     previousLizardEntries,
     lizardHistoryLabelKeys,
-    setRecaptureHistoryIsOpen
+    setRecaptureHistoryIsOpen,
 }) => (
     <motion.div className="absolute h-[calc(100%-2.5rem)] w-[calc(100%-2.5rem)] shadow-2xl top-0 left-0 bg-white border-2 border-asu-maroon rounded-2xl m-5 p-1 flex flex-col items-center portrait:hidden">
         <h1 className="text-3xl">Recapture History</h1>
 
         <motion.div className="flex items-center space-x-2 justify-center w-full border-black border-0 justify-items-center max-w-md">
             <motion.div className="flex w-16 flex-col items-center">
-                <p className="text-sm text-black/75 italic leading-none">
-                    Site
-                </p>
+                <p className="text-sm text-black/75 italic leading-none">Site</p>
                 <motion.div className="w-full bg-black h-[1px]" />
-                <p className="text-md text-black font-semibold leading-tight">
-                    {currentData.site}
-                </p>
+                <p className="text-md text-black font-semibold leading-tight">{currentData.site}</p>
             </motion.div>
             <motion.div className="flex w-20 flex-col items-center">
-                <p className="text-sm text-black/75 italic leading-none">
-                    Species
-                </p>
+                <p className="text-sm text-black/75 italic leading-none">Species</p>
                 <motion.div className="w-full bg-black h-[1px]" />
                 <p className="text-md text-black font-semibold leading-tight">
                     {speciesCode ?? 'N/A'}
                 </p>
             </motion.div>
             <motion.div className="flex w-28 flex-col items-center">
-                <p className="text-sm text-black/75 italic leading-none">
-                    Toe Clip Code
-                </p>
+                <p className="text-sm text-black/75 italic leading-none">Toe Clip Code</p>
                 <motion.div className="w-full bg-black h-[1px]" />
-                <p className="text-md text-black font-semibold leading-tight">
-                    {toeCode}
-                </p>
+                <p className="text-md text-black font-semibold leading-tight">{toeCode}</p>
             </motion.div>
         </motion.div>
 
@@ -762,13 +757,18 @@ const LandscapeTable = ({
             <table className="text-center text-sm w-full table-auto border-collapse">
                 <thead>
                     <tr>
-                        {lizardHistoryLabelArray.map(((label, index, array) => (
-                            <td key={label} className={index < array.length - 1 ? 
-                                                        'border-r-[1px] border-b-2 border-black'
-                                                        :
-                                                        'border-r-0 border-b-2 border-black'
-                                }>{label}</td>
-                        )))}
+                        {lizardHistoryLabelArray.map((label, index, array) => (
+                            <td
+                                key={label}
+                                className={
+                                    index < array.length - 1
+                                        ? 'border-r-[1px] border-b-2 border-black'
+                                        : 'border-r-0 border-b-2 border-black'
+                                }
+                            >
+                                {label}
+                            </td>
+                        ))}
                     </tr>
                 </thead>
                 <tbody>
@@ -780,27 +780,28 @@ const LandscapeTable = ({
                                     if (key === 'dateTime') {
                                         const date = new Date(entry[key]).toLocaleDateString();
                                         itemToDisplay = date;
-                                    } 
-                                    if (itemToDisplay  === 'false') {
+                                    }
+                                    if (itemToDisplay === 'false') {
                                         itemToDisplay = 'No';
                                     }
                                     if (itemToDisplay === 'true') {
                                         itemToDisplay = 'Yes';
                                     }
                                     return (
-                                        <td 
-                                            key={`${itemToDisplay}${index}`} 
+                                        <td
+                                            key={`${itemToDisplay}${index}`}
                                             className={
-                                                index < array.length - 1 ? 
-                                                'border-r-[1px] border-b-[1px] border-black'
-                                                :
-                                                'border-b-[1px] border-black'
+                                                index < array.length - 1
+                                                    ? 'border-r-[1px] border-b-[1px] border-black'
+                                                    : 'border-b-[1px] border-black'
                                             }
-                                        >{itemToDisplay}</td>
-                                    )
+                                        >
+                                            {itemToDisplay}
+                                        </td>
+                                    );
                                 })}
                             </tr>
-                        )
+                        );
                     })}
                 </tbody>
             </table>
@@ -812,7 +813,7 @@ const LandscapeTable = ({
             Close
         </button>
     </motion.div>
-)
+);
 
 function Button({ prompt, handler, isSelected }) {
     return (
