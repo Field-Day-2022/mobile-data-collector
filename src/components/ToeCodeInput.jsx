@@ -187,7 +187,7 @@ export default function ToeCodeInput({
                     !templateToeCode.primary.includes('C4') && // it does not contain "C4"
                     !templateToeCode.primary.includes('D4') // it does not contain "D4"
                 ) {
-                    // Potential toe code found
+                    // Potential toe code found.
                     let tempToeCode = templateToeCode.primary + workingToeCode;
                     tempToeArray = tempToeCode.split(/([a-zA-Z]\d)/).filter(Boolean);
                     // Make sure it's in correct order.
