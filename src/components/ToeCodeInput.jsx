@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
-import { useAtom, useAtomValue, useSetAtom } from 'jotai';
-import { appMode, currentSessionData, notificationText } from '../utils/jotai';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { useAtomValue } from 'jotai';
+import { appMode, currentSessionData } from '../utils/jotai';
 import { db } from '../index';
-import { collection, deleteDoc, getDocsFromCache, query, where, doc } from 'firebase/firestore';
-import { motion, useAnimationControls, AnimatePresence, useCycle } from 'framer-motion';
+import { collection, getDocsFromCache, query, where } from 'firebase/firestore';
+import { motion, useAnimationControls, AnimatePresence } from 'framer-motion';
 import SingleCheckbox from './SingleCheckbox';
 
 export default function ToeCodeInput({
@@ -13,6 +13,7 @@ export default function ToeCodeInput({
     isRecapture,
     setIsRecapture,
 }) {
+    // Initialize component state
     const [selected, setSelected] = useState({
         a: false,
         b: false,
@@ -25,89 +26,101 @@ export default function ToeCodeInput({
         5: false,
     });
     const [errorMsg, setErrorMsg] = useState();
+    const [onCloseMsg, setOnCloseMsg] = useState();
     const [isValid, setIsValid] = useState(false);
-    const currentData = useAtomValue(currentSessionData);
-    const [recaptureHistoryIsOpen, setRecaptureHistoryIsOpen] = useState(false);
+    const currentData = useAtomValue(currentSessionData); // Fetch current session data via jotai
+    const [recaptureHistoryIsOpen, setRecaptureHistoryIsOpen] = useState(false); // Manage recapture history modal visibility
     const [historyButtonText, setHistoryButtonText] = useState('History');
     const [previousLizardEntries, setPreviousLizardEntries] = useState([]);
-    const [isAnimating, setIsAnimating] = useState(false);
+    const isAnimating = useRef(false); // Reference to control animation states
+    const errorMsgControls = useAnimationControls(); // Controls for error message animation
+    const environment = useAtomValue(appMode); // Get environment value via jotai
 
-    // const recaptureHistoryControls = useAnimationControls();
-    // const recaptureHistoryContainerControls = useAnimationControls();
-    const errorMsgControls = useAnimationControls();
-
-    const environment = useAtomValue(appMode);
-    const setNotification = useSetAtom(notificationText);
-
-    useEffect(() => {
-        animationTimeout(checkToeCodeValidity);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [toeCode, isRecapture]);
-
-    const animationTimeout = (callback, msg = '') => {
-        let elapsedTime = 0;
-        const checkInterval = 200;
-        const totalDuration = getTotalAnimationDuration(errorMsgVariant);
-      
-        const checkIsAnimating = () => {
-          if (!isAnimating) {
-            callback(msg);
-          } else if (elapsedTime >= totalDuration) {
-            callback(msg);
-          } else {
-            elapsedTime += checkInterval;
-            setTimeout(checkIsAnimating, checkInterval); // Check condition again after interval
-          }
-        };
-      
-        // Start the recursive checking
-        checkIsAnimating();
-      };
-
-    const errorMsgVariant = {
-        visible: {
-            y: '0',
-            scale: 1,
-            opacity: 1,
-            transition: {
-                duration: 0.5,
-                type: 'spring',
+    // Error message variant for framer-motion animation
+    const errorMsgVariant = useMemo(
+        () => ({
+            visible: {
+                y: '0',
+                scale: 1,
+                opacity: 1,
+                transition: {
+                    duration: 0.5,
+                    type: 'spring',
+                },
             },
-        },
-        hidden: {
-            y: '-100%',
-            scale: 0,
-            opacity: 0,
-            transition: {
-                duration: 0.5,
-                type: 'spring',
-                delay: 3,
+            hidden: {
+                y: '-100%',
+                scale: 0,
+                opacity: 0,
+                transition: {
+                    duration: 0.5,
+                    type: 'spring',
+                    delay: 3,
+                },
             },
-        },
-    };
+        }),
+        []
+    );
 
+    /**
+     * Handles the timeout to check whether the animation has completed.
+     * Waits for the animation to finish before invoking the provided callback.
+     */
+    const animationTimeout = useCallback(
+        async (callback, msg = '') => {
+            let elapsedTime = 0;
+            const checkInterval = 200;
+            const totalDuration = getTotalAnimationDuration(errorMsgVariant);
+
+            const checkIsAnimating = () => {
+                if (!isAnimating.current) {
+                    callback(msg);
+                } else if (elapsedTime >= totalDuration * 5) {
+                    callback(msg);
+                } else {
+                    elapsedTime += checkInterval;
+                    setTimeout(checkIsAnimating, checkInterval);
+                }
+            };
+            checkIsAnimating();
+        },
+        [errorMsgVariant]
+    );
+
+    /**
+     * Calculate the total animation duration based on the visible and hidden transitions.
+     * @param {Object} variant - Framer motion variant object containing transition details.
+     */
     const getTotalAnimationDuration = (variant) => {
         const { visible, hidden } = variant;
-
         const visibleDuration = visible.transition?.duration || 0;
         const hiddenDuration = hidden.transition?.duration || 0;
         const hiddenDelay = hidden.transition?.delay || 0;
-
         return (visibleDuration + hiddenDelay + hiddenDuration) * 1000;
     };
 
-    const triggerErrorMsgAnimation = async (msg) => {
-        setIsValid(false);
-        setIsAnimating(true);
-        setErrorMsg(msg);
-        await errorMsgControls.start('visible');
-        await errorMsgControls.start('hidden');
-        setIsAnimating(false);
-    };
+    /**
+     * Triggers the error message animation by updating the state and using framer-motion controls.
+     */
+    const triggerErrorMsgAnimation = useCallback(
+        async (msg) => {
+            isAnimating.current = true;
+            setErrorMsg(msg);
+            await errorMsgControls.start('visible');
+            await errorMsgControls.start('hidden');
+            isAnimating.current = false;
+        },
+        [errorMsgControls]
+    );
 
+    // Letters and numbers available for selection in the toe code input.
     const letters = ['A', 'B', 'C', 'D'];
     const numbers = [1, 2, 3, 4, 5];
 
+    /**
+     * Formats the current `toeCode` into a readable string format.
+     * Example: A1B2C3 -> A1-B2-C3
+     */
     const formattedToeCodes = toeCode
         ? toeCode.split('').reduce((total, current, index, array) => {
               if (index % 2 && index < array.length - 1) {
@@ -118,10 +131,11 @@ export default function ToeCodeInput({
           })
         : 'EX: A1-B2-C3';
 
+    /**
+     * Generates a new unique toe code based on the existing data and templates.
+     * Handles the logic to ensure the new code is not already in use.
+     */
     const generateNewToeCode = async () => {
-        if (toeCode.includes('C4') || toeCode.includes('D4')) {
-            animationTimeout(triggerErrorMsgAnimation, 'App does not generate toe clip codes with C4 or D4');
-        }
         console.log(`Environment: ${environment}`);
         const collectionName =
             environment === 'live'
@@ -142,71 +156,83 @@ export default function ToeCodeInput({
         lizardSnapshot.docs.forEach((document) => {
             toeCodesArray.push(document.data().toeClipCode);
         });
-        console.log(toeCodesArray);
+        console.log('Existing toe codes: ' + toeCodesArray);
         const toeCodesTemplateSnapshot = await getDocsFromCache(
             query(collection(db, 'AnswerSet'), where('set_name', '==', 'toe clip codes'))
         );
 
-        // if current toe code is nonempty, then there is a toe that is already gone,
-        // and we would like to utilize the natural toe loss in the toe clip code.
-        // this will also work when toeCode = ''
-        for (const templateToeCode of toeCodesTemplateSnapshot.docs[0].data().answers) {
-            if (
-                templateToeCode.primary.includes(toeCode) && // the template code contains the current toeCode
-                !templateToeCode.primary.includes('C4') && // it does not contain "C4"
-                !templateToeCode.primary.includes('D4') && // it does not contain "C4"
-                !toeCodesArray.includes(templateToeCode.primary) // it has not be already used
-            ) {
-                setToeCode(templateToeCode.primary);
-                setSelected({
-                    a: false,
-                    b: false,
-                    c: false,
-                    d: false,
-                    1: false,
-                    2: false,
-                    3: false,
-                    4: false,
-                    5: false,
-                });
-                return;
+        // Make sure toe code is in correct order.
+        let tempToeArray = toeCode.split(/([a-zA-Z]\d)/).filter(Boolean);
+        tempToeArray.sort();
+        let workingToeCode = tempToeArray.join('');
+
+        // If the toe code is empty, get next available code.
+        if (workingToeCode === '') {
+            for (const templateToeCode of toeCodesTemplateSnapshot.docs[0].data().answers) {
+                if (
+                    !toeCodesArray.includes(templateToeCode.primary) &&
+                    !templateToeCode.primary.includes('C4') &&
+                    !templateToeCode.primary.includes('D4')
+                ) {
+                    workingToeCode = templateToeCode.primary;
+                    break;
+                }
+            }
+            // If desired code is already in use, combine it with the next available toe code.
+        } else if (toeCodesArray.includes(workingToeCode)) {
+            let toeCodeChars = workingToeCode.split(/\d+/).filter(Boolean);
+            for (const templateToeCode of toeCodesTemplateSnapshot.docs[0].data().answers) {
+                if (
+                    !toeCodeChars.some((char) => templateToeCode.primary.includes(char)) &&
+                    !templateToeCode.primary.includes('C4') && // it does not contain "C4"
+                    !templateToeCode.primary.includes('D4') // it does not contain "D4"
+                ) {
+                    // Potential toe code found
+                    let tempToeCode = templateToeCode.primary + workingToeCode;
+                    tempToeArray = tempToeCode.split(/([a-zA-Z]\d)/).filter(Boolean);
+                    // Make sure it's in correct order.
+                    tempToeArray.sort();
+                    tempToeCode = tempToeArray.join('');
+                    // Check to see if combination of desired codes and potential code are not in use
+                    if (!toeCodesArray.includes(tempToeCode)) {
+                        workingToeCode = tempToeCode;
+                        break;
+                    }
+                }
             }
         }
+        // Make sure it's in correct order.
+        tempToeArray = workingToeCode.split(/([a-zA-Z]\d)/).filter(Boolean);
+        tempToeArray.sort();
+        workingToeCode = tempToeArray.join('');
 
-        console.log('no toe codes available that include what we want, grabbing first available');
-
-        // if we got here then we don't have a template toe code that contains what we want, so just
-        // grab the first available
-        for (const templateToeCode of toeCodesTemplateSnapshot.docs[0].data().answers) {
-            if (
-                !toeCodesArray.includes(templateToeCode.primary) &&
-                !templateToeCode.primary.includes('C4') &&
-                !templateToeCode.primary.includes('D4')
-            ) {
-                setToeCode(templateToeCode.primary);
-                setSelected({
-                    a: false,
-                    b: false,
-                    c: false,
-                    d: false,
-                    1: false,
-                    2: false,
-                    3: false,
-                    4: false,
-                    5: false,
-                });
-                return;
-            }
-        }
+        setToeCode(workingToeCode);
+        setSelected({
+            a: false,
+            b: false,
+            c: false,
+            d: false,
+            1: false,
+            2: false,
+            3: false,
+            4: false,
+            5: false,
+        });
+        return;
     };
 
-    const checkToeCodeValidity = async () => {
+    /**
+     * Validates the current toe code by checking its length, format, and whether it's already in use.
+     * Adjusts the validity state and error messages accordingly.
+     */
+    const checkToeCodeValidity = useCallback(async () => {
+        setIsValid(false);
         if (toeCode.length < 2) {
             setIsValid(false);
-            setErrorMsg('Toe Clip Code needs to be at least 2 characters long');
+            setOnCloseMsg('Toe Clip Code needs to be at least 2 characters long');
         } else if (toeCode.length % 2) {
             setIsValid(false);
-            setErrorMsg('Toe Clip Code must have an even number of characters');
+            setOnCloseMsg('Toe Clip Code must have an even number of characters');
         } else {
             const collectionName =
                 environment === 'live'
@@ -221,18 +247,29 @@ export default function ToeCodeInput({
                     where('speciesCode', '==', speciesCode)
                 )
             );
+
+            // Check if code includes special toes C4 of D4.
+            let tempToeArray = toeCode.split(/([a-zA-Z]\d)/).filter(Boolean);
+            if (tempToeArray.includes('C4') || tempToeArray.includes('D4')) {
+                animationTimeout(
+                    triggerErrorMsgAnimation,
+                    'Warning: This code contains special toes, which should not be clipped.'
+                );
+                setIsValid(true);
+            }
+
             if (isRecapture) {
                 if (lizardSnapshot.size > 0) {
                     setIsValid(true);
                 } else {
-                    setErrorMsg(
+                    setOnCloseMsg(
                         'Toe Clip Code is not previously recorded, please uncheck the recapture box to record a new entry'
                     );
                     setIsValid(false);
                 }
             } else {
                 if (lizardSnapshot.size > 0) {
-                    setErrorMsg(
+                    setOnCloseMsg(
                         'Toe Clip Code is already taken, choose another or check recapture box'
                     );
                     setIsValid(false);
@@ -241,22 +278,54 @@ export default function ToeCodeInput({
                 }
             }
         }
-    };
+    }, [
+        toeCode,
+        isRecapture,
+        speciesCode,
+        currentData,
+        environment,
+        animationTimeout,
+        triggerErrorMsgAnimation,
+    ]);
 
+    // Re-run the validity check whenever the `toeCode` or `isRecapture` states change.
+    useEffect(() => {
+        checkToeCodeValidity();
+    }, [toeCode, isRecapture, checkToeCodeValidity]);
+
+    /**
+     * Handles clicks on letters or numbers in the ToeCodeInput.
+     * Ensures that the entered toe code follows the correct rules and updates the state accordingly.
+     */
     const handleClick = (source) => {
-        setIsValid(false);
         if (source !== 'backspace' && toeCode.length !== 8) {
             if (Number(source)) {
                 if (toeCode.length === 0) {
-                    animationTimeout(triggerErrorMsgAnimation, 'Error: Toe Clip Codes must begin with a letter');
+                    animationTimeout(
+                        triggerErrorMsgAnimation,
+                        'Error: Toe Clip Codes must begin with a letter'
+                    );
                     return;
                 }
                 if (!Number(toeCode.charAt(toeCode.length - 1))) {
-                    if (toeCode.length >= 3 && toeCode.charAt(toeCode.length - 1) == toeCode.charAt(toeCode.length - 3) && source == toeCode.charAt(toeCode.length - 2)) {
-                        animationTimeout(triggerErrorMsgAnimation, 'Error: You entered the same toe twice.');
+                    if (
+                        toeCode.length >= 3 &&
+                        toeCode.charAt(toeCode.length - 1) === toeCode.charAt(toeCode.length - 3) &&
+                        source === toeCode.charAt(toeCode.length - 2)
+                    ) {
+                        animationTimeout(
+                            triggerErrorMsgAnimation,
+                            'Error: You entered the same toe twice.'
+                        );
                         return;
                     }
-                    setToeCode(`${toeCode}${source}`);
+
+                    // Make sure toe code is in correct order.
+                    let workingToeCode = toeCode + source;
+                    let tempToeArray = workingToeCode.split(/([a-zA-Z]\d)/).filter(Boolean);
+                    tempToeArray.sort();
+                    workingToeCode = tempToeArray.join('');
+                    setToeCode(workingToeCode);
                     setSelected({
                         a: false,
                         b: false,
@@ -271,13 +340,18 @@ export default function ToeCodeInput({
                 }
             } else {
                 if (Number(toeCode.charAt(toeCode.length - 1)) || toeCode.length === 0) {
-                    // console.log("letter pressed")
                     if (toeCode.length >= 2 && source <= toeCode.charAt(toeCode.length - 2)) {
                         if (source < toeCode.charAt(toeCode.length - 2)) {
-                            animationTimeout(triggerErrorMsgAnimation, 'Error: Letters must be in alphabetical order');
+                            animationTimeout(
+                                triggerErrorMsgAnimation,
+                                'Error: Letters must be in alphabetical order'
+                            );
                             return;
                         } else {
-                            animationTimeout(triggerErrorMsgAnimation, 'Warning: You should only clip one toe per foot. Proceed only if toes are already missing.');
+                            animationTimeout(
+                                triggerErrorMsgAnimation,
+                                'Warning: You should only clip one toe per foot. Are these toes already missing?'
+                            );
                         }
                     }
                     setToeCode(`${toeCode}${source}`);
@@ -285,6 +359,7 @@ export default function ToeCodeInput({
                 }
             }
         } else if (source === 'backspace') {
+            console.log('oops');
             setToeCode(toeCode.substring(0, toeCode.length - 1));
             setSelected({
                 a: false,
@@ -303,6 +378,10 @@ export default function ToeCodeInput({
         }
     };
 
+    /**
+     * Queries the database for previous lizard entries with the same toe clip code.
+     * Updates the state with the found records and opens the recapture history modal.
+     */
     const findPreviousLizardEntries = async () => {
         setHistoryButtonText('Querying...');
         const collectionName =
@@ -323,15 +402,12 @@ export default function ToeCodeInput({
             console.log(doc.data());
             tempArray.push(doc.data());
         }
-        // for testing scrollability of the table
-        // for (let i = 0; i < 50; i++) {
-        //     tempArray.push(tempArray[0])
-        // }
         setPreviousLizardEntries(tempArray);
         setRecaptureHistoryIsOpen(true);
         setHistoryButtonText('History');
     };
 
+    // Framer motion variants for recapture history modal
     const recaptureHistoryContainerVariant = {
         hidden: {
             opacity: 0,
@@ -356,6 +432,7 @@ export default function ToeCodeInput({
         },
     };
 
+    // Labels for the recapture history table
     const lizardHistoryLabelArray = [
         'Date',
         'Array',
@@ -515,7 +592,14 @@ export default function ToeCodeInput({
                                     {isValid ? (
                                         <label htmlFor="my-modal-4">Close</label>
                                     ) : (
-                                        <p onClick={() => triggerErrorMsgAnimation(errorMsg)}>
+                                        <p
+                                            onClick={() =>
+                                                animationTimeout(
+                                                    triggerErrorMsgAnimation,
+                                                    onCloseMsg
+                                                )
+                                            }
+                                        >
                                             Close
                                         </p>
                                     )}
@@ -541,6 +625,10 @@ export default function ToeCodeInput({
     );
 }
 
+/**
+ * Displays truncated or full comment text when clicked.
+ * Manages the state of comment expansion for better visibility.
+ */
 const Comments = ({ commentText }) => {
     const [isExpanded, setIsExpanded] = useState(false);
     return (
@@ -576,6 +664,10 @@ const Comments = ({ commentText }) => {
     );
 };
 
+/**
+ * PortraitTable: Displays recapture history in a vertical portrait view.
+ * Contains a table with lizard history and corresponding data.
+ */
 const PortraitTable = ({
     recaptureHistoryVariant,
     currentData,
@@ -721,6 +813,10 @@ const PortraitTable = ({
     );
 };
 
+/**
+ * LandscapeTable: Displays recapture history in a horizontal landscape view.
+ * Handles larger screen/tablet viewports with a wider format.
+ */
 const LandscapeTable = ({
     currentData,
     speciesCode,
@@ -815,6 +911,10 @@ const LandscapeTable = ({
     </motion.div>
 );
 
+/**
+ * Button component used for selecting letters and numbers in the toe code.
+ * The button appearance changes based on whether it is selected.
+ */
 function Button({ prompt, handler, isSelected }) {
     return (
         <button
