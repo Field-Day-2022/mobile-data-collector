@@ -55,17 +55,17 @@ function App() {
             if (snapshot.data().lastEditTime !== lastEditTime) {
                 console.log(
                     `fetching new/modified lizard data from ${new Date(
-                        lastEditTime
+                        lastEditTime,
                     ).toLocaleString()} to ${new Date(
-                        snapshot.data().lastEditTime
-                    ).toLocaleString()}`
+                        snapshot.data().lastEditTime,
+                    ).toLocaleString()}`,
                 );
                 setLizardDataLoaded(false);
                 checkForServerData(
                     lastEditTime,
                     snapshot.data().lastEditTime,
                     setLizardDataLoaded,
-                    environment
+                    environment,
                 );
                 setLastEditTime(snapshot.data().lastEditTime);
             }

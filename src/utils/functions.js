@@ -42,7 +42,7 @@ export const updatePreexistingArthropodData = (
     incomingData,
     setCurrentData,
     currentData,
-    setCurrentForm
+    setCurrentForm,
 ) => {
     let tempArthropod = currentData.arthropod;
     let matchesPreviousFenceTrap = false;
@@ -80,7 +80,7 @@ export const numReadsFirstTimeUser = async () => {
         const q = query(srcColRef, where('taxa', '==', 'Lizard'));
         const snapshot = await getCountFromServer(q);
         console.log(
-            `Count of lizard entry documents in ${collectionName}: ${snapshot.data().count}`
+            `Count of lizard entry documents in ${collectionName}: ${snapshot.data().count}`,
         );
         netCount += snapshot.data().count;
     }
@@ -96,12 +96,12 @@ export const checkForServerData = async (
     latestClientTime,
     latestServerTime,
     setLizardDataLoaded,
-    environment
+    environment,
 ) => {
     console.log(
         `comparing local: ${new Date(latestClientTime).toLocaleTimeString()} and ${new Date(
-            latestServerTime
-        ).toLocaleTimeString()}`
+            latestServerTime,
+        ).toLocaleTimeString()}`,
     );
     if (latestClientTime === 0) {
         await downloadAllLizardDataFromServer(environment);
@@ -123,7 +123,7 @@ export const downloadAllLizardDataFromServer = async (environment) => {
     ];
     for (const collectionName of collections) {
         const incomingLizardData = await getDocsFromServer(
-            query(collection(db, collectionName), where('taxa', '==', 'Lizard'))
+            query(collection(db, collectionName), where('taxa', '==', 'Lizard')),
         );
         console.log(`fresh lizard data downloaded from ${collectionName}:`);
         console.log(incomingLizardData);
@@ -145,8 +145,8 @@ export const downloadLatestLizardDataFromServer = async (latestClientTime, envir
             query(
                 collection(db, collectionName),
                 where('lastEdit', '>', latestClientTime),
-                where('taxa', '==', 'Lizard')
-            )
+                where('taxa', '==', 'Lizard'),
+            ),
         );
         if (!incomingLizardData.empty) {
             console.log(`fresh lizard data downloaded from ${collectionName}:`);
@@ -163,7 +163,7 @@ const fetchDocFromServer = async (entryId, collectionId) => {
         const docSnap = await getDocFromServer(doc(db, collectionId, entryId));
         if (docSnap.exists()) {
             console.log(
-                `Unexpected: document ${docSnap.id} exists on server, removing from deletedEntries`
+                `Unexpected: document ${docSnap.id} exists on server, removing from deletedEntries`,
             );
             await updateDoc(doc(db, 'Metadata', 'LizardData'), {
                 deletedEntries: arrayRemove({
@@ -202,13 +202,13 @@ export const syncDeletedEntries = async (deletedEntries, setLizardDataLoaded) =>
 export const getLizardAnswerFormDataFromFirestore = async (
     currentData,
     setLizardSpeciesList,
-    setFenceTraps
+    setFenceTraps,
 ) => {
     const speciesSnapshot = await getDocsFromCache(
         query(
             collection(db, 'AnswerSet'),
-            where('set_name', '==', `${currentData.project}LizardSpecies`)
-        )
+            where('set_name', '==', `${currentData.project}LizardSpecies`),
+        ),
     );
     let speciesCodesArray = [];
     for (const answer of speciesSnapshot.docs[0].data().answers) {
@@ -216,7 +216,7 @@ export const getLizardAnswerFormDataFromFirestore = async (
     }
     setLizardSpeciesList(speciesCodesArray);
     const fenceTrapsSnapshot = await getDocsFromCache(
-        query(collection(db, 'AnswerSet'), where('set_name', '==', 'Fence Traps'))
+        query(collection(db, 'AnswerSet'), where('set_name', '==', 'Fence Traps')),
     );
     let fenceTrapsArray = [];
     for (const answer of fenceTrapsSnapshot.docs[0].data().answers) {
@@ -231,7 +231,7 @@ export const verifyForm = (
     setNotification,
     setConfirmationModalIsOpen,
     setErrors,
-    setContinueAnyways
+    setContinueAnyways,
 ) => {
     let tempErrors = blankErrors;
     let errorExists = false;
@@ -258,7 +258,7 @@ export const verifyArthropodForm = (
     trap,
     setNotification,
     setConfirmationModalIsOpen,
-    setErrors
+    setErrors,
 ) => {
     let tempErrors = {
         trap: '',
@@ -280,7 +280,7 @@ export const verifyLizardForm = (
     trap,
     setNotification,
     setConfirmationModalIsOpen,
-    setErrors
+    setErrors,
 ) => {
     let tempErrors = {
         speciesCode: '',
@@ -323,7 +323,7 @@ export const completeLizardCapture = async (
     lizardData,
     environment,
     triggerLastEditUpdate,
-    setLastEditTime
+    setLastEditTime,
 ) => {
     const date = new Date();
     console.log('setting new last edit time to ', date.getTime());
@@ -343,7 +343,7 @@ export const completeLizardCapture = async (
     updateData('lizard', lizardEntry, setCurrentData, currentData, setCurrentForm);
     await setDoc(
         doc(db, collectionName, `${currentData.site}Lizard${date.getTime()}`),
-        lizardEntry
+        lizardEntry,
     );
     triggerLastEditUpdate();
 };
@@ -421,7 +421,7 @@ const createLizardEntry = async (currentData, dataEntry) => {
     const { genus, species } = await getGenusSpecies(
         currentData.project,
         'Lizard',
-        dataEntry.speciesCode
+        dataEntry.speciesCode,
     );
     const entryDate = new Date(dataEntry.dateTime);
     const year = entryDate.getFullYear().toString();
@@ -489,7 +489,7 @@ export const deleteLizardEntries = async (currentData, environment) => {
 
 const getGenusSpecies = async (project, taxa, speciesCode) => {
     const docsSnapshot = await getDocsFromCache(
-        query(collection(db, 'AnswerSet'), where('set_name', '==', `${project}${taxa}Species`))
+        query(collection(db, 'AnswerSet'), where('set_name', '==', `${project}${taxa}Species`)),
     );
     const answerSet = docsSnapshot.docs[0].data();
     // console.log(speciesCode)
