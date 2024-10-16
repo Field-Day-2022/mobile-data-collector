@@ -193,7 +193,7 @@ export default function ToeCodeInput({
                     // Make sure it's in correct order.
                     tempToeArray.sort();
                     tempToeCode = tempToeArray.join('');
-                    // Check to see if combination of desired codes and potential code are not in use
+                    // Check to see if combination of desired codes and potential code are not in use.
                     if (!toeCodesArray.includes(tempToeCode)) {
                         workingToeCode = tempToeCode;
                         break;
