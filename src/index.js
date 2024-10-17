@@ -15,14 +15,14 @@ import { LoginWrapper } from './pages/LoginWrapper';
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-    apiKey: 'AIzaSyAmjxPpYBWe1gwBvDXka9-Fk4zRuWPQw-Y',
-    authDomain: 'asu-field-day.firebaseapp.com',
-    databaseURL: 'https://asu-field-day-default-rtdb.firebaseio.com',
-    projectId: 'asu-field-day',
-    storageBucket: 'asu-field-day.appspot.com',
-    messagingSenderId: '470318492986',
-    appId: '1:470318492986:web:0e14ad60aaf2ca37fc7403',
-    measurementId: 'G-3DBWYMJ1S8',
+    apiKey: "AIzaSyDf315Ml5vfmtGVYQJa2Kq7SxUAgg_2vqs",
+    authDomain: "field-day-backup.firebaseapp.com",
+    databaseURL: "https://field-day-backup-default-rtdb.firebaseio.com",
+    projectId: "field-day-backup",
+    storageBucket: "field-day-backup.appspot.com",
+    messagingSenderId: "846923163868",
+    appId: "1:846923163868:web:d79fdde0c3fe0057126c19",
+    measurementId: "G-ZNJTJKVD92"
 };
 
 // Initialize Firebase

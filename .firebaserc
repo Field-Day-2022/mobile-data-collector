@@ -1,12 +1,12 @@
 {
   "projects": {
-    "default": "asu-field-day"
+    "default": "field-day-backup"
   },
   "targets": {
-    "asu-field-day": {
+    "field-day-backup": {
       "hosting": {
         "pwa": [
-          "asu-field-day-pwa"
+          "mobile-data-collector"
         ]
       }
     }

@@ -55,7 +55,8 @@ export const FinishSessionForm = () => {
             setAnswerSet(tempAnswerSetArray);
         }
         getAnswerSet();
-    }, [])
+    }, []) 
+
 
     useEffect(() => {
         if (isEditingPrevious) {
