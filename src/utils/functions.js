@@ -454,14 +454,16 @@ const createLizardEntry = async (currentData, dataEntry) => {
 };
 
 export const getCollectionSessionName = (project, environment) => {
-    let collectionName = `Test${project.replace(/\s/g, '')}Session`;
-    if (environment === 'live') collectionName = `${project.replace(/\s/g, '')}Session`;
+    // Keep project name exactly as is (with spaces)
+    let collectionName = `Test${project}Session`;
+    if (environment === 'live') collectionName = `${project}Session`;
     return collectionName;
 };
 
 export const getCollectionDataName = (project, environment) => {
-    let collectionName = `Test${project.replace(/\s/g, '')}Data`;
-    if (environment === 'live') collectionName = `${project.replace(/\s/g, '')}Data`;
+    // Keep project name exactly as is (with spaces)
+    let collectionName = `Test${project}Data`;
+    if (environment === 'live') collectionName = `${project}Data`;
     return collectionName;
 };
 
@@ -488,18 +490,26 @@ export const deleteLizardEntries = async (currentData, environment) => {
     console.log('complete');
 };
 
-const getGenusSpecies = async (project, taxa, speciesCode) => {
-    const docsSnapshot = await getDocsFromCache(
-        query(collection(db, 'AnswerSet'), where('set_name', '==', `${project}${taxa}Species`)),
-    );
-    const answerSet = docsSnapshot.docs[0].data();
-    // console.log(speciesCode)
-    // console.log(answerSet)
-    for (const answer of answerSet.answers) {
-        if (answer.primary === speciesCode) {
-            // console.log(answer.secondary.Genus)
-            return { genus: answer.secondary.Genus, species: answer.secondary.Species };
+export const getGenusSpecies = async (project, taxa, speciesCode) => {
+    try {
+        const docsSnapshot = await getDocsFromCache(
+            query(collection(db, 'AnswerSet'), where('set_name', '==', `${project}${taxa}Species`))
+        );
+        
+        if (docsSnapshot?.docs?.length > 0) {
+            const answerSet = docsSnapshot.docs[0].data();
+            // console.log(speciesCode)
+            // console.log(answerSet)
+            for (const answer of answerSet.answers) {
+                if (answer.primary === speciesCode) {
+                    // console.log(answer.secondary.Genus)
+                    return { genus: answer.secondary.Genus, species: answer.secondary.Species };
+                }
+            }
         }
+        return { genus: 'N/A', species: 'N/A' };
+    } catch (error) {
+        console.error(`Error in getGenusSpecies: ${error.message}`);
+        return { genus: 'N/A', species: 'N/A' };
     }
-    return { genus: 'N/A', species: 'N/A' };
 };
