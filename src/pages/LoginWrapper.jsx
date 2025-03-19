@@ -40,7 +40,7 @@ export const LoginWrapper = ({ children }) => {
             email: email,
             loginDate: now.toLocaleDateString(),
             loginTime: now.toLocaleTimeString(),
-            platform: 'desktop' // Added platform field
+            platform: 'mobile' // Added platform field
         });
         console.log(`Login recorded for: ${email}`);
     }
