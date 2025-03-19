@@ -74,7 +74,6 @@ export const LoginWrapper = ({ children }) => {
                     }
                 }
                 logAnalyticsEvent(user); // Log analytics after authorization
-                await addLoginHistory(user.email); // Record login history
                 alert('User logged in successfully!');
             } else {
                 alert('Please use your ASU email.');
@@ -87,6 +86,11 @@ export const LoginWrapper = ({ children }) => {
 
     // Display appropriate UI based on user state
     if (user && user.email.endsWith('@asu.edu')) {
+        // Record login history for auto-logged-in users
+        addLoginHistory(user.email).catch((error) => {
+            console.error('Failed to record login history:', error);
+        });
+
         return children; // Render children if the user is authenticated
     } else if (loading) {
         return (
