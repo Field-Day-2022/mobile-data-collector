@@ -15,6 +15,7 @@ export default function NewData() {
     const [errors, setErrors] = useState({
         recorder: '',
         handler: '',
+        dropdown: '',
     });
     const [sites, setSites] = useState();
     const [arrays, setArrays] = useState();
@@ -66,9 +67,8 @@ export default function NewData() {
 
     const getArrays = async (projectName, siteName) => {
         if (projectName !== currentProject || siteName !== currentSite) setCurrentArray('Array');
-        let arraysSnapshot = null;
         const set_name = `${projectName}${siteName}Array`;
-        arraysSnapshot = await getDocsFromCache(
+        const arraysSnapshot = await getDocsFromCache(
             query(collection(db, 'AnswerSet'), where('set_name', '==', set_name)),
         );
         if (arraysSnapshot.docs[0]) {
@@ -84,18 +84,28 @@ export default function NewData() {
         let tempErrors = {
             recorder: '',
             handler: '',
+            dropdown: '',
         };
+        // Validate handler and recorder initials
         if (handler.length < 2) tempErrors.handler = 'Must be 2-3 letters';
         if (recorder.length < 2) tempErrors.recorder = 'Must be 2-3 letters';
+        // Validate selections
+        if (currentProject === 'Project') {
+            tempErrors.dropdown = 'Please select a project.';
+        } else if (currentSite === 'Site') {
+            tempErrors.dropdown = 'Please select a site.';
+        } else if (currentArray === 'Array') {
+            tempErrors.dropdown = 'Please select an array.';
+        }
+
+
         let errorExists = false;
         for (const key in tempErrors) {
             if (tempErrors[key] !== '') errorExists = true;
         }
         if (errorExists) {
-            console.log(handler.length);
-            console.log(tempErrors);
             setErrors(tempErrors);
-            setNotification('Errors present');
+            setNotification(tempErrors.dropdown);
             return;
         } else {
             setErrors(tempErrors);
@@ -143,18 +153,18 @@ export default function NewData() {
         <div
             id="wrapper"
             className="
-      text-center 
-      form-control 
-      items-center 
-      justify-start 
-      overflow-x-hidden 
-      overflow-y-auto
-      scrollbar-thin 
-      scrollbar-thumb-asu-maroon 
-      scrollbar-thumb-rounded-full 
-      rounded-lg 
-      w-full 
-      h-full"
+                text-center 
+                form-control 
+                items-center 
+                justify-start 
+                overflow-x-hidden 
+                overflow-y-auto
+                scrollbar-thin 
+                scrollbar-thumb-asu-maroon 
+                scrollbar-thumb-rounded-full 
+                rounded-lg 
+                w-full 
+                h-full"
         >
             <TextInput
                 maxLength={3}
@@ -183,22 +193,15 @@ export default function NewData() {
             <div className="dropdown flex justify-center items-center">
                 <label
                     tabIndex={0}
+                    // Conditionally add red border if there's an error for project
                     className="btn glass m-1 text-asu-maroon text-xl capitalize font-medium"
+                    style={errors.dropdown && errors.dropdown.includes('project') ? { border: '2px solid #F87272' } : {}}
                 >
                     {currentProject}
                 </label>
                 <ul
                     tabIndex={0}
-                    className="
-          dropdown-content 
-          menu 
-          p-2 
-          shadow 
-          bg-white
-          rounded-box 
-          w-48
-          text-asu-maroon
-          "
+                    className="dropdown-content menu p-2 shadow bg-white rounded-box w-48 text-asu-maroon"
                 >
                     <li
                         onClick={() => {
@@ -245,14 +248,12 @@ export default function NewData() {
             </div>
             <div
                 className="
-          dropdown
-          flex
-          justify-center
-          "
+                    dropdown flex justify-center"
             >
                 <label
                     tabIndex={0}
-                    className="btn glass m-1 text-asu-maroon text-xl capitalize font-medium"
+                    className="btn glass m-1 text-asu-maroon text-xl capitalize"
+                    style={errors.dropdown && errors.dropdown.includes('site') ? { border: '2px solid #F87272' } : {}}
                 >
                     {currentSite !== 'Site' ? `Site ${currentSite}` : currentSite}
                 </label>
@@ -260,18 +261,17 @@ export default function NewData() {
                     <ul
                         tabIndex={0}
                         className="
-            dropdown-content 
-            -bottom-[25%]
-            pl-2
-            pr-2
-            shadow 
-            bg-white
-            overflow-y-auto
-            max-h-72
-            text-asu-maroon 
-            rounded-box
-            w-36
-            "
+                            dropdown-content 
+                            -bottom-[25%]
+                            pl-2
+                            pr-2
+                            shadow 
+                            bg-white
+                            overflow-y-auto
+                            max-h-72
+                            text-asu-maroon 
+                            rounded-box
+                            w-36"
                     >
                         {sites.map((site, index) => (
                             <li
@@ -280,9 +280,7 @@ export default function NewData() {
                                     getArrays(currentProject, site);
                                     document.activeElement.blur();
                                 }}
-                                className={
-                                    index < sites.length - 1 ? 'border-b-2 border-black/50' : ''
-                                }
+                                className={index < sites.length - 1 ? 'border-b-2 border-black/50' : ''}
                                 key={site}
                             >
                                 <a className="flex flex-col justify-center text-xl p-2">{site}</a>
@@ -294,7 +292,8 @@ export default function NewData() {
             <div className="dropdown flex justify-center">
                 <label
                     tabIndex={0}
-                    className="btn glass m-1 text-asu-maroon text-xl capitalize font-medium"
+                    className="btn glass m-1 text-asu-maroon text-xl capitalize"
+                    style={errors.dropdown && errors.dropdown.includes('array') ? { border: '2px solid #F87272' } : {}}
                 >
                     {currentArray !== 'Array' ? `Array ${currentArray}` : currentArray}
                 </label>
@@ -302,15 +301,15 @@ export default function NewData() {
                     <ul
                         tabIndex={0}
                         className="
-            dropdown-content 
-            menu 
-            -bottom-[25%]
-            p-2 
-            shadow 
-            bg-white
-            text-asu-maroon
-            rounded-box 
-            w-28"
+                            dropdown-content 
+                            menu 
+                            -bottom-[25%]
+                            p-2 
+                            shadow 
+                            bg-white
+                            text-asu-maroon
+                            rounded-box 
+                            w-28"
                     >
                         {arrays.map((array, index) => (
                             <li
@@ -318,9 +317,7 @@ export default function NewData() {
                                     setCurrentArray(array);
                                     document.activeElement.blur();
                                 }}
-                                className={
-                                    index < arrays.length - 1 ? 'border-b-2 border-black/50' : ''
-                                }
+                                className={index < arrays.length - 1 ? 'border-b-2 border-black/50' : ''}
                                 key={array}
                             >
                                 <a className="flex justify-center text-xl">{array}</a>
@@ -333,13 +330,13 @@ export default function NewData() {
                 <p className="text-xl mb-1 text-asu-maroon font-semibold">Any captures?</p>
                 <div className="flex">
                     <button
-                        onClick={() => currentArray !== 'Array' && finishForm('withCaptures')}
+                        onClick={() => finishForm('withCaptures')}
                         className="btn w-28 mr-2 glass text-asu-maroon text-xl capitalize"
                     >
                         Yes
                     </button>
                     <button
-                        onClick={() => currentArray !== 'Array' && finishForm('withoutCaptures')}
+                        onClick={() => finishForm('withoutCaptures')}
                         className="btn w-28 glass text-asu-maroon text-xl capitalize"
                     >
                         No
