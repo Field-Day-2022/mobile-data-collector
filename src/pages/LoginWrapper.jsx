@@ -32,6 +32,19 @@ export const LoginWrapper = ({ children }) => {
         await addDoc(authorizedUsersRef, { email });
     };
 
+    //This adds user login history to a new collection.
+    const addLoginHistory= async (email) => {
+        const loginHistoryRef = collection(db, 'loginHistory');
+        const now = new Date();
+        await addDoc(loginHistoryRef, {
+            email: email,
+            loginDate: now.toLocaleDateString(),
+            loginTime: now.toLocaleTimeString(),
+            platform: 'desktop' // Added platform field
+        });
+        console.log(`Login recorded for: ${email}`);
+    }
+
     // Prompt the user for a password to register them in the database
     const promptForPassword = async () => {
         const password = window.prompt('Enter the registration password:');
@@ -61,6 +74,7 @@ export const LoginWrapper = ({ children }) => {
                     }
                 }
                 logAnalyticsEvent(user); // Log analytics after authorization
+                await addLoginHistory(user.email); // Record login history
                 alert('User logged in successfully!');
             } else {
                 alert('Please use your ASU email.');
