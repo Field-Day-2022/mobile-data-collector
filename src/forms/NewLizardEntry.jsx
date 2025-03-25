@@ -93,7 +93,7 @@ export default function NewLizardEntry() {
     }, []);
 
     useEffect(() => {
-        if (otl > vtl && Number(otl) && Number(vtl)) {
+        if (Number(otl) && Number(vtl) && Number(otl) > Number(vtl)) {
             setErrors({ otl: 'OTL must not be larger than VTL.' });
             setOtl(vtl);
         }
