@@ -155,7 +155,7 @@ export default function NewLizardEntry() {
                 setValue={setOtl}
                 placeholder="0 mm"
                 inputValidation="vtl"
-                upperBound={vtl + 1}
+                upperBound={vtl}
                 error={errors.otl}
             />
             <SingleCheckbox
