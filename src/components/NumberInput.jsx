@@ -31,12 +31,9 @@ export default function NumberInput({
                     const inputValidator = createInputValidator(value, upperBound);
                     if (inputValidator.generalValidation) {
                         if (
-                            (
-                                inputValidation === 'mass' || 
-                                inputValidation === 'oneDecimalPlace'
-                            ) &&
+                            (inputValidation === 'mass' || inputValidation === 'oneDecimalPlace') &&
                             inputValidator.oneDecimalPlaceMax
-                    )
+                        )
                             setValue(value);
                         else if (
                             inputValidation === 'vtl' &&
@@ -44,17 +41,20 @@ export default function NumberInput({
                             inputValidator.integerOnly
                         )
                             setValue(value);
-                        else if (
-                            inputValidation === undefined && 
-                            inputValidator.integerOnly
-                        )
+                        else if (inputValidation === undefined && inputValidator.integerOnly)
                             setValue(value);
                     }
                 }}
-                step={(inputValidation === 'oneDecimalPlace' || inputValidation === 'mass') ?  '.1' : '1'}
+                step={
+                    inputValidation === 'oneDecimalPlace' || inputValidation === 'mass' ? '.1' : '1'
+                }
                 value={value ?? ''}
                 type={value === 'N/A' ? 'text' : 'number'}
-                inputMode={(inputValidation === 'oneDecimalPlace' || inputValidation === 'mass') ? 'decimal' : 'numeric'}
+                inputMode={
+                    inputValidation === 'oneDecimalPlace' || inputValidation === 'mass'
+                        ? 'decimal'
+                        : 'numeric'
+                }
                 pattern="[0-9]*"
                 placeholder={placeholder}
                 className="border-2 placeholder:text-gray-400 placeholder:font-light  text-black  input  bg-white/25  input-bordered  input-secondary  text-xl  w-full  max-w-xs disabled:bg-gray-600"

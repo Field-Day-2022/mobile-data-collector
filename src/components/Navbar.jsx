@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
 import { useAtom } from 'jotai';
 import { currentPageName, currentFormName, currentSessionData } from '../utils/jotai';
 import { useRef } from 'react';
@@ -7,7 +6,7 @@ import { AnimatePresence, motion, useCycle } from 'framer-motion';
 export default function Navbar() {
     const [currentPage, setCurrentPage] = useAtom(currentPageName);
     const [currentForm, setCurrentForm] = useAtom(currentFormName);
-    const [currentData, setCurrentData] = useAtom(currentSessionData);
+    const [currentData] = useAtom(currentSessionData);
 
     // https://codesandbox.io/s/framer-motion-side-menu-mx2rw?from-embed=&file=/src/Example.tsx:1027-1037
     const [isOpen, toggleOpen] = useCycle(false, true);
@@ -32,16 +31,16 @@ export default function Navbar() {
             opacity: 0,
             x: '-10%',
             transition: {
-                duration: .1,
-            }
+                duration: 0.1,
+            },
         },
     };
 
     const navUlVariant = {
         open: {
             opacity: 1,
-            transition: { 
-                staggerChildren: 0.08, 
+            transition: {
+                staggerChildren: 0.08,
             },
         },
         closed: {
@@ -57,73 +56,87 @@ export default function Navbar() {
             ref={containerRef}
         >
             <AnimatePresence>
-                {isOpen && <motion.div 
-                    key='backgroundDiv'
-                    className="fixed inset-0 z-30 bg-black/80 border-0 border-green-400"
-                    initial={{opacity: 0}}
-                    animate={{opacity: 1}}
-                    exit={{opacity: 0}}
-                    onClick={() => toggleOpen()}
-                />}
+                {isOpen && (
+                    <motion.div
+                        key="backgroundDiv"
+                        className="fixed inset-0 z-30 bg-black/80 border-0 border-green-400"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => toggleOpen()}
+                    />
+                )}
             </AnimatePresence>
-            {isOpen && <motion.div
-                key="navDiv"
-                className="bg-transparent rounded-tr-xl rounded-br-xl w-full absolute top-12 z-50"
-                variants={navigationContainerVariant}
-                initial='closed'
-                animate={isOpen ? 'open' : 'closed'}
-            >
-                <motion.ul
-                    variants={navUlVariant}
-                    initial={'closed'}
+            {isOpen && (
+                <motion.div
+                    key="navDiv"
+                    className="bg-transparent rounded-tr-xl rounded-br-xl w-full absolute top-12 z-50"
+                    variants={navigationContainerVariant}
+                    initial="closed"
                     animate={isOpen ? 'open' : 'closed'}
                 >
-                    <ListItem 
-                        variant={navItemVariant}
-                        menuLabel={"Home"}
-                        activeMenuLabel={currentPage}
-                        clickHandler={() => {
-                            setCurrentPage('Home');
-                            setCurrentForm('');
-                            toggleOpen();
-                        }}
-                    />
-                    <ListItem 
-                        variant={navItemVariant}
-                        menuLabel={"Collect Data"}
-                        activeMenuLabel={currentPage}
-                        clickHandler={() => {
-                            setCurrentPage('Collect Data');
-                            if (currentData.project === '') {
-                                setCurrentForm('New Data');
-                            } else {
-                                setCurrentForm('New Data Entry');
-                            }
-                            toggleOpen();
-                        }}
-                    />
-                    <ListItem 
-                        variant={navItemVariant}
-                        menuLabel={"History"}
-                        activeMenuLabel={currentPage}
-                        clickHandler={() => {
-                            setCurrentPage('History');
-                            setCurrentForm('');
-                            toggleOpen();
-                        }}
-                    />
-                    <ListItem 
-                        variant={navItemVariant}
-                        menuLabel={"About Us"}
-                        activeMenuLabel={currentPage}
-                        clickHandler={() => {
-                            setCurrentPage('About Us');
-                            setCurrentForm('');
-                            toggleOpen();
-                        }}
-                    />
-                </motion.ul>
-            </motion.div>}
+                    <motion.ul
+                        variants={navUlVariant}
+                        initial={'closed'}
+                        animate={isOpen ? 'open' : 'closed'}
+                    >
+                        <ListItem
+                            variant={navItemVariant}
+                            menuLabel={'Home'}
+                            activeMenuLabel={currentPage}
+                            clickHandler={() => {
+                                setCurrentPage('Home');
+                                setCurrentForm('');
+                                toggleOpen();
+                            }}
+                        />
+                        <ListItem
+                            variant={navItemVariant}
+                            menuLabel={'Search'}
+                            activeMenuLabel={currentPage}
+                            clickHandler={() => {
+                                setCurrentPage('Search');
+                                setCurrentForm('');
+                                toggleOpen();
+                            }}
+                        />
+                        <ListItem
+                            variant={navItemVariant}
+                            menuLabel={'Collect Data'}
+                            activeMenuLabel={currentPage}
+                            clickHandler={() => {
+                                setCurrentPage('Collect Data');
+                                if (currentData.project === '') {
+                                    setCurrentForm('New Data');
+                                } else {
+                                    setCurrentForm('New Data Entry');
+                                }
+                                toggleOpen();
+                            }}
+                        />
+                        <ListItem
+                            variant={navItemVariant}
+                            menuLabel={'History'}
+                            activeMenuLabel={currentPage}
+                            clickHandler={() => {
+                                setCurrentPage('History');
+                                setCurrentForm('');
+                                toggleOpen();
+                            }}
+                        />
+                        <ListItem
+                            variant={navItemVariant}
+                            menuLabel={'About Us'}
+                            activeMenuLabel={currentPage}
+                            clickHandler={() => {
+                                setCurrentPage('About Us');
+                                setCurrentForm('');
+                                toggleOpen();
+                            }}
+                        />
+                    </motion.ul>
+                </motion.div>
+            )}
 
             <MenuToggle isOpen={isOpen} toggle={() => toggleOpen()} />
 
@@ -137,28 +150,23 @@ export default function Navbar() {
     );
 }
 
-const ListItem = ({
-    variant, 
-    menuLabel,
-    activeMenuLabel,
-    clickHandler,
-}) => {
+const ListItem = ({ variant, menuLabel, activeMenuLabel, clickHandler }) => {
     return (
         <motion.li
             className={
-                menuLabel === activeMenuLabel ? 
-                "text-2xl px-2 py-6 bg-white border-4 border-asu-gold mx-2 mb-8 shadow-asu-gold shadow-lg rounded-xl"
-                :
-                "text-2xl px-2 py-6 bg-white border-2 border-asu-gold mx-2 mb-8 text-black rounded-xl"}
+                menuLabel === activeMenuLabel
+                    ? 'text-2xl px-2 py-6 bg-white border-4 border-asu-gold mx-2 mb-8 shadow-asu-gold shadow-lg rounded-xl'
+                    : 'text-2xl px-2 py-6 bg-white border-2 border-asu-gold mx-2 mb-8 text-black rounded-xl'
+            }
             variants={variant}
             onClick={() => clickHandler()}
         >
-            <p className={menuLabel === activeMenuLabel ? "font-bold" : ""}>{menuLabel}</p>
+            <p className={menuLabel === activeMenuLabel ? 'font-bold' : ''}>{menuLabel}</p>
         </motion.li>
-    )
-}
+    );
+};
 
-const Path = ({isOpen, ...props}) => (
+const Path = ({ isOpen, ...props }) => (
     <motion.path
         fill="transparent"
         strokeWidth="3"

@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from 'react';
 import { useAtom, useSetAtom } from 'jotai';
 import { collection, query, where, getDocsFromCache } from 'firebase/firestore';
@@ -48,33 +47,21 @@ export default function NewSnakeEntry() {
         sex === 'Male' && setSex('M');
         sex === 'Female' && setSex('F');
         sex === 'Unknown' && setSex('U');
-    }, [sex])
+    }, [sex]);
 
     useEffect(() => {
-        if (
-            continueAnyways &&
-            mass &&
-            svl &&
-            vtl &&
-            sex
-        ) {
+        if (continueAnyways && mass && svl && vtl && sex) {
             setConfirmationModalIsOpen(true);
         }
-    }, [
-        continueAnyways,  
-        mass,
-        svl,
-        vtl, 
-        sex
-    ])
+    }, [continueAnyways, mass, svl, vtl, sex]);
 
     useEffect(() => {
         const getAnswerFormDataFromFirestore = async () => {
             const speciesSnapshot = await getDocsFromCache(
                 query(
                     collection(db, 'AnswerSet'),
-                    where('set_name', '==', `${currentData.project}SnakeSpecies`)
-                )
+                    where('set_name', '==', `${currentData.project}SnakeSpecies`),
+                ),
             );
             let speciesCodesArray = [];
             for (const answer of speciesSnapshot.docs[0].data().answers) {
@@ -82,7 +69,7 @@ export default function NewSnakeEntry() {
             }
             setSpecies(speciesCodesArray);
             const fenceTrapsSnapshot = await getDocsFromCache(
-                query(collection(db, 'AnswerSet'), where('set_name', '==', 'Fence Traps'))
+                query(collection(db, 'AnswerSet'), where('set_name', '==', 'Fence Traps')),
             );
             let fenceTrapsArray = [];
             for (const answer of fenceTrapsSnapshot.docs[0].data().answers) {
@@ -110,7 +97,7 @@ export default function NewSnakeEntry() {
             },
             setCurrentData,
             currentData,
-            setCurrentForm
+            setCurrentForm,
         );
     };
 
@@ -150,15 +137,18 @@ export default function NewSnakeEntry() {
                 value={mass}
                 setValue={setMass}
                 placeholder="0.0 g"
-                inputValidation='mass'
+                inputValidation="mass"
             />
             <Dropdown
                 error={errors.sex}
                 value={`${
-                    sex === 'M' || sex === 'Male' ? 'Male' :
-                    sex === 'F' || sex === 'Female' ? 'Female' :
-                    sex === 'U' || sex === 'Unknown' ? 'Unknown' :
-                    sex
+                    sex === 'M' || sex === 'Male'
+                        ? 'Male'
+                        : sex === 'F' || sex === 'Female'
+                          ? 'Female'
+                          : sex === 'U' || sex === 'Unknown'
+                            ? 'Unknown'
+                            : sex
                 }`}
                 setValue={setSex}
                 placeholder="Sex"
@@ -171,8 +161,8 @@ export default function NewSnakeEntry() {
                 value={comments}
                 setValue={setComments}
             />
-            <Button 
-                prompt="Finished?" 
+            <Button
+                prompt="Finished?"
                 clickHandler={() => {
                     verifyForm(
                         snakeErrors,
@@ -182,28 +172,29 @@ export default function NewSnakeEntry() {
                             mass,
                             svl,
                             vtl,
-                            sex
+                            sex,
                         },
                         setNotification,
                         setConfirmationModalIsOpen,
                         setErrors,
-                        setContinueAnyways
-                    )
+                        setContinueAnyways,
+                    );
                 }}
             />
-            {continueAnyways && 
+            {continueAnyways && (
                 <div>
-                    <p className='text-xl'>Form has incomplete data, continue anyways?</p>
-                    <Button 
-                        prompt='Submit incomplete form'
+                    <p className="text-xl">Form has incomplete data, continue anyways?</p>
+                    <Button
+                        prompt="Submit incomplete form"
                         clickHandler={() => {
                             svl === '' && setSvl('N/A');
                             vtl === '' && setVtl('N/A');
                             mass === '' && setMass('N/A');
-                            sex ===  '' && setSex('U');
+                            sex === '' && setSex('U');
                         }}
                     />
-                </div>}
+                </div>
+            )}
             {confirmationModalIsOpen && (
                 <ConfirmationModal
                     data={{
@@ -223,7 +214,7 @@ export default function NewSnakeEntry() {
                         svl === 'N/A' && setSvl('');
                         vtl === 'N/A' && setVtl('');
                         mass === 'N/A' && setMass('');
-                        sex ===  'U' && setSex('');
+                        sex === 'U' && setSex('');
                     }}
                 />
             )}

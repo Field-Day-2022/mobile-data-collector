@@ -1,11 +1,6 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react';
 import { useAtom, useSetAtom } from 'jotai';
-import { 
-    currentFormName, 
-    currentSessionData,
-    notificationText
-} from '../utils/jotai';
+import { currentFormName, currentSessionData, notificationText } from '../utils/jotai';
 import { getStandardizedDateTimeString, updateData, verifyForm } from '../utils/functions';
 import { sexOptions } from '../utils/hardCodedData';
 import NumberInput from '../components/NumberInput';
@@ -25,7 +20,7 @@ export default function NewAmphibianEntry() {
         hdBody: '',
         mass: '',
         sex: '',
-    }
+    };
     const [speciesCode, setSpeciesCode] = useState('');
     const [trap, setTrap] = useState('');
     const [hdBody, setHdBody] = useState('');
@@ -35,44 +30,39 @@ export default function NewAmphibianEntry() {
     const [comments, setComments] = useState('');
     const [confirmationModalIsOpen, setConfirmationModalIsOpen] = useState(false);
     const [species, setSpecies] = useState([]);
-    const [errors, setErrors] = useState(amphibianErrorObj)
+    const [errors, setErrors] = useState(amphibianErrorObj);
     const [fenceTraps, setFenceTraps] = useState([]);
     const [currentData, setCurrentData] = useAtom(currentSessionData);
     const setCurrentForm = useSetAtom(currentFormName);
-    const setNotification  = useSetAtom(notificationText);
+    const setNotification = useSetAtom(notificationText);
     const [continueAnyways, setContinueAnyways] = useState(false);
 
     useEffect(() => {
         sex === 'Male' && setSex('M');
         sex === 'Female' && setSex('F');
         sex === 'Unknown' && setSex('U');
-    }, [sex])
+    }, [sex]);
 
     useEffect(() => {
-        if (
-            continueAnyways &&
-            hdBody &&
-            mass &&
-            sex
-        ) {
+        if (continueAnyways && hdBody && mass && sex) {
             setConfirmationModalIsOpen(true);
         }
-    }, [continueAnyways, hdBody, mass, sex])
+    }, [continueAnyways, hdBody, mass, sex]);
 
     useEffect(() => {
         const getAnswerFormDataFromFirestore = async () => {
             const speciesSnapshot = await getDocsFromCache(
                 query(
                     collection(db, 'AnswerSet'),
-                    where('set_name', '==', `${currentData.project}AmphibianSpecies`)
-                )
+                    where('set_name', '==', `${currentData.project}AmphibianSpecies`),
+                ),
             );
             const speciesCodesArray = speciesSnapshot.docs[0].data().answers.map((answer) => {
                 return answer.primary;
             });
             setSpecies(speciesCodesArray);
             const fenceTrapsSnapshot = await getDocsFromCache(
-                query(collection(db, 'AnswerSet'), where('set_name', '==', 'Fence Traps'))
+                query(collection(db, 'AnswerSet'), where('set_name', '==', 'Fence Traps')),
             );
             let fenceTrapsArray = [];
             for (const answer of fenceTrapsSnapshot.docs[0].data().answers) {
@@ -99,7 +89,7 @@ export default function NewAmphibianEntry() {
             },
             setCurrentData,
             currentData,
-            setCurrentForm
+            setCurrentForm,
         );
     };
 
@@ -124,7 +114,7 @@ export default function NewAmphibianEntry() {
                 value={hdBody}
                 setValue={setHdBody}
                 placeholder="HD-Body"
-                inputValidation='oneDecimalPlace'
+                inputValidation="oneDecimalPlace"
                 error={errors.hdBody}
             />
             <NumberInput
@@ -135,57 +125,60 @@ export default function NewAmphibianEntry() {
                 inputValidation="mass"
                 error={errors.mass}
             />
-            <Dropdown 
+            <Dropdown
                 value={`${
-                    sex === 'M' || sex === 'Male' ? 'Male' :
-                    sex === 'F' || sex === 'Female' ? 'Female' :
-                    sex === 'U' || sex === 'Unknown' ? 'Unknown' :
-                    sex
+                    sex === 'M' || sex === 'Male'
+                        ? 'Male'
+                        : sex === 'F' || sex === 'Female'
+                          ? 'Female'
+                          : sex === 'U' || sex === 'Unknown'
+                            ? 'Unknown'
+                            : sex
                 }`}
-                setValue={setSex} 
-                placeholder="Sex" 
-                options={sexOptions} 
-                error={errors.sex}    
+                setValue={setSex}
+                placeholder="Sex"
+                options={sexOptions}
+                error={errors.sex}
             />
-            <SingleCheckbox 
-                prompt="Is it dead?" 
-                value={isDead} 
-                setValue={setIsDead}       
-            />
+            <SingleCheckbox prompt="Is it dead?" value={isDead} setValue={setIsDead} />
             <TextInput
                 prompt="Comments"
                 placeholder="any thoughts?"
                 value={comments}
                 setValue={setComments}
             />
-            <Button prompt="Finished?" clickHandler={() => 
-                verifyForm(
-                    amphibianErrorObj,
-                    {
-                        speciesCode,
-                        trap,
-                        hdBody,
-                        mass,
-                        sex
-                    },
-                    setNotification,
-                    setConfirmationModalIsOpen,
-                    setErrors,
-                    setContinueAnyways,
-                )
-            }/>
-            {continueAnyways && 
+            <Button
+                prompt="Finished?"
+                clickHandler={() =>
+                    verifyForm(
+                        amphibianErrorObj,
+                        {
+                            speciesCode,
+                            trap,
+                            hdBody,
+                            mass,
+                            sex,
+                        },
+                        setNotification,
+                        setConfirmationModalIsOpen,
+                        setErrors,
+                        setContinueAnyways,
+                    )
+                }
+            />
+            {continueAnyways && (
                 <div>
-                    <p className='text-xl'>Form has incomplete data, continue anyways?</p>
-                    <Button 
-                        prompt='Submit incomplete form'
+                    <p className="text-xl">Form has incomplete data, continue anyways?</p>
+                    <Button
+                        prompt="Submit incomplete form"
                         clickHandler={() => {
                             if (hdBody === '') setHdBody('N/A');
                             if (mass === '') setMass('N/A');
                             if (sex === '') setSex('U');
                         }}
                     />
-                </div>}
+                </div>
+            )}
             {confirmationModalIsOpen && (
                 <ConfirmationModal
                     data={{
@@ -203,7 +196,7 @@ export default function NewAmphibianEntry() {
                     resetFields={() => {
                         hdBody === 'N/A' && setHdBody('');
                         mass === 'N/A' && setMass('');
-                        sex ===  'U' && setSex('');
+                        sex === 'U' && setSex('');
                     }}
                 />
             )}

@@ -1,6 +1,7 @@
 export default function FormWrapper({ children }) {
-  return (
-    <div className="
+    return (
+        <div
+            className="
       pb-24 
       text-center 
       form-control 
@@ -15,8 +16,9 @@ export default function FormWrapper({ children }) {
       w-full
       h-full
       max-h-[calc(100%-3em)]
-      ">
-        {children}
-    </div>
-  )
-} 
+      "
+        >
+            {children}
+        </div>
+    );
+}
