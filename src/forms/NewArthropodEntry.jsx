@@ -59,7 +59,7 @@ export default function NewArthropodEntry() {
             const fenceTrapsSnapshot = await getDocsFromCache(
                 query(
                     collection(db, 'AnswerSet'),
-                    where('set_name', '==', 'Fence Traps'),
+                    where('set_name', '==', 'Arthropod Fence Traps'),
                 ),
             );
             let fenceTrapsArray = [];
