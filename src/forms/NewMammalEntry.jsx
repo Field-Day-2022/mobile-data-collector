@@ -11,7 +11,7 @@ import ConfirmationModal from '../components/ConfirmationModal';
 import { collection, query, where, getDocsFromCache } from 'firebase/firestore';
 import { db } from '../index';
 import { currentFormName, currentSessionData, notificationText } from '../utils/jotai';
-import { getStandardizedDateTimeString, updateData, verifyForm } from '../utils/functions';
+import { getStandardizedDateTimeString, updateData, verifyForm, getAnswerFormDataFromFirestore } from '../utils/functions';
 
 import { sexOptions } from '../utils/hardCodedData';
 
@@ -50,29 +50,8 @@ export default function NewMammalEntry() {
     }, [continueAnyways, mass, sex]);
 
     useEffect(() => {
-        const getAnswerFormDataFromFirestore = async () => {
-            const speciesSnapshot = await getDocsFromCache(
-                query(
-                    collection(db, 'AnswerSet'),
-                    where('set_name', '==', `${currentData.project}MammalSpecies`),
-                ),
-            );
-            let speciesCodesArray = [];
-            for (const answer of speciesSnapshot.docs[0].data().answers) {
-                speciesCodesArray.push(answer.primary);
-            }
-            setSpecies(speciesCodesArray);
-            const fenceTrapsSnapshot = await getDocsFromCache(
-                query(collection(db, 'AnswerSet'), where('set_name', '==', 'Fence Traps')),
-            );
-            let fenceTrapsArray = [];
-            for (const answer of fenceTrapsSnapshot.docs[0].data().answers) {
-                fenceTrapsArray.push(answer.primary);
-            }
-            setFenceTraps(fenceTrapsArray);
-        };
-        getAnswerFormDataFromFirestore();
-    }, []);
+        getAnswerFormDataFromFirestore(currentData, 'Mammal', setSpecies, setFenceTraps);
+    }, [currentData]);
 
     const completeCapture = () => {
         updateData(

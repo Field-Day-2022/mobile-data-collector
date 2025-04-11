@@ -19,7 +19,7 @@ import Button from '../components/Button';
 import ConfirmationModal from '../components/ConfirmationModal';
 import { ScaleLoader } from 'react-spinners';
 import {
-    getLizardAnswerFormDataFromFirestore,
+    getAnswerFormDataFromFirestore,
     completeLizardCapture,
     verifyForm,
 } from '../utils/functions';
@@ -89,8 +89,8 @@ export default function NewLizardEntry() {
     const sexOptions = ['Male', 'Female', 'Unknown'];
 
     useEffect(() => {
-        getLizardAnswerFormDataFromFirestore(currentData, setLizardSpeciesList, setFenceTraps);
-    }, []);
+        getAnswerFormDataFromFirestore(currentData, 'Lizard', setLizardSpeciesList, setFenceTraps);
+    }, [currentData]);
 
     useEffect(() => {
         if (Number(otl) && Number(vtl) && Number(otl) > Number(vtl)) {

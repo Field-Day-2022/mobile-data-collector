@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAtom, useSetAtom } from 'jotai';
 import { currentFormName, currentSessionData, notificationText } from '../utils/jotai';
-import { getStandardizedDateTimeString, updateData, verifyForm } from '../utils/functions';
+import { getStandardizedDateTimeString, updateData, verifyForm, getAnswerFormDataFromFirestore } from '../utils/functions';
 import { sexOptions } from '../utils/hardCodedData';
 import NumberInput from '../components/NumberInput';
 import FormWrapper from '../components/FormWrapper';
@@ -50,28 +50,8 @@ export default function NewAmphibianEntry() {
     }, [continueAnyways, hdBody, mass, sex]);
 
     useEffect(() => {
-        const getAnswerFormDataFromFirestore = async () => {
-            const speciesSnapshot = await getDocsFromCache(
-                query(
-                    collection(db, 'AnswerSet'),
-                    where('set_name', '==', `${currentData.project}AmphibianSpecies`),
-                ),
-            );
-            const speciesCodesArray = speciesSnapshot.docs[0].data().answers.map((answer) => {
-                return answer.primary;
-            });
-            setSpecies(speciesCodesArray);
-            const fenceTrapsSnapshot = await getDocsFromCache(
-                query(collection(db, 'AnswerSet'), where('set_name', '==', 'Fence Traps')),
-            );
-            let fenceTrapsArray = [];
-            for (const answer of fenceTrapsSnapshot.docs[0].data().answers) {
-                fenceTrapsArray.push(answer.primary);
-            }
-            setFenceTraps(fenceTrapsArray);
-        };
-        getAnswerFormDataFromFirestore();
-    }, []);
+        getAnswerFormDataFromFirestore(currentData, 'Amphibian', setSpecies, setFenceTraps);
+    }, [currentData]);
 
     const completeCapture = () => {
         updateData(
