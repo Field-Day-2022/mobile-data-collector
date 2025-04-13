@@ -194,30 +194,41 @@ export const syncDeletedEntries = async (deletedEntries, setLizardDataLoaded) =>
     setLizardDataLoaded(true);
 };
 
-export const getLizardAnswerFormDataFromFirestore = async (
+export const getAnswerFormDataFromFirestore = async (
     currentData,
-    setLizardSpeciesList,
-    setFenceTraps,
+    animalType,
+    setSpeciesList,
+    setFenceTraps
 ) => {
-    const speciesSnapshot = await getDocsFromCache(
-        query(
-            collection(db, 'AnswerSet'),
-            where('set_name', '==', `${currentData.project}LizardSpecies`),
-        ),
-    );
-    let speciesCodesArray = [];
-    for (const answer of speciesSnapshot.docs[0].data().answers) {
-        speciesCodesArray.push(answer.primary);
+    try {
+        // Fetch species
+        const speciesSnapshot = await getDocsFromCache(
+            query(
+                collection(db, 'AnswerSet'),
+                where('set_name', '==', `${currentData.project}${animalType}Species`)
+            )
+        );
+        let speciesCodesArray = [];
+        for (const answer of speciesSnapshot.docs[0].data().answers) {
+            speciesCodesArray.push(answer.primary);
+        }
+        setSpeciesList(speciesCodesArray);
+
+        // Fetch fence traps and filter based on the secondary key
+        const fenceTrapsSnapshot = await getDocsFromCache(
+            query(collection(db, 'AnswerSet'), where('set_name', '==', 'Fence Traps'))
+        );
+        let fenceTrapsArray = [];
+        for (const answer of fenceTrapsSnapshot.docs[0].data().answers) {
+            if (answer.secondary?.[animalType.toLowerCase()] === true) {
+                // Filter traps where the secondary key for the animal type is true
+                fenceTrapsArray.push(answer.primary);
+            }
+        }
+        setFenceTraps(fenceTrapsArray);
+    } catch (error) {
+        console.error(`Error fetching ${animalType} answer form data:`, error);
     }
-    setLizardSpeciesList(speciesCodesArray);
-    const fenceTrapsSnapshot = await getDocsFromCache(
-        query(collection(db, 'AnswerSet'), where('set_name', '==', 'Fence Traps')),
-    );
-    let fenceTrapsArray = [];
-    for (const answer of fenceTrapsSnapshot.docs[0].data().answers) {
-        fenceTrapsArray.push(answer.primary);
-    }
-    setFenceTraps(fenceTrapsArray);
 };
 
 export const verifyForm = (
