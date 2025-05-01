@@ -1,4 +1,3 @@
-/* eslint-disable no-loop-func */
 import {
     collection,
     where,
@@ -6,15 +5,11 @@ import {
     getCountFromServer,
     writeBatch,
     doc,
-    getDocs,
     getDocsFromCache,
     getDocsFromServer,
-    orderBy,
-    limit,
     setDoc,
     getDocFromCache,
     updateDoc,
-    deleteDoc,
     getDocFromServer,
     arrayRemove,
     arrayUnion,
@@ -112,7 +107,7 @@ export const checkForServerData = async (
     }
 };
 
-export const downloadAllLizardDataFromServer = async (environment) => {
+export const downloadAllLizardDataFromServer = async () => {
     const collections = [
         'GatewayData',
         'VirginRiverData',
@@ -130,7 +125,7 @@ export const downloadAllLizardDataFromServer = async (environment) => {
     }
 };
 
-export const downloadLatestLizardDataFromServer = async (latestClientTime, environment) => {
+export const downloadLatestLizardDataFromServer = async (latestClientTime) => {
     const collections = [
         'GatewayData',
         'VirginRiverData',
@@ -501,10 +496,4 @@ const getGenusSpecies = async (project, taxa, speciesCode) => {
         }
     }
     return { genus: 'N/A', species: 'N/A' };
-};
-
-const reloadCachedLizardData = async (collectionName, docId) => {
-    const document = await getDocFromCache(doc(db, collectionName, docId));
-    console.log('retrieved cached lizard entry:');
-    console.log(document);
 };

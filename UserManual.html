@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      line-height: 1.6;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      color: #333;
+    }
+Copyh1 {
+  color: #2c5282;
+  border-bottom: 2px solid #2c5282;
+  padding-bottom: 10px;
+}
+
+h2 {
+  color: #2d3748;
+  margin-top: 30px;
+}
+
+h3 {
+  color: #4a5568;
+}
+
+.section {
+  margin-bottom: 40px;
+}
+
+.instruction-block {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  margin: 20px 0;
+}
+
+.instruction-text {
+  flex: 1;
+}
+
+.instruction-image {
+  flex: 1;
+  text-align: center;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  margin: 10px 0;
+}
+
+.note {
+  background-color: #f8fafc;
+  padding: 15px;
+  border-left: 4px solid #2c5282;
+  margin: 15px 0;
+}
+
+ul {
+  padding-left: 20px;
+}
+  </style>
+</head>
+<body>
+  <h1>Field Day Wildlife Data Collection App</h1>
+  <div class="section">
+    <h2>Introduction</h2>
+    <p>The Field Day project is an innovative Wildlife Data Collection and management Tool designed to address field researchers' challenges, particularly those in biology and ecology.</p>
+    <div class="note">
+      <strong>Key Features:</strong>
+      <ul>
+        <li>Progressive Web App (PWA) for mobile devices</li>
+        <li>Web application for larger screens</li>
+        <li>Offline functionality with local database caching</li>
+        <li>2-factor Google authentication</li>
+        <li>Population data collection using capture mark-recapture techniques</li>
+      </ul>
+    </div>
+  </div>
+  <div class="section">
+    <h2>Getting Started</h2>
+Copy<h3>Logging In</h3>
+<div class="instruction-block">
+  <div class="instruction-text">
+    <ol>
+      <li>Access the PWA at <a href="https://asu-field-day-pwa.web.app/">https://asu-field-day-pwa.web.app/</a></li>
+      <li>Tap the <strong>Login</strong> button</li>
+      <li>Use your ASU.edu credentials for Google OAuth 2.0 authentication</li>
+      <li>Complete 2-factor authentication if prompted</li>
+      <li>Ensure <strong>App Mode: Live</strong> is selected</li>
+    </ol>
+  </div>
+  <div class="instruction-image">
+    <img src="/api/placeholder/300/400" alt="Login Screen">
+  </div>
+</div>
+
+<h3>Navigation</h3>
+<div class="instruction-block">
+  <div class="instruction-text">
+    <p>Access the main menu from the top-left corner for:</p>
+    <ul>
+      <li><strong>Collect Field Data:</strong> Begin a new session</li>
+      <li><strong>Session History:</strong> View past sessions</li>
+      <li><strong>About Us:</strong> Project team information</li>
+    </ul>
+  </div>
+  <div class="instruction-image">
+    <img src="/api/placeholder/300/400" alt="Menu Navigation">
+  </div>
+</div>
+  </div>
+  <div class="section">
+    <h2>Data Collection Process</h2>
+Copy<h3>Starting a New Session</h3>
+<div class="instruction-block">
+  <div class="instruction-text">
+    <ol>
+      <li>Enter handler initials (2-3 characters required)</li>
+      <li>Select your project</li>
+      <li>Choose site and array</li>
+    </ol>
+  </div>
+  <div class="instruction-image">
+    <img src="/api/placeholder/300/400" alt="New Session Form">
+  </div>
+</div>
+
+<h3>Recording Captures</h3>
+<div class="instruction-block">
+  <div class="instruction-text">
+    <p>Select the appropriate form for:</p>
+    <ul>
+      <li>Arthropod</li>
+      <li>Amphibian</li>
+      <li>Lizard</li>
+      <li>Mammal</li>
+      <li>Snake</li>
+    </ul>
+  </div>
+  <div class="instruction-image">
+    <img src="/api/placeholder/300/400" alt="Species Selection">
+  </div>
+</div>
+
+<h3>Mammal Entry Form</h3>
+<div class="instruction-block">
+  <div class="instruction-text">
+    <ul>
+      <li>Record species details</li>
+      <li>Enter measurements</li>
+      <li>Add observations</li>
+    </ul>
+  </div>
+  <div class="instruction-image">
+    <img src="/api/placeholder/300/400" alt="Mammal Entry Form">
+  </div>
+</div>
+
+<h3>Snake Entry Form</h3>
+<div class="instruction-block">
+  <div class="instruction-text">
+    <ul>
+      <li>Document snake species</li>
+      <li>Record measurements</li>
+      <li>Note observations</li>
+    </ul>
+  </div>
+  <div class="instruction-image">
+    <img src="/api/placeholder/300/400" alt="Snake Entry Form">
+  </div>
+</div>
+
+<h3>Trap Status</h3>
+<div class="instruction-block">
+  <div class="instruction-text">
+    <p>Indicate trap status as:</p>
+    <ul>
+      <li>Open</li>
+      <li>Checked</li>
+      <li>Checked and closed</li>
+    </ul>
+  </div>
+  <div class="instruction-image">
+    <img src="/api/placeholder/300/400" alt="Trap Status">
+  </div>
+</div>
+  </div>
+  <div class="section">
+    <h2>Best Practices</h2>
+    <div class="note">
+      <ul>
+        <li>Always verify data before final submission</li>
+        <li>Enter comments for any unusual observations</li>
+        <li>Ensure proper trap status documentation</li>
+        <li>Complete all required fields</li>
+      </ul>
+    </div>
+  </div>
+  <div class="section">
+    <h2>Technical Notes</h2>
+    <div class="note">
+      <ul>
+        <li>Offline data collection available through local caching</li>
+        <li>Regular synchronization recommended</li>
+        <li>Keep Google Authenticator app updated for 2FA</li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>
