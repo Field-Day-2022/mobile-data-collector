@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
 import { useAtomValue, useSetAtom } from 'jotai';
 import { currentFormName, currentSessionData } from '../utils/jotai';
 
@@ -63,18 +62,18 @@ export default function NewDataEntry() {
                         tabIndex={0}
                         className="dropdown-content menu items-center p-2 shadow bg-white rounded-box text-xl border-asu-maroon border-2"
                     >
-                        {entryTypes.map((entry, index) => (
+                        {entryTypes.map((entry) => (
                             <li
                                 onClick={() => {
                                     document.activeElement.blur();
                                     goToForm(`New ${entry} Entry`);
                                 }}
-                                className={
-                                   "w-full"
-                                }
+                                className={'w-full'}
                                 key={entry}
                             >
-                                <p className="border-2 border-asu-maroon m-1 p-2 flex flex-col items-center">{entry}</p>
+                                <p className="border-2 border-asu-maroon m-1 p-2 flex flex-col items-center">
+                                    {entry}
+                                </p>
                             </li>
                         ))}
                     </ul>
@@ -132,8 +131,9 @@ export default function NewDataEntry() {
                 <div className="modal-box bg-white">
                     <h3 className="text-3xl font-bold text-black mb-2">Are you sure?</h3>
                     <p className="text-black text-md">
-                        This will send the session data to the server and close it to further data collection.
-                        If you want to add to this session after closing, go to the "History" page and select it.
+                        This will send the session data to the server and close it to further data
+                        collection. If you want to add to this session after closing, go to the
+                        "History" page and select it.
                     </p>
                     <div className="modal-action m-1 flex flex-col items-center">
                         <label

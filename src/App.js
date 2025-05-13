@@ -1,5 +1,9 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable react-hooks/exhaustive-deps */
+/*
+ * Field Day Flex
+ *
+ * Version: 5-2-2025
+ */
+
 import { useEffect, useState, memo, useRef } from 'react';
 import { collection, doc, onSnapshot } from 'firebase/firestore';
 import CollectData from './pages/CollectData';
@@ -13,6 +17,7 @@ import {
     triggerUpdateOnLastEditTime,
 } from './utils/jotai';
 import Home from './pages/Home';
+import Search from './pages/Search';
 import PastSessionData from './pages/PastSessionData';
 import Navbar from './components/Navbar';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -76,7 +81,7 @@ function App() {
             if (lastEditTime === snapshot.data().lastEditTime) setLizardDataLoaded(true);
         });
 
-        onSnapshot(collection(db, 'AnswerSet'), (snapshot) => {
+        onSnapshot(collection(db, 'AnswerSet'), () => {
             setAnswerSetLoading(false);
         });
     };
@@ -95,6 +100,7 @@ function App() {
                 ) : (
                     <AppWrapper>
                         {currentPage === 'Home' && <Home />}
+                        {currentPage === 'Search' && <Search />}
                         {currentPage === 'History' && <PastSessionData />}
                         {currentPage === 'Collect Data' && <CollectData />}
                         {currentPage === 'About Us' && <AboutUs />}

@@ -1,64 +1,66 @@
 {
-  "name": "field-day-2022-pwa",
-  "version": "0.1.0",
-  "private": true,
-  "dependencies": {
-    "@testing-library/jest-dom": "^5.16.5",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
-    "daisyui": "^2.39.0",
-    "firebase": "^9.13.0",
-    "firebaseui": "^6.0.2",
-    "framer-motion": "^7.6.5",
-    "jotai": "^1.10.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-firebase-hooks": "^5.1.0",
-    "react-loader-spinner": "^5.3.4",
-    "react-scripts": "5.0.1",
-    "react-spinners": "^0.13.8",
-    "web-vitals": "^2.1.4",
-    "workbox-background-sync": "^6.5.4",
-    "workbox-broadcast-update": "^6.5.4",
-    "workbox-cacheable-response": "^6.5.4",
-    "workbox-core": "^6.5.4",
-    "workbox-expiration": "^6.5.4",
-    "workbox-google-analytics": "^6.5.4",
-    "workbox-navigation-preload": "^6.5.4",
-    "workbox-precaching": "^6.5.4",
-    "workbox-range-requests": "^6.5.4",
-    "workbox-routing": "^6.5.4",
-    "workbox-strategies": "^6.5.4",
-    "workbox-streams": "^6.5.4"
-  },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "CI=false react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
-  "devDependencies": {
-    "autoprefixer": "^10.4.13",
-    "postcss": "^8.4.21",
-    "tailwind-scrollbar": "^2.0.1",
-    "tailwindcss": "^3.2.4"
-  }
+    "name": "field-day-2022-pwa",
+    "version": "0.1.0",
+    "private": true,
+    "dependencies": {
+        "@testing-library/jest-dom": "^5.16.5",
+        "@testing-library/react": "^13.4.0",
+        "@testing-library/user-event": "^13.5.0",
+        "daisyui": "^2.39.0",
+        "firebase": "^9.13.0",
+        "firebaseui": "^6.0.2",
+        "framer-motion": "^7.6.5",
+        "jotai": "^1.10.0",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
+        "react-firebase-hooks": "^5.1.0",
+        "react-loader-spinner": "^5.3.4",
+        "react-scripts": "5.0.1",
+        "react-spinners": "^0.13.8",
+        "web-vitals": "^2.1.4",
+        "workbox-background-sync": "^6.5.4",
+        "workbox-broadcast-update": "^6.5.4",
+        "workbox-cacheable-response": "^6.5.4",
+        "workbox-core": "^6.5.4",
+        "workbox-expiration": "^6.5.4",
+        "workbox-google-analytics": "^6.5.4",
+        "workbox-navigation-preload": "^6.5.4",
+        "workbox-precaching": "^6.5.4",
+        "workbox-range-requests": "^6.5.4",
+        "workbox-routing": "^6.5.4",
+        "workbox-strategies": "^6.5.4",
+        "workbox-streams": "^6.5.4"
+    },
+    "scripts": {
+        "start": "react-scripts start",
+        "build": "cross-env CI=false react-scripts build",
+        "test": "cross-env CI=false react-scripts test --passWithNoTests",
+        "eject": "react-scripts eject",
+        "lint": "eslint .",
+        "ci": "npx prettier --write **/*.{html,css,js,md,jsx,json} --config .prettierrc && npm run lint && npm test"
+    },
+    "browserslist": {
+        "production": [
+            ">0.2%",
+            "not dead",
+            "not op_mini all"
+        ],
+        "development": [
+            "last 1 chrome version",
+            "last 1 firefox version",
+            "last 1 safari version"
+        ]
+    },
+    "devDependencies": {
+        "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+        "@typescript-eslint/utils": "^8.22.0",
+        "autoprefixer": "^10.4.13",
+        "cross-env": "^7.0.3",
+        "eslint": "^9.12.0",
+        "eslint-plugin-react": "^7.37.1",
+        "postcss": "^8.4.21",
+        "prettier": "^3.3.3",
+        "tailwind-scrollbar": "^2.0.1",
+        "tailwindcss": "^3.2.4"
+    }
 }
