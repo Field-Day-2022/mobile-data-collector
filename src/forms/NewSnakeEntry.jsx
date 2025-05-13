@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from 'react';
 import { useAtom, useSetAtom } from 'jotai';
 import { collection, query, where, getDocsFromCache } from 'firebase/firestore';
@@ -12,7 +11,7 @@ import TextInput from '../components/TextInput';
 import Button from '../components/Button';
 
 import { currentFormName, currentSessionData, notificationText } from '../utils/jotai';
-import { getStandardizedDateTimeString, updateData, verifyForm } from '../utils/functions';
+import { getStandardizedDateTimeString, updateData, verifyForm, getAnswerFormDataFromFirestore } from '../utils/functions';
 import { sexOptions } from '../utils/hardCodedData';
 import ConfirmationModal from '../components/ConfirmationModal';
 
@@ -48,50 +47,17 @@ export default function NewSnakeEntry() {
         sex === 'Male' && setSex('M');
         sex === 'Female' && setSex('F');
         sex === 'Unknown' && setSex('U');
-    }, [sex])
+    }, [sex]);
 
     useEffect(() => {
-        if (
-            continueAnyways &&
-            mass &&
-            svl &&
-            vtl &&
-            sex
-        ) {
+        if (continueAnyways && mass && svl && vtl && sex) {
             setConfirmationModalIsOpen(true);
         }
-    }, [
-        continueAnyways,  
-        mass,
-        svl,
-        vtl, 
-        sex
-    ])
+    }, [continueAnyways, mass, svl, vtl, sex]);
 
     useEffect(() => {
-        const getAnswerFormDataFromFirestore = async () => {
-            const speciesSnapshot = await getDocsFromCache(
-                query(
-                    collection(db, 'AnswerSet'),
-                    where('set_name', '==', `${currentData.project}SnakeSpecies`)
-                )
-            );
-            let speciesCodesArray = [];
-            for (const answer of speciesSnapshot.docs[0].data().answers) {
-                speciesCodesArray.push(answer.primary);
-            }
-            setSpecies(speciesCodesArray);
-            const fenceTrapsSnapshot = await getDocsFromCache(
-                query(collection(db, 'AnswerSet'), where('set_name', '==', 'Fence Traps'))
-            );
-            let fenceTrapsArray = [];
-            for (const answer of fenceTrapsSnapshot.docs[0].data().answers) {
-                fenceTrapsArray.push(answer.primary);
-            }
-            setFenceTraps(fenceTrapsArray);
-        };
-        getAnswerFormDataFromFirestore();
-    }, []);
+        getAnswerFormDataFromFirestore(currentData, 'Snake', setSpecies, setFenceTraps);
+    }, [currentData]);
 
     const completeCapture = () => {
         updateData(
@@ -110,7 +76,7 @@ export default function NewSnakeEntry() {
             },
             setCurrentData,
             currentData,
-            setCurrentForm
+            setCurrentForm,
         );
     };
 
@@ -150,15 +116,18 @@ export default function NewSnakeEntry() {
                 value={mass}
                 setValue={setMass}
                 placeholder="0.0 g"
-                inputValidation='mass'
+                inputValidation="mass"
             />
             <Dropdown
                 error={errors.sex}
                 value={`${
-                    sex === 'M' || sex === 'Male' ? 'Male' :
-                    sex === 'F' || sex === 'Female' ? 'Female' :
-                    sex === 'U' || sex === 'Unknown' ? 'Unknown' :
-                    sex
+                    sex === 'M' || sex === 'Male'
+                        ? 'Male'
+                        : sex === 'F' || sex === 'Female'
+                          ? 'Female'
+                          : sex === 'U' || sex === 'Unknown'
+                            ? 'Unknown'
+                            : sex
                 }`}
                 setValue={setSex}
                 placeholder="Sex"
@@ -171,8 +140,8 @@ export default function NewSnakeEntry() {
                 value={comments}
                 setValue={setComments}
             />
-            <Button 
-                prompt="Finished?" 
+            <Button
+                prompt="Finished?"
                 clickHandler={() => {
                     verifyForm(
                         snakeErrors,
@@ -182,28 +151,29 @@ export default function NewSnakeEntry() {
                             mass,
                             svl,
                             vtl,
-                            sex
+                            sex,
                         },
                         setNotification,
                         setConfirmationModalIsOpen,
                         setErrors,
-                        setContinueAnyways
-                    )
+                        setContinueAnyways,
+                    );
                 }}
             />
-            {continueAnyways && 
+            {continueAnyways && (
                 <div>
-                    <p className='text-xl'>Form has incomplete data, continue anyways?</p>
-                    <Button 
-                        prompt='Submit incomplete form'
+                    <p className="text-xl">Form has incomplete data, continue anyways?</p>
+                    <Button
+                        prompt="Submit incomplete form"
                         clickHandler={() => {
                             svl === '' && setSvl('N/A');
                             vtl === '' && setVtl('N/A');
                             mass === '' && setMass('N/A');
-                            sex ===  '' && setSex('U');
+                            sex === '' && setSex('U');
                         }}
                     />
-                </div>}
+                </div>
+            )}
             {confirmationModalIsOpen && (
                 <ConfirmationModal
                     data={{
@@ -223,7 +193,7 @@ export default function NewSnakeEntry() {
                         svl === 'N/A' && setSvl('');
                         vtl === 'N/A' && setVtl('');
                         mass === 'N/A' && setMass('');
-                        sex ===  'U' && setSex('');
+                        sex === 'U' && setSex('');
                     }}
                 />
             )}

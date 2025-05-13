@@ -1,4 +1,3 @@
-/* eslint-disable no-loop-func */
 import {
     collection,
     where,
@@ -6,15 +5,11 @@ import {
     getCountFromServer,
     writeBatch,
     doc,
-    getDocs,
     getDocsFromCache,
     getDocsFromServer,
-    orderBy,
-    limit,
     setDoc,
     getDocFromCache,
     updateDoc,
-    deleteDoc,
     getDocFromServer,
     arrayRemove,
     arrayUnion,
@@ -42,7 +37,7 @@ export const updatePreexistingArthropodData = (
     incomingData,
     setCurrentData,
     currentData,
-    setCurrentForm
+    setCurrentForm,
 ) => {
     let tempArthropod = currentData.arthropod;
     let matchesPreviousFenceTrap = false;
@@ -80,7 +75,7 @@ export const numReadsFirstTimeUser = async () => {
         const q = query(srcColRef, where('taxa', '==', 'Lizard'));
         const snapshot = await getCountFromServer(q);
         console.log(
-            `Count of lizard entry documents in ${collectionName}: ${snapshot.data().count}`
+            `Count of lizard entry documents in ${collectionName}: ${snapshot.data().count}`,
         );
         netCount += snapshot.data().count;
     }
@@ -96,12 +91,12 @@ export const checkForServerData = async (
     latestClientTime,
     latestServerTime,
     setLizardDataLoaded,
-    environment
+    environment,
 ) => {
     console.log(
         `comparing local: ${new Date(latestClientTime).toLocaleTimeString()} and ${new Date(
-            latestServerTime
-        ).toLocaleTimeString()}`
+            latestServerTime,
+        ).toLocaleTimeString()}`,
     );
     if (latestClientTime === 0) {
         await downloadAllLizardDataFromServer(environment);
@@ -112,7 +107,7 @@ export const checkForServerData = async (
     }
 };
 
-export const downloadAllLizardDataFromServer = async (environment) => {
+export const downloadAllLizardDataFromServer = async () => {
     const collections = [
         'GatewayData',
         'VirginRiverData',
@@ -123,14 +118,14 @@ export const downloadAllLizardDataFromServer = async (environment) => {
     ];
     for (const collectionName of collections) {
         const incomingLizardData = await getDocsFromServer(
-            query(collection(db, collectionName), where('taxa', '==', 'Lizard'))
+            query(collection(db, collectionName), where('taxa', '==', 'Lizard')),
         );
         console.log(`fresh lizard data downloaded from ${collectionName}:`);
         console.log(incomingLizardData);
     }
 };
 
-export const downloadLatestLizardDataFromServer = async (latestClientTime, environment) => {
+export const downloadLatestLizardDataFromServer = async (latestClientTime) => {
     const collections = [
         'GatewayData',
         'VirginRiverData',
@@ -145,8 +140,8 @@ export const downloadLatestLizardDataFromServer = async (latestClientTime, envir
             query(
                 collection(db, collectionName),
                 where('lastEdit', '>', latestClientTime),
-                where('taxa', '==', 'Lizard')
-            )
+                where('taxa', '==', 'Lizard'),
+            ),
         );
         if (!incomingLizardData.empty) {
             console.log(`fresh lizard data downloaded from ${collectionName}:`);
@@ -163,7 +158,7 @@ const fetchDocFromServer = async (entryId, collectionId) => {
         const docSnap = await getDocFromServer(doc(db, collectionId, entryId));
         if (docSnap.exists()) {
             console.log(
-                `Unexpected: document ${docSnap.id} exists on server, removing from deletedEntries`
+                `Unexpected: document ${docSnap.id} exists on server, removing from deletedEntries`,
             );
             await updateDoc(doc(db, 'Metadata', 'LizardData'), {
                 deletedEntries: arrayRemove({
@@ -199,30 +194,41 @@ export const syncDeletedEntries = async (deletedEntries, setLizardDataLoaded) =>
     setLizardDataLoaded(true);
 };
 
-export const getLizardAnswerFormDataFromFirestore = async (
+export const getAnswerFormDataFromFirestore = async (
     currentData,
-    setLizardSpeciesList,
+    animalType,
+    setSpeciesList,
     setFenceTraps
 ) => {
-    const speciesSnapshot = await getDocsFromCache(
-        query(
-            collection(db, 'AnswerSet'),
-            where('set_name', '==', `${currentData.project}LizardSpecies`)
-        )
-    );
-    let speciesCodesArray = [];
-    for (const answer of speciesSnapshot.docs[0].data().answers) {
-        speciesCodesArray.push(answer.primary);
+    try {
+        // Fetch species
+        const speciesSnapshot = await getDocsFromCache(
+            query(
+                collection(db, 'AnswerSet'),
+                where('set_name', '==', `${currentData.project}${animalType}Species`)
+            )
+        );
+        let speciesCodesArray = [];
+        for (const answer of speciesSnapshot.docs[0].data().answers) {
+            speciesCodesArray.push(answer.primary);
+        }
+        setSpeciesList(speciesCodesArray);
+
+        // Fetch fence traps and filter based on the secondary key
+        const fenceTrapsSnapshot = await getDocsFromCache(
+            query(collection(db, 'AnswerSet'), where('set_name', '==', 'Fence Traps'))
+        );
+        let fenceTrapsArray = [];
+        for (const answer of fenceTrapsSnapshot.docs[0].data().answers) {
+            if (answer.secondary?.[animalType.toLowerCase()] === true) {
+                // Filter traps where the secondary key for the animal type is true
+                fenceTrapsArray.push(answer.primary);
+            }
+        }
+        setFenceTraps(fenceTrapsArray);
+    } catch (error) {
+        console.error(`Error fetching ${animalType} answer form data:`, error);
     }
-    setLizardSpeciesList(speciesCodesArray);
-    const fenceTrapsSnapshot = await getDocsFromCache(
-        query(collection(db, 'AnswerSet'), where('set_name', '==', 'Fence Traps'))
-    );
-    let fenceTrapsArray = [];
-    for (const answer of fenceTrapsSnapshot.docs[0].data().answers) {
-        fenceTrapsArray.push(answer.primary);
-    }
-    setFenceTraps(fenceTrapsArray);
 };
 
 export const verifyForm = (
@@ -231,20 +237,26 @@ export const verifyForm = (
     setNotification,
     setConfirmationModalIsOpen,
     setErrors,
-    setContinueAnyways
+    setContinueAnyways,
 ) => {
     let tempErrors = blankErrors;
     let errorExists = false;
     for (const key in entryData) {
         if (entryData[key] === '') {
-            tempErrors[key] = 'Required';
+            tempErrors[key] = 'Incomplete';
             errorExists = true;
         } else if (entryData[key] === '0') {
             tempErrors[key] = 'Must not be 0';
         }
     }
-    if (entryData.speciesCode !== '' && entryData.trap !== '') {
+    if (entryData.speciesCode !== '' && entryData.trap !== '' && errorExists) {
         setContinueAnyways(true);
+    }
+    if (entryData.speciesCode === '') {
+        tempErrors.speciesCode = 'Required';
+    }
+    if (entryData.trap === '') {
+        tempErrors.trap = 'Required';
     }
     if (errorExists) {
         setNotification('Errors in form');
@@ -258,7 +270,7 @@ export const verifyArthropodForm = (
     trap,
     setNotification,
     setConfirmationModalIsOpen,
-    setErrors
+    setErrors,
 ) => {
     let tempErrors = {
         trap: '',
@@ -280,7 +292,7 @@ export const verifyLizardForm = (
     trap,
     setNotification,
     setConfirmationModalIsOpen,
-    setErrors
+    setErrors,
 ) => {
     let tempErrors = {
         speciesCode: '',
@@ -323,7 +335,7 @@ export const completeLizardCapture = async (
     lizardData,
     environment,
     triggerLastEditUpdate,
-    setLastEditTime
+    setLastEditTime,
 ) => {
     const date = new Date();
     console.log('setting new last edit time to ', date.getTime());
@@ -343,7 +355,7 @@ export const completeLizardCapture = async (
     updateData('lizard', lizardEntry, setCurrentData, currentData, setCurrentForm);
     await setDoc(
         doc(db, collectionName, `${currentData.site}Lizard${date.getTime()}`),
-        lizardEntry
+        lizardEntry,
     );
     triggerLastEditUpdate();
 };
@@ -421,7 +433,7 @@ const createLizardEntry = async (currentData, dataEntry) => {
     const { genus, species } = await getGenusSpecies(
         currentData.project,
         'Lizard',
-        dataEntry.speciesCode
+        dataEntry.speciesCode,
     );
     const entryDate = new Date(dataEntry.dateTime);
     const year = entryDate.getFullYear().toString();
@@ -453,14 +465,16 @@ const createLizardEntry = async (currentData, dataEntry) => {
 };
 
 export const getCollectionSessionName = (project, environment) => {
-    let collectionName = `Test${project.replace(/\s/g, '')}Session`;
-    if (environment === 'live') collectionName = `${project.replace(/\s/g, '')}Session`;
+    // Keep project name exactly as is (with spaces)
+    let collectionName = `Test${project}Session`;
+    if (environment === 'live') collectionName = `${project}Session`;
     return collectionName;
 };
 
 export const getCollectionDataName = (project, environment) => {
-    let collectionName = `Test${project.replace(/\s/g, '')}Data`;
-    if (environment === 'live') collectionName = `${project.replace(/\s/g, '')}Data`;
+    // Keep project name exactly as is (with spaces)
+    let collectionName = `Test${project}Data`;
+    if (environment === 'live') collectionName = `${project}Data`;
     return collectionName;
 };
 
@@ -487,24 +501,26 @@ export const deleteLizardEntries = async (currentData, environment) => {
     console.log('complete');
 };
 
-const getGenusSpecies = async (project, taxa, speciesCode) => {
-    const docsSnapshot = await getDocsFromCache(
-        query(collection(db, 'AnswerSet'), where('set_name', '==', `${project}${taxa}Species`))
-    );
-    const answerSet = docsSnapshot.docs[0].data();
-    // console.log(speciesCode)
-    // console.log(answerSet)
-    for (const answer of answerSet.answers) {
-        if (answer.primary === speciesCode) {
-            // console.log(answer.secondary.Genus)
-            return { genus: answer.secondary.Genus, species: answer.secondary.Species };
+export const getGenusSpecies = async (project, taxa, speciesCode) => {
+    try {
+        const docsSnapshot = await getDocsFromCache(
+            query(collection(db, 'AnswerSet'), where('set_name', '==', `${project}${taxa}Species`))
+        );
+        
+        if (docsSnapshot?.docs?.length > 0) {
+            const answerSet = docsSnapshot.docs[0].data();
+            // console.log(speciesCode)
+            // console.log(answerSet)
+            for (const answer of answerSet.answers) {
+                if (answer.primary === speciesCode) {
+                    // console.log(answer.secondary.Genus)
+                    return { genus: answer.secondary.Genus, species: answer.secondary.Species };
+                }
+            }
         }
+        return { genus: 'N/A', species: 'N/A' };
+    } catch (error) {
+        console.error(`Error in getGenusSpecies: ${error.message}`);
+        return { genus: 'N/A', species: 'N/A' };
     }
-    return { genus: 'N/A', species: 'N/A' };
-};
-
-const reloadCachedLizardData = async (collectionName, docId) => {
-    const document = await getDocFromCache(doc(db, collectionName, docId));
-    console.log('retrieved cached lizard entry:');
-    console.log(document);
 };

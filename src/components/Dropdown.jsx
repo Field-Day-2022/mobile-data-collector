@@ -1,25 +1,18 @@
-export default function Dropdown
-({ 
-    value, 
-    setValue, 
-    placeholder, 
-    options, 
-    error,
-    clickHandler, 
-}) {
+export default function Dropdown({ value, setValue, placeholder, options, error, clickHandler }) {
     return (
         <div
             className={
-                error ? 
-                'dropdown flex flex-col items-center my-2 border-2 border-red-600 rounded-xl p-2'
-                :
-                'dropdown flex flex-col items-center my-2'
+                error
+                    ? 'dropdown flex flex-col items-center my-2 border-2 border-red-600 rounded-xl p-2'
+                    : 'dropdown flex flex-col items-center my-2'
             }
         >
             <p className="text-red-600 font-bold">{error}</p>
             <label
                 tabIndex={0}
-                className={'btn bg-white border-2 border-asu-maroon focus:border-asu-maroon hover:bg-white/50 m-1 text-black text-xl capitalize font-medium'}
+                className={
+                    'btn bg-white border-2 border-asu-maroon focus:border-asu-maroon hover:bg-white/50 m-1 text-black text-xl capitalize font-medium'
+                }
             >
                 {value ? `${placeholder}: ${value}` : placeholder}
             </label>

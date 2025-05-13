@@ -10,25 +10,21 @@ import Button from '../components/Button';
 import ConfirmationModal from '../components/ConfirmationModal';
 import PlusMinusButtons from '../components/PlusMinusButtons';
 
-import { 
-    currentFormName, 
-    currentSessionData, 
+import {
+    currentFormName,
+    currentSessionData,
     editingPrevious,
-    notificationText
+    notificationText,
 } from '../utils/jotai';
-import { 
-    updateData, 
+import {
+    updateData,
     updatePreexistingArthropodData,
     verifyArthropodForm,
     changeStringsToNumbers,
-    getStandardizedDateTimeString
+    getStandardizedDateTimeString,
+    
 } from '../utils/functions';
-import {
-    collection,
-    query,
-    where,
-    getDocsFromCache,
-} from 'firebase/firestore';
+import { collection, query, where, getDocsFromCache } from 'firebase/firestore';
 import { db } from '../index';
 
 export default function NewArthropodEntry() {
@@ -41,34 +37,44 @@ export default function NewArthropodEntry() {
     const [fenceTraps, setFenceTraps] = useState([]);
     const [errors, setErrors] = useState({
         trap: '',
-    })
+    });
 
     const [currentData, setCurrentData] = useAtom(currentSessionData);
     const setCurrentForm = useSetAtom(currentFormName);
     const isEditingPrevious = useAtomValue(editingPrevious);
-    const setNotification  = useSetAtom(notificationText);
+    const setNotification = useSetAtom(notificationText);
 
     useEffect(() => {
         const getAnswerFormDataFromFirestore = async () => {
-            const speciesSnapshot = await getDocsFromCache(
-                query(collection(db, 'AnswerSet'), where('set_name', '==', 'ArthropodSpecies'))
-            );
-            let tempArthropodSpeciesArray = [];
-            let tempArthropodData = {};
-            for (const arthropodSpecies of speciesSnapshot.docs[0].data().answers) {
-                tempArthropodSpeciesArray.push(arthropodSpecies.primary.toLowerCase());
-                tempArthropodData[arthropodSpecies.primary.toLowerCase()] = '';
+            try {
+                // Fetch arthropod species
+                const speciesSnapshot = await getDocsFromCache(
+                    query(collection(db, 'AnswerSet'), where('set_name', '==', 'ArthropodSpecies'))
+                );
+                let tempArthropodSpeciesArray = [];
+                let tempArthropodData = {};
+                for (const arthropodSpecies of speciesSnapshot.docs[0].data().answers) {
+                    tempArthropodSpeciesArray.push(arthropodSpecies.primary.toLowerCase());
+                    tempArthropodData[arthropodSpecies.primary.toLowerCase()] = '';
+                }
+                setArthropodSpeciesList(tempArthropodSpeciesArray);
+                setArthropodData(tempArthropodData);
+    
+                // Fetch fence traps and filter based on the secondary key
+                const fenceTrapsSnapshot = await getDocsFromCache(
+                    query(collection(db, 'AnswerSet'), where('set_name', '==', 'Fence Traps'))
+                );
+                let fenceTrapsArray = [];
+                for (const answer of fenceTrapsSnapshot.docs[0].data().answers) {
+                    if (answer.secondary?.arthropod === true) {
+                        // Include only traps where the secondary key for 'arthropod' is true
+                        fenceTrapsArray.push(answer.primary);
+                    }
+                }
+                setFenceTraps(fenceTrapsArray);
+            } catch (error) {
+                console.error('Error fetching arthropod answer form data:', error);
             }
-            setArthropodSpeciesList(tempArthropodSpeciesArray);
-            setArthropodData(tempArthropodData);
-            const fenceTrapsSnapshot = await getDocsFromCache(
-                query(collection(db, 'AnswerSet'), where('set_name', '==', 'Fence Traps'))
-            );
-            let fenceTrapsArray = [];
-            for (const answer of fenceTrapsSnapshot.docs[0].data().answers) {
-                fenceTrapsArray.push(answer.primary);
-            }
-            setFenceTraps(fenceTrapsArray);
         };
         getAnswerFormDataFromFirestore();
     }, []);
@@ -87,7 +93,7 @@ export default function NewArthropodEntry() {
                 },
                 setCurrentData,
                 currentData,
-                setCurrentForm
+                setCurrentForm,
             );
         } else {
             updateData(
@@ -102,7 +108,7 @@ export default function NewArthropodEntry() {
                 },
                 setCurrentData,
                 currentData,
-                setCurrentForm
+                setCurrentForm,
             );
         }
     };
@@ -147,14 +153,17 @@ export default function NewArthropodEntry() {
                 value={comments}
                 setValue={setComments}
             />
-            <Button prompt="Finished?" clickHandler={() => 
-                verifyArthropodForm(
-                    trap,
-                    setNotification,
-                    setConfirmationModalIsOpen,
-                    setErrors
-                )
-            }/>
+            <Button
+                prompt="Finished?"
+                clickHandler={() =>
+                    verifyArthropodForm(
+                        trap,
+                        setNotification,
+                        setConfirmationModalIsOpen,
+                        setErrors,
+                    )
+                }
+            />
             {confirmationModalIsOpen && (
                 <ConfirmationModal
                     data={{
@@ -166,6 +175,13 @@ export default function NewArthropodEntry() {
                     completeCapture={completeCapture}
                     setConfirmationModalIsOpen={setConfirmationModalIsOpen}
                     modalType="arthropod"
+                    resetFields={() => {
+                        setTrap(trap);
+                        setPredator(predator);
+                        setArthropodData(arthropodData);
+                        setComments(comments);
+                        setErrors({ trap: '' });
+                    }}
                 />
             )}
         </FormWrapper>

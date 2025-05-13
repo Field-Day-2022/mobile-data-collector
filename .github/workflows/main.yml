@@ -1,29 +1,24 @@
-name: AutoPretty
+name: CI
 
 on:
   push:
-    branches:
-      - "main"
-      - "dev"
-      - "US**"
   pull_request:
-    branches:
-      - "main"
-      - "dev"
-      - "US**"
-
 
 jobs:
-  prettier:
-    if: ${{ github.event.action != 'synchronize' }}
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - name: Prettify code
-        uses: creyD/prettier_action@v4.3
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
         with:
-          # This part is also where you can pass other options, for example:
-          prettier_options: --write **/*.{html,css,js,md} --config .prettierrc
-          only_changed: False
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run CI script
+        run: npm run ci

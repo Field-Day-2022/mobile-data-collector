@@ -19,7 +19,7 @@ export default function PastSessionData() {
     const setCurrentForm = useSetAtom(currentFormName);
     const setCurrentPage = useSetAtom(currentPageName);
     const setEntryIndex = useSetAtom(pastEntryIndex);
-    const setCurrentSessionObject = useSetAtom(sessionObject)
+    const setCurrentSessionObject = useSetAtom(sessionObject);
     const [isOpen, setIsOpen] = useState([]);
     const [openEntry, setOpenEntry] = useState();
     const setNotification = useSetAtom(notificationText);
@@ -29,40 +29,26 @@ export default function PastSessionData() {
             height: '430px',
             transition: {
                 type: 'spring',
-                bounce: .25,
-            }
+                bounce: 0.25,
+            },
         },
         closed: {
             height: '60px',
             transition: {
                 type: 'spring',
-                bounce: .25,
-                when: ''
-            }
+                bounce: 0.25,
+                when: '',
+            },
         },
-    };
-
-    // will delete all sessions that have been recorded before today - 
-    // disabled because of case where user might go multiple days without 
-    // syncing, but editing sessions after the initial day is disabled
-    // eslint-disable-next-line no-unused-vars
-    const deleteSessionsBeforeToday = () => {
-        const now = new Date();
-        const nowDateCode = `${now.getDate()}${now.getMonth()}${now.getFullYear()}`;
-        setPastData(
-            pastData.filter((value) => {
-                const sessionDate = new Date(value.sessionData.sessionEpochTime);
-                const sessionDateCode = `${sessionDate.getDate()}${sessionDate.getMonth()}${sessionDate.getFullYear()}`;
-                return (nowDateCode === sessionDateCode);
-            })
-        );
     };
 
     useEffect(() => {
         setIsOpen(new Array(pastData.length).fill(false));
-        setPastData(pastData.sort((a, b) => b.sessionData.sessionEpochTime - a.sessionData.sessionEpochTime))
-        // deleteSessionsBeforeToday();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        setPastData(
+            pastData.sort(
+                (a, b) => b.sessionData.sessionEpochTime - a.sessionData.sessionEpochTime,
+            ),
+        );
     }, []);
 
     const getNumberCrittersRecorded = (critter) => {
@@ -128,12 +114,12 @@ export default function PastSessionData() {
         >
             <h1 className="text-2xl underline underline-offset-8 font-bold">Session History</h1>
             {pastData.map((sessionEntry, index) => {
-                const displayString = `${
-                    new Intl.DateTimeFormat('en-US', {
-                        dateStyle: 'short',
-                        timeStyle: 'short'
-                    }).format(new Date(sessionEntry.sessionData.sessionEpochTime))
-                } - ${sessionEntry.sessionData.site}`
+                const displayString = `${new Intl.DateTimeFormat('en-US', {
+                    dateStyle: 'short',
+                    timeStyle: 'short',
+                }).format(
+                    new Date(sessionEntry.sessionData.sessionEpochTime),
+                )} - ${sessionEntry.sessionData.site}`;
                 return (
                     <motion.li
                         key={index}
@@ -149,14 +135,19 @@ export default function PastSessionData() {
                         }}
                         custom={index}
                     >
-                        <motion.div className={!isOpen[index] ? 
-                        'flex flex-row justify-around text-lg text-center items-center transition border-b-0 h-full'
-                        :
-                        'flex flex-row justify-around text-lg text-center items-center transition border-b-[1px] border-b-black'}>
-                            <motion.p >Uploaded to server? {sessionEntry.uploaded ? '✔️' : '❌'}</motion.p>
-                            <motion.p >{displayString}</motion.p>
+                        <motion.div
+                            className={
+                                !isOpen[index]
+                                    ? 'flex flex-row justify-around text-lg text-center items-center transition border-b-0 h-full'
+                                    : 'flex flex-row justify-around text-lg text-center items-center transition border-b-[1px] border-b-black'
+                            }
+                        >
+                            <motion.p>
+                                Uploaded to server? {sessionEntry.uploaded ? '✔️' : '❌'}
+                            </motion.p>
+                            <motion.p>{displayString}</motion.p>
                         </motion.div>
-                        <AnimatePresence mode='sync'>
+                        <AnimatePresence mode="sync">
                             {isOpen[index] && (
                                 <motion.div
                                     variants={container}
@@ -193,32 +184,30 @@ export default function PastSessionData() {
                                                 <EntryTableRow
                                                     entryType={'Arthropod'}
                                                     entryNumber={getNumberCrittersRecorded(
-                                                        'arthropod'
+                                                        'arthropod',
                                                     )}
                                                 />
                                                 <EntryTableRow
                                                     entryType={'Amphibian'}
                                                     entryNumber={getNumberCrittersRecorded(
-                                                        'amphibian'
+                                                        'amphibian',
                                                     )}
                                                 />
                                                 <EntryTableRow
                                                     entryType={'Lizard'}
                                                     entryNumber={getNumberCrittersRecorded(
-                                                        'lizard'
+                                                        'lizard',
                                                     )}
                                                 />
                                                 <EntryTableRow
                                                     entryType={'Mammal'}
                                                     entryNumber={getNumberCrittersRecorded(
-                                                        'mammal'
+                                                        'mammal',
                                                     )}
                                                 />
                                                 <EntryTableRow
                                                     entryType={'Snake'}
-                                                    entryNumber={getNumberCrittersRecorded(
-                                                        'snake'
-                                                    )}
+                                                    entryNumber={getNumberCrittersRecorded('snake')}
                                                 />
                                             </tbody>
                                         </table>
@@ -227,27 +216,27 @@ export default function PastSessionData() {
                                         className="text-white bg-asu-maroon mt-2 text-lg rounded-xl p-2"
                                         variants={item}
                                         onClick={() => {
-                                            const currentMonthDay = `${
-                                                new Date().getMonth()
-                                            }${
-                                                new Date().getDate()
-                                            }`
-                                            const sessionMonthDay = `${
-                                                new Date(pastData[openEntry].sessionData.sessionEpochTime).getMonth()
-                                            }${
-                                                new Date(pastData[openEntry].sessionData.sessionEpochTime).getDate()
-                                            }`
-                                            console.log(currentMonthDay, sessionMonthDay)
+                                            const currentMonthDay = `${new Date().getMonth()}${new Date().getDate()}`;
+                                            const sessionMonthDay = `${new Date(
+                                                pastData[openEntry].sessionData.sessionEpochTime,
+                                            ).getMonth()}${new Date(
+                                                pastData[openEntry].sessionData.sessionEpochTime,
+                                            ).getDate()}`;
+                                            console.log(currentMonthDay, sessionMonthDay);
                                             if (currentMonthDay === sessionMonthDay) {
                                                 setIsEditingPrevious(true);
                                                 setCurrentData(pastData[openEntry].sessionData);
-                                                setCurrentSessionObject(pastData[openEntry].sessionObj)
+                                                setCurrentSessionObject(
+                                                    pastData[openEntry].sessionObj,
+                                                );
                                                 setCurrentPage('Collect Data');
                                                 setCurrentForm('New Data Entry');
                                                 setEntryIndex(index);
                                             } else {
-                                                setNotification('Can only edit sessions from today')
-                                                setEntryIndex(-1)
+                                                setNotification(
+                                                    'Can only edit sessions from today',
+                                                );
+                                                setEntryIndex(-1);
                                             }
                                         }}
                                     >
@@ -256,50 +245,12 @@ export default function PastSessionData() {
                                 </motion.div>
                             )}
                         </AnimatePresence>
-                        <div className="h-20"/>
+                        <div className="h-20" />
                     </motion.li>
                 );
             })}
         </motion.ul>
     );
-}
-
-const UploadStatusIndicator = ({session}) => {
-    if (session.uploaded) {
-        return (
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="w-10 h-10 stroke-green-600"
-            >
-                <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M4.5 12.75l6 6 9-13.5"
-                />
-            </svg>
-        ) 
-    } else {
-        return (
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="w-10 h-10 stroke-red-600"
-            >
-                <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M6 18L18 6M6 6l12 12"
-                />
-            </svg>
-        )
-    }
 }
 
 const EntryTableRow = ({ entryType, entryNumber }) => {
