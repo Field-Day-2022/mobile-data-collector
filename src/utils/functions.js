@@ -498,4 +498,3 @@ const getGenusSpecies = async (project, taxa, speciesCode) => {
     }
     return { genus: 'N/A', species: 'N/A' };
 };
-
