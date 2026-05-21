@@ -70,4 +70,11 @@ Both workflows use Node 20, install via `npm ci`, build with `npm run build`, an
 
 ## Code style
 
-A GitHub Action ([main.yml](.github/workflows/main.yml)) runs Prettier on pushes and PRs to `main`, `dev`, and `US**` branches. Run `npx prettier --write .` locally before opening a PR if you want to match formatting up front.
+Prettier rules live in [.prettierrc](.prettierrc) and ignore patterns in [.prettierignore](.prettierignore). Two scripts are wired up:
+
+```bash
+npm run format        # format every file in place
+npm run format-check  # verify everything is formatted; exits non-zero if not
+```
+
+[main.yml](.github/workflows/main.yml) runs `npm run format-check` on pushes and PRs to `main`, `dev`, and `US**` branches. A PR fails its Format Check if any tracked file isn't formatted — run `npm run format` locally and commit the result to fix it.

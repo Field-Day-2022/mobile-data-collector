@@ -1,4 +1,4 @@
-name: AutoPretty
+name: Format Check
 
 on:
   push:
@@ -12,18 +12,17 @@ on:
       - "dev"
       - "US**"
 
+permissions:
+  contents: read
 
 jobs:
   prettier:
-    if: ${{ github.event.action != 'synchronize' }}
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v3
-
-      - name: Prettify code
-        uses: creyD/prettier_action@v4.3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          # This part is also where you can pass other options, for example:
-          prettier_options: --write **/*.{html,css,js,md} --config .prettierrc
-          only_changed: False
+          node-version: '20'
+          cache: npm
+      - run: npm ci
+      - run: npm run format-check
