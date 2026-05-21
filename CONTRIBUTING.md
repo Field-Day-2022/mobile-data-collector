@@ -68,13 +68,14 @@ Add each of the eight `REACT_APP_FIREBASE_*` names from the table above, with th
 
 Both workflows use Node 20, install via `npm ci`, build with `npm run build`, and deploy with `FirebaseExtended/action-hosting-deploy`.
 
-## Code style
+## Code style and linting
 
-Prettier rules live in [.prettierrc](.prettierrc) and ignore patterns in [.prettierignore](.prettierignore). Two scripts are wired up:
+ESLint config lives in the `eslintConfig` block of [package.json](package.json) (uses CRA's `react-app` preset). Prettier rules live in [.prettierrc](.prettierrc) and ignore patterns in [.prettierignore](.prettierignore). Three scripts are wired up:
 
 ```bash
-npm run format        # format every file in place
+npm run lint          # run ESLint against src/
+npm run format        # format every file in place with Prettier
 npm run format-check  # verify everything is formatted; exits non-zero if not
 ```
 
-[main.yml](.github/workflows/main.yml) runs `npm run format-check` on pushes and PRs to `main`, `dev`, and `US**` branches. A PR fails its Format Check if any tracked file isn't formatted — run `npm run format` locally and commit the result to fix it.
+[ci.yml](.github/workflows/ci.yml) runs `npm run lint` and `npm run format-check` on every pull request targeting `main`. A PR fails CI if either step fails — run `npm run format` locally for prettier issues, and fix any lint errors before pushing.
