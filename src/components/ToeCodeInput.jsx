@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { useAtom, useAtomValue, useSetAtom } from 'jotai';
-import { appMode, currentSessionData, notificationText } from '../utils/jotai';
+import { useAtomValue } from 'jotai';
+import { appMode, currentSessionData } from '../utils/jotai';
 import { db } from '../index';
-import { collection, deleteDoc, getDocsFromCache, query, where, doc } from 'firebase/firestore';
-import { motion, useAnimationControls, AnimatePresence, useCycle } from 'framer-motion';
+import { collection, getDocsFromCache, query, where } from 'firebase/firestore';
+import { motion, useAnimationControls, AnimatePresence } from 'framer-motion';
 import SingleCheckbox from './SingleCheckbox';
 
 export default function ToeCodeInput({
@@ -36,7 +36,6 @@ export default function ToeCodeInput({
     const errorMsgControls = useAnimationControls();
 
     const environment = useAtomValue(appMode);
-    const setNotification = useSetAtom(notificationText);
 
     useEffect(() => {
         checkToeCodeValidity();

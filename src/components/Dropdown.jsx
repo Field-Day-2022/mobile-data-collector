@@ -36,28 +36,29 @@ export default function Dropdown({ value, setValue, placeholder, options, error,
                 {options.length ? (
                     options.map((entry, index) => (
                         <li
-                            tabIndex={0}
-                            onClick={() => {
-                                document.activeElement.blur();
-                                setValue(entry);
-                                clickHandler && clickHandler(entry);
-                            }}
                             className={
                                 index < options.length - 1 ? 'border-b-2 border-black/25' : ''
                             }
                             key={entry}
                         >
-                            <a className="flex flex-col justify-center text-xl p-2">{entry}</a>
+                            <button
+                                type="button"
+                                className="flex flex-col justify-center text-xl p-2 w-full text-left"
+                                onClick={() => {
+                                    document.activeElement.blur();
+                                    setValue(entry);
+                                    clickHandler && clickHandler(entry);
+                                }}
+                            >
+                                {entry}
+                            </button>
                         </li>
                     ))
                 ) : (
-                    <li
-                        tabIndex={0}
-                        onClick={() => {
-                            document.activeElement.blur();
-                        }}
-                    >
-                        <a className="flex flex-col justify-center text-xl p-2">None available</a>
+                    <li>
+                        <span className="flex flex-col justify-center text-xl p-2">
+                            None available
+                        </span>
                     </li>
                 )}
             </ul>

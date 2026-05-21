@@ -7,7 +7,7 @@ import { AnimatePresence, motion, useCycle } from 'framer-motion';
 export default function Navbar() {
     const [currentPage, setCurrentPage] = useAtom(currentPageName);
     const [currentForm, setCurrentForm] = useAtom(currentFormName);
-    const [currentData, setCurrentData] = useAtom(currentSessionData);
+    const [currentData] = useAtom(currentSessionData);
 
     // https://codesandbox.io/s/framer-motion-side-menu-mx2rw?from-embed=&file=/src/Example.tsx:1027-1037
     const [isOpen, toggleOpen] = useCycle(false, true);
