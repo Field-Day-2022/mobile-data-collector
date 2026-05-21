@@ -48,25 +48,13 @@ export default function NewSnakeEntry() {
         sex === 'Male' && setSex('M');
         sex === 'Female' && setSex('F');
         sex === 'Unknown' && setSex('U');
-    }, [sex])
+    }, [sex]);
 
     useEffect(() => {
-        if (
-            continueAnyways &&
-            mass &&
-            svl &&
-            vtl &&
-            sex
-        ) {
+        if (continueAnyways && mass && svl && vtl && sex) {
             setConfirmationModalIsOpen(true);
         }
-    }, [
-        continueAnyways,  
-        mass,
-        svl,
-        vtl, 
-        sex
-    ])
+    }, [continueAnyways, mass, svl, vtl, sex]);
 
     useEffect(() => {
         const getAnswerFormDataFromFirestore = async () => {
@@ -150,15 +138,18 @@ export default function NewSnakeEntry() {
                 value={mass}
                 setValue={setMass}
                 placeholder="0.0 g"
-                inputValidation='mass'
+                inputValidation="mass"
             />
             <Dropdown
                 error={errors.sex}
                 value={`${
-                    sex === 'M' || sex === 'Male' ? 'Male' :
-                    sex === 'F' || sex === 'Female' ? 'Female' :
-                    sex === 'U' || sex === 'Unknown' ? 'Unknown' :
-                    sex
+                    sex === 'M' || sex === 'Male'
+                        ? 'Male'
+                        : sex === 'F' || sex === 'Female'
+                        ? 'Female'
+                        : sex === 'U' || sex === 'Unknown'
+                        ? 'Unknown'
+                        : sex
                 }`}
                 setValue={setSex}
                 placeholder="Sex"
@@ -171,8 +162,8 @@ export default function NewSnakeEntry() {
                 value={comments}
                 setValue={setComments}
             />
-            <Button 
-                prompt="Finished?" 
+            <Button
+                prompt="Finished?"
                 clickHandler={() => {
                     verifyForm(
                         snakeErrors,
@@ -182,28 +173,29 @@ export default function NewSnakeEntry() {
                             mass,
                             svl,
                             vtl,
-                            sex
+                            sex,
                         },
                         setNotification,
                         setConfirmationModalIsOpen,
                         setErrors,
                         setContinueAnyways
-                    )
+                    );
                 }}
             />
-            {continueAnyways && 
+            {continueAnyways && (
                 <div>
-                    <p className='text-xl'>Form has incomplete data, continue anyways?</p>
-                    <Button 
-                        prompt='Submit incomplete form'
+                    <p className="text-xl">Form has incomplete data, continue anyways?</p>
+                    <Button
+                        prompt="Submit incomplete form"
                         clickHandler={() => {
                             svl === '' && setSvl('N/A');
                             vtl === '' && setVtl('N/A');
                             mass === '' && setMass('N/A');
-                            sex ===  '' && setSex('U');
+                            sex === '' && setSex('U');
                         }}
                     />
-                </div>}
+                </div>
+            )}
             {confirmationModalIsOpen && (
                 <ConfirmationModal
                     data={{
@@ -223,7 +215,7 @@ export default function NewSnakeEntry() {
                         svl === 'N/A' && setSvl('');
                         vtl === 'N/A' && setVtl('');
                         mass === 'N/A' && setMass('');
-                        sex ===  'U' && setSex('');
+                        sex === 'U' && setSex('');
                     }}
                 />
             )}

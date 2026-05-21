@@ -38,7 +38,7 @@ export default function NewData() {
             mammal: [],
             snake: [],
         });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const getSites = async (projectName) => {
@@ -94,8 +94,8 @@ export default function NewData() {
             if (tempErrors[key] !== '') errorExists = true;
         }
         if (errorExists) {
-            console.log(handler.length)
-            console.log(tempErrors)
+            console.log(handler.length);
+            console.log(tempErrors);
             setErrors(tempErrors);
             setNotification('Errors present');
             return;
@@ -245,20 +245,20 @@ export default function NewData() {
                     </li>
                 </ul>
             </div>
-                <div
-                    className="
+            <div
+                className="
           dropdown
           flex
           justify-center
           "
+            >
+                <label
+                    tabIndex={0}
+                    className="btn glass m-1 text-asu-maroon text-xl capitalize font-medium"
                 >
-                    <label
-                        tabIndex={0}
-                        className="btn glass m-1 text-asu-maroon text-xl capitalize font-medium"
-                    >
-                        {currentSite !== 'Site' ? `Site ${currentSite}` : currentSite}
-                    </label>
-                    {sites && 
+                    {currentSite !== 'Site' ? `Site ${currentSite}` : currentSite}
+                </label>
+                {sites && (
                     <ul
                         tabIndex={0}
                         className="
@@ -291,16 +291,16 @@ export default function NewData() {
                             </li>
                         ))}
                     </ul>
-                    }
-                </div>
-                <div className="dropdown flex justify-center">
-                    <label
-                        tabIndex={0}
-                        className="btn glass m-1 text-asu-maroon text-xl capitalize font-medium"
-                    >
-                        {currentArray !== 'Array' ? `Array ${currentArray}` : currentArray}
-                    </label>
-                {arrays && 
+                )}
+            </div>
+            <div className="dropdown flex justify-center">
+                <label
+                    tabIndex={0}
+                    className="btn glass m-1 text-asu-maroon text-xl capitalize font-medium"
+                >
+                    {currentArray !== 'Array' ? `Array ${currentArray}` : currentArray}
+                </label>
+                {arrays && (
                     <ul
                         tabIndex={0}
                         className="
@@ -329,25 +329,25 @@ export default function NewData() {
                             </li>
                         ))}
                     </ul>
-                    }
+                )}
+            </div>
+            <div className="flex flex-col justify-center items-center border-black border-0">
+                <p className="text-xl mb-1 text-asu-maroon font-semibold">Any captures?</p>
+                <div className="flex">
+                    <button
+                        onClick={() => currentArray !== 'Array' && finishForm('withCaptures')}
+                        className="btn w-28 mr-2 glass text-asu-maroon text-xl capitalize"
+                    >
+                        Yes
+                    </button>
+                    <button
+                        onClick={() => currentArray !== 'Array' && finishForm('withoutCaptures')}
+                        className="btn w-28 glass text-asu-maroon text-xl capitalize"
+                    >
+                        No
+                    </button>
                 </div>
-                <div className="flex flex-col justify-center items-center border-black border-0">
-                    <p className="text-xl mb-1 text-asu-maroon font-semibold">Any captures?</p>
-                    <div className="flex">
-                        <button
-                            onClick={() => currentArray !== 'Array' && finishForm('withCaptures')}
-                            className="btn w-28 mr-2 glass text-asu-maroon text-xl capitalize"
-                        >
-                            Yes
-                        </button>
-                        <button
-                            onClick={() => currentArray !== 'Array' && finishForm('withoutCaptures')}
-                            className="btn w-28 glass text-asu-maroon text-xl capitalize"
-                        >
-                            No
-                        </button>
-                    </div>
-                </div>
+            </div>
         </div>
     );
 }

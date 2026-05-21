@@ -9,31 +9,20 @@ import SingleCheckbox from '../components/SingleCheckbox';
 import TextInput from '../components/TextInput';
 import Button from '../components/Button';
 import ConfirmationModal from '../components/ConfirmationModal';
-import {
-    collection,
-    query,
-    where,
-    getDocsFromCache,
-} from 'firebase/firestore';
+import { collection, query, where, getDocsFromCache } from 'firebase/firestore';
 import { db } from '../index';
-import { 
-    currentFormName, 
-    currentSessionData,
-    notificationText,
-} from '../utils/jotai';
+import { currentFormName, currentSessionData, notificationText } from '../utils/jotai';
 import { getStandardizedDateTimeString, updateData, verifyForm } from '../utils/functions';
 
-import {
-    sexOptions,
-} from '../utils/hardCodedData';
+import { sexOptions } from '../utils/hardCodedData';
 
 export default function NewMammalEntry() {
     const mammalErrors = {
         speciesCode: '',
         trap: '',
         mass: '',
-        sex: ''
-    }
+        sex: '',
+    };
     const [speciesCode, setSpeciesCode] = useState('');
     const [trap, setTrap] = useState('');
     const [mass, setMass] = useState('');
@@ -53,21 +42,13 @@ export default function NewMammalEntry() {
         sex === 'Male' && setSex('M');
         sex === 'Female' && setSex('F');
         sex === 'Unknown' && setSex('U');
-    }, [sex])
-    
+    }, [sex]);
+
     useEffect(() => {
-        if (
-            continueAnyways &&
-            mass &&
-            sex
-        ) {
+        if (continueAnyways && mass && sex) {
             setConfirmationModalIsOpen(true);
         }
-    }, [
-        continueAnyways, 
-        mass, 
-        sex
-    ])
+    }, [continueAnyways, mass, sex]);
 
     useEffect(() => {
         const getAnswerFormDataFromFirestore = async () => {
@@ -129,39 +110,38 @@ export default function NewMammalEntry() {
                 options={fenceTraps}
                 error={errors.trap}
             />
-            <NumberInput 
-                label="Mass (g)" 
-                value={mass} 
-                setValue={setMass} 
-                inputValidation='mass'
+            <NumberInput
+                label="Mass (g)"
+                value={mass}
+                setValue={setMass}
+                inputValidation="mass"
                 placeholder="0.0 g"
                 error={errors.mass}
             />
-            <Dropdown 
+            <Dropdown
                 value={`${
-                    sex === 'M' || sex === 'Male' ? 'Male' :
-                    sex === 'F' || sex === 'Female' ? 'Female' :
-                    sex === 'U' || sex === 'Unknown' ? 'Unknown' :
-                    sex
+                    sex === 'M' || sex === 'Male'
+                        ? 'Male'
+                        : sex === 'F' || sex === 'Female'
+                        ? 'Female'
+                        : sex === 'U' || sex === 'Unknown'
+                        ? 'Unknown'
+                        : sex
                 }`}
-                setValue={setSex} 
-                placeholder="Sex" 
+                setValue={setSex}
+                placeholder="Sex"
                 options={sexOptions}
                 error={errors.sex}
             />
-            <SingleCheckbox 
-                prompt="Is it dead?" 
-                value={isDead} 
-                setValue={setIsDead}
-            />
+            <SingleCheckbox prompt="Is it dead?" value={isDead} setValue={setIsDead} />
             <TextInput
                 prompt="Comments"
                 placeholder="any thoughts?"
                 value={comments}
                 setValue={setComments}
             />
-            <Button 
-                prompt="Finished?" 
+            <Button
+                prompt="Finished?"
                 clickHandler={() => {
                     verifyForm(
                         mammalErrors,
@@ -169,26 +149,27 @@ export default function NewMammalEntry() {
                             speciesCode,
                             trap,
                             mass,
-                            sex
+                            sex,
                         },
                         setNotification,
                         setConfirmationModalIsOpen,
                         setErrors,
                         setContinueAnyways
-                    )
+                    );
                 }}
             />
-            {continueAnyways && 
+            {continueAnyways && (
                 <div>
-                    <p className='text-xl'>Form has incomplete data, continue anyways?</p>
-                    <Button 
-                        prompt='Submit incomplete form'
+                    <p className="text-xl">Form has incomplete data, continue anyways?</p>
+                    <Button
+                        prompt="Submit incomplete form"
                         clickHandler={() => {
                             if (mass === '') setMass('N/A');
                             if (sex === '') setSex('U');
                         }}
                     />
-                </div>}
+                </div>
+            )}
             {confirmationModalIsOpen && (
                 <ConfirmationModal
                     data={{
@@ -204,7 +185,7 @@ export default function NewMammalEntry() {
                     modalType="mammal"
                     resetFields={() => {
                         mass === 'N/A' && setMass('');
-                        sex ===  'U' && setSex('');
+                        sex === 'U' && setSex('');
                     }}
                 />
             )}

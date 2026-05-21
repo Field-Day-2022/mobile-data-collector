@@ -5,7 +5,7 @@ export default function ConfirmationModal({
     completeCapture,
     setConfirmationModalIsOpen,
     modalType,
-    resetFields
+    resetFields,
 }) {
     const displayData = () => {
         let outputArray = [];
@@ -63,7 +63,9 @@ export default function ConfirmationModal({
                             if (Number(data.arthropodData[arthropodEntry]) > 0) {
                                 outputArray.push(
                                     <p key={arthropodEntry}>
-                                        {`${arthropodEntry.toUpperCase()}: ${data.arthropodData[arthropodEntry]}`}
+                                        {`${arthropodEntry.toUpperCase()}: ${
+                                            data.arthropodData[arthropodEntry]
+                                        }`}
                                     </p>
                                 );
                             }
@@ -111,14 +113,15 @@ export default function ConfirmationModal({
     return (
         <motion.div
             className="absolute h-full w-full flex justify-center bg-black/90 z-50 top-0"
-            initial={{ opacity: 0}}
-            animate={{ opacity: 1}}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
         >
-            <motion.div className="relative flex flex-col justify-between bg-white h-5/6 w-full border-2 border-asu-maroon overflow-y-auto"
-                initial={{y: '100%', scale: 0}}
-                animate={{y: 0, scale: 1, transition: { duration: .25 } }}
+            <motion.div
+                className="relative flex flex-col justify-between bg-white h-5/6 w-full border-2 border-asu-maroon overflow-y-auto"
+                initial={{ y: '100%', scale: 0 }}
+                animate={{ y: 0, scale: 1, transition: { duration: 0.25 } }}
             >
-                <div className='overflow-y-auto text-2xl'>
+                <div className="overflow-y-auto text-2xl">
                     <p className="text-4xl mt-2 mb-2">Verify</p>
                     {displayData()}
                 </div>

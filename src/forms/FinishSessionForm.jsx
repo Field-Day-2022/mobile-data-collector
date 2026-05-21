@@ -41,39 +41,38 @@ export const FinishSessionForm = () => {
     const setNotification = useSetAtom(notificationText);
     const [trapStatus, setTrapStatus] = useState('');
     const [comments, setComments] = useState('');
-    const environment= useAtomValue(appMode);
+    const environment = useAtomValue(appMode);
     const [answerSet, setAnswerSet] = useState([]);
-    const [pastSessionObj, setPastSessionObj] = useAtom(sessionObject)
+    const [pastSessionObj, setPastSessionObj] = useAtom(sessionObject);
 
     useEffect(() => {
         const getAnswerSet = async () => {
             const answerSetSnapshot = await getDocsFromCache(collection(db, 'AnswerSet'));
             let tempAnswerSetArray = [];
-            answerSetSnapshot.docs.forEach(document => {
-                tempAnswerSetArray.push(document.data())
-            })
+            answerSetSnapshot.docs.forEach((document) => {
+                tempAnswerSetArray.push(document.data());
+            });
             setAnswerSet(tempAnswerSetArray);
-        }
+        };
         getAnswerSet();
-    }, [])
+    }, []);
 
     useEffect(() => {
         if (isEditingPrevious) {
-           setComments(pastSessionObj.commentsAboutTheArray)
-           setTrapStatus(pastSessionObj.trapStatus)
-       }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isEditingPrevious])    
+            setComments(pastSessionObj.commentsAboutTheArray);
+            setTrapStatus(pastSessionObj.trapStatus);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isEditingPrevious]);
 
     const uploadSessionData = async (sessionObj) => {
         if (isEditingPrevious) {
             console.log(entryIndex);
             const sessionId = pastSessions[entryIndex].sessionId;
             let collectionName = `Test${currentData.project.replace(/\s/g, '')}Session`;
-            if (environment === 'live') collectionName = `${currentData.project.replace(/\s/g, '')}Session`
-            console.log(
-                `Updating existing entry with id ${sessionId} in ${collectionName}`
-            );
+            if (environment === 'live')
+                collectionName = `${currentData.project.replace(/\s/g, '')}Session`;
+            console.log(`Updating existing entry with id ${sessionId} in ${collectionName}`);
             await setDoc(doc(db, collectionName, sessionId), sessionObj);
             console.log('Successfully overwritten');
             setNotification('Successfully added to session');
@@ -84,7 +83,7 @@ export const FinishSessionForm = () => {
                             uploaded: true,
                             sessionId,
                             sessionData: currentData,
-                            sessionObj
+                            sessionObj,
                         };
                     } else {
                         return session;
@@ -98,17 +97,15 @@ export const FinishSessionForm = () => {
                 {
                     uploaded: false,
                     sessionData: currentData,
-                    sessionObj
-                }
-            ])
+                    sessionObj,
+                },
+            ]);
             let collectionName = `Test${currentData.project.replace(/\s/g, '')}Session`;
-            if (environment === 'live') collectionName = `${currentData.project.replace(/\s/g, '')}Session`
+            if (environment === 'live')
+                collectionName = `${currentData.project.replace(/\s/g, '')}Session`;
             console.log(`Uploading new entry to ${collectionName}`);
-            const docRef = await addDoc(
-                collection(db, collectionName),
-                sessionObj
-            )
-            console.log('uploading and adding session id')
+            const docRef = await addDoc(collection(db, collectionName), sessionObj);
+            console.log('uploading and adding session id');
             setPastSessions((pastSessions) =>
                 pastSessions.map((session) => {
                     if (session.sessionData.sessionDateTime === currentData.sessionDateTime) {
@@ -116,7 +113,7 @@ export const FinishSessionForm = () => {
                             uploaded: true,
                             sessionId: docRef.id,
                             sessionData: currentData,
-                            sessionObj
+                            sessionObj,
                         };
                     } else {
                         return session;
@@ -130,7 +127,7 @@ export const FinishSessionForm = () => {
     const uploadBatchedEntryData = async (entryDataArray) => {
         let collectionName = `Test${currentData.project.replace(/\s/g, '')}Data`;
         if (environment === 'live') {
-            collectionName = `${currentData.project.replace(/\s/g, '')}Data`
+            collectionName = `${currentData.project.replace(/\s/g, '')}Data`;
         }
         console.log(`Uploading to ${collectionName}`);
         const dataBatch = writeBatch(db);
@@ -142,18 +139,18 @@ export const FinishSessionForm = () => {
             }
             let taxa = entryObject.taxa;
             if (entryObject.taxa === 'N/A') {
-                taxa = 'Arthropod'
+                taxa = 'Arthropod';
             }
             const entryId = `${currentData.site}${taxa}${entryObject.entryId}`;
-            console.log(entryId)
+            console.log(entryId);
             dataBatch.set(doc(db, collectionName, entryId), entryObject);
             if (taxa === 'Lizard') {
                 await updateDoc(doc(db, 'Metadata', 'LizardData'), {
                     deletedEntries: arrayRemove({
                         entryId,
-                        collectionId: collectionName
-                    })
-                })
+                        collectionId: collectionName,
+                    }),
+                });
             }
         }
         await dataBatch.commit();
@@ -173,7 +170,7 @@ export const FinishSessionForm = () => {
             site: currentData.site,
             trapStatus: trapStatus,
             year: sessionDateTime.getFullYear().toString(),
-            sessionId: currentData.sessionEpochTime
+            sessionId: currentData.sessionEpochTime,
         };
         console.log(sessionObj);
         const dataObjTemplate = {
@@ -367,14 +364,14 @@ export const FinishSessionForm = () => {
             mammal: [],
             snake: [],
         });
-        setPastSessionObj({})
+        setPastSessionObj({});
     };
 
     const getGenusSpecies = (project, taxa, speciesCode) => {
         for (const set of answerSet) {
-            console.log(`${project}${taxa}Species`)
+            console.log(`${project}${taxa}Species`);
             if (set.set_name === `${project}${taxa}Species`) {
-                console.log(set)
+                console.log(set);
                 for (const answer of set.answers) {
                     if (answer.primary === speciesCode) {
                         // console.log(answer.secondary.Genus)

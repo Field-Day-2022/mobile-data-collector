@@ -1,4 +1,12 @@
-export default function TextInput({ prompt, placeholder, value, setValue, onChangeHandler, maxLength, error }) {
+export default function TextInput({
+    prompt,
+    placeholder,
+    value,
+    setValue,
+    onChangeHandler,
+    maxLength,
+    error,
+}) {
     return (
         <div className={error && 'border-2 border-red-600 rounded-xl my-1 px-2'}>
             <p className="text-red-600 font-bold text-left">{error}</p>
@@ -9,8 +17,8 @@ export default function TextInput({ prompt, placeholder, value, setValue, onChan
                 maxLength={maxLength ?? 100}
                 value={value}
                 onChange={(e) => {
-                    setValue && setValue(e.target.value)
-                    onChangeHandler && onChangeHandler(e.target.value)    
+                    setValue && setValue(e.target.value);
+                    onChangeHandler && onChangeHandler(e.target.value);
                 }}
                 type="text"
                 placeholder={placeholder}
