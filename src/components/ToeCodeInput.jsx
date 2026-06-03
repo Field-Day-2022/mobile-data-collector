@@ -6,6 +6,73 @@ import { collection, getDocsFromCache, query, where } from 'firebase/firestore';
 import { motion, useAnimationControls, AnimatePresence } from 'framer-motion';
 import SingleCheckbox from './SingleCheckbox';
 
+const footOptions = ['A', 'B', 'C', 'D'];
+const toeOptions = ['1', '2', '3', '4', '5'];
+
+const getToeCodePairs = (code) => {
+    const pairs = [];
+    for (let index = 0; index < code.length; index += 2) {
+        pairs.push({
+            foot: code.charAt(index),
+            toe: code.charAt(index + 1),
+            toeNumber: Number(code.charAt(index + 1)),
+            pair: code.slice(index, index + 2),
+        });
+    }
+    return pairs;
+};
+
+const getCanonicalToeCode = (code) => {
+    if (!code || code.length % 2) return code;
+    const pairs = getToeCodePairs(code);
+    const hasInvalidPair = pairs.some(
+        ({ foot, toe }) => !footOptions.includes(foot) || !toeOptions.includes(toe)
+    );
+    if (hasInvalidPair) return code;
+
+    return pairs
+        .sort((first, second) => {
+            if (first.foot === second.foot) return first.toeNumber - second.toeNumber;
+            return first.foot < second.foot ? -1 : 1;
+        })
+        .map(({ pair }) => pair)
+        .join('');
+};
+
+const getToeCodeValidationMessage = (code, manualEntry) => {
+    if (code.length < 2) return 'Toe Clip Code needs to be at least 2 characters long';
+    if (code.length % 2) return 'Toe Clip Code must have an even number of characters';
+
+    const pairs = getToeCodePairs(code);
+    const clippedToes = new Set();
+    const previousToeByFoot = {};
+    let previousFoot = '';
+
+    for (const { foot, toe, toeNumber, pair } of pairs) {
+        if (!footOptions.includes(foot) || !toeOptions.includes(toe)) {
+            return 'Toe Clip Code contains an invalid foot or toe number';
+        }
+        if (previousFoot && foot < previousFoot) {
+            return 'Toe Clip Code letters must be in alphabetical order';
+        }
+        if (previousFoot === foot && !manualEntry) {
+            return 'Toe Clip Code can only include one toe per foot unless Manual entry is enabled';
+        }
+        if (clippedToes.has(pair)) {
+            return 'Toe Clip Code cannot include the same toe twice';
+        }
+        if (previousToeByFoot[foot] !== undefined && toeNumber <= previousToeByFoot[foot]) {
+            return 'Toe numbers on the same foot must be in ascending order';
+        }
+
+        clippedToes.add(pair);
+        previousToeByFoot[foot] = toeNumber;
+        previousFoot = foot;
+    }
+
+    return '';
+};
+
 export default function ToeCodeInput({
     toeCode,
     setToeCode,
@@ -44,7 +111,7 @@ export default function ToeCodeInput({
     useEffect(() => {
         checkToeCodeValidity();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [toeCode, isRecapture]);
+    }, [toeCode, isRecapture, manualEntry]);
 
     const errorMsgVariant = {
         visible: {
@@ -75,9 +142,6 @@ export default function ToeCodeInput({
             errorMsgControls.start('hidden');
         });
     };
-
-    const letters = ['A', 'B', 'C', 'D'];
-    const numbers = [1, 2, 3, 4, 5];
 
     // One letter+number pair per clipped toe. Default caps at 4 feet (8 chars);
     // manual entry allows extra toes per foot for natural-toe-loss edge cases.
@@ -119,7 +183,7 @@ export default function ToeCodeInput({
         );
         const toeCodesArray = [];
         lizardSnapshot.docs.forEach((document) => {
-            toeCodesArray.push(document.data().toeClipCode);
+            toeCodesArray.push(getCanonicalToeCode(document.data().toeClipCode));
         });
         console.log(toeCodesArray);
         const toeCodesTemplateSnapshot = await getDocsFromCache(
@@ -180,13 +244,12 @@ export default function ToeCodeInput({
     };
 
     const checkToeCodeValidity = async () => {
-        if (toeCode.length < 2) {
+        const validationMessage = getToeCodeValidationMessage(toeCode, manualEntry);
+        if (validationMessage) {
             setIsValid(false);
-            setErrorMsg('Toe Clip Code needs to be at least 2 characters long');
-        } else if (toeCode.length % 2) {
-            setIsValid(false);
-            setErrorMsg('Toe Clip Code must have an even number of characters');
+            setErrorMsg(validationMessage);
         } else {
+            const canonicalToeCode = getCanonicalToeCode(toeCode);
             const collectionName =
                 environment === 'live'
                     ? `${currentData.project.replace(/\s/g, '')}Data`
@@ -194,13 +257,15 @@ export default function ToeCodeInput({
             const lizardSnapshot = await getDocsFromCache(
                 query(
                     collection(db, collectionName),
-                    where('toeClipCode', '==', toeCode),
                     where('site', '==', currentData.site),
                     where('speciesCode', '==', speciesCode)
                 )
             );
+            const matchingLizardEntries = lizardSnapshot.docs.filter((document) => {
+                return getCanonicalToeCode(document.data().toeClipCode) === canonicalToeCode;
+            });
             if (isRecapture) {
-                if (lizardSnapshot.size > 0) {
+                if (matchingLizardEntries.length > 0) {
                     setIsValid(true);
                 } else {
                     setErrorMsg(
@@ -209,7 +274,7 @@ export default function ToeCodeInput({
                     setIsValid(false);
                 }
             } else {
-                if (lizardSnapshot.size > 0) {
+                if (matchingLizardEntries.length > 0) {
                     setErrorMsg(
                         'Toe Clip Code is already taken, choose another or check recapture box'
                     );
@@ -229,7 +294,13 @@ export default function ToeCodeInput({
                     return;
                 }
                 if (!Number(toeCode.charAt(toeCode.length - 1))) {
-                    setToeCode(`${toeCode}${source}`);
+                    const nextToeCode = `${toeCode}${source}`;
+                    const validationMessage = getToeCodeValidationMessage(nextToeCode, manualEntry);
+                    if (validationMessage) {
+                        triggerErrorMsgAnimation(validationMessage);
+                        return;
+                    }
+                    setToeCode(nextToeCode);
                     setSelected({
                         a: false,
                         b: false,
@@ -255,6 +326,16 @@ export default function ToeCodeInput({
                     if (toeCode.length >= 2 && source === previousLetter && !manualEntry) {
                         triggerErrorMsgAnimation(
                             'Error: Can only clip one toe per foot. Enable Manual entry for multiple toes on one foot.'
+                        );
+                        return;
+                    }
+                    if (
+                        toeCode.length >= 2 &&
+                        source === previousLetter &&
+                        toeCode.charAt(toeCode.length - 1) === '5'
+                    ) {
+                        triggerErrorMsgAnimation(
+                            'Error: No higher toe number is available on this foot'
                         );
                         return;
                     }
@@ -290,13 +371,14 @@ export default function ToeCodeInput({
         const lizardDataRef = collection(db, collectionName);
         const q = query(
             lizardDataRef,
-            where('toeClipCode', '==', toeCode),
             where('site', '==', currentData.site),
             where('speciesCode', '==', speciesCode)
         );
         const lizardEntriesSnapshot = await getDocsFromCache(q);
         let tempArray = [];
+        const canonicalToeCode = getCanonicalToeCode(toeCode);
         for (const doc of lizardEntriesSnapshot.docs) {
+            if (getCanonicalToeCode(doc.data().toeClipCode) !== canonicalToeCode) continue;
             console.log(doc.data());
             tempArray.push(doc.data());
         }
@@ -443,7 +525,7 @@ export default function ToeCodeInput({
                         </div>
                         <div className="flex flex-col items-center justify-center">
                             <div className="flex w-full justify-evenly items-center">
-                                {letters.map((letter) => (
+                                {footOptions.map((letter) => (
                                     <Button
                                         key={letter}
                                         prompt={letter}
@@ -472,7 +554,7 @@ export default function ToeCodeInput({
                                 </div>
                             </div>
                             <div className="flex mt-2 w-full justify-evenly">
-                                {numbers.map((number) => (
+                                {toeOptions.map((number) => (
                                     <Button
                                         key={number}
                                         prompt={number}
