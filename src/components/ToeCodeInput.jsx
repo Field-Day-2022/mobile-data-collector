@@ -30,6 +30,10 @@ export default function ToeCodeInput({
     const [recaptureHistoryIsOpen, setRecaptureHistoryIsOpen] = useState(false);
     const [historyButtonText, setHistoryButtonText] = useState('History');
     const [previousLizardEntries, setPreviousLizardEntries] = useState([]);
+    // Manual entry is an escape hatch for edge cases (e.g. natural toe loss) where
+    // more than one toe is clipped on a single foot. Off by default so the strict
+    // one-toe-per-foot keypad stays the norm (see WORK.md item 1).
+    const [manualEntry, setManualEntry] = useState(false);
 
     // const recaptureHistoryControls = useAnimationControls();
     // const recaptureHistoryContainerControls = useAnimationControls();
@@ -74,6 +78,15 @@ export default function ToeCodeInput({
 
     const letters = ['A', 'B', 'C', 'D'];
     const numbers = [1, 2, 3, 4, 5];
+
+    // One letter+number pair per clipped toe. Default caps at 4 feet (8 chars);
+    // manual entry allows extra toes per foot for natural-toe-loss edge cases.
+    const maxToeCodeLength = manualEntry ? 16 : 8;
+
+    // An "unusual" pattern is the same foot (letter) clipped more than once. Only
+    // reachable via manual entry; surfaced as a warning to catch data-entry typos.
+    const footLetters = toeCode.match(/[A-D]/g) ?? [];
+    const hasUnusualPattern = new Set(footLetters).size !== footLetters.length;
 
     const formattedToeCodes = toeCode
         ? toeCode.split('').reduce((total, current, index, array) => {
@@ -209,7 +222,7 @@ export default function ToeCodeInput({
     };
 
     const handleClick = (source) => {
-        if (source !== 'backspace' && toeCode.length !== 8) {
+        if (source !== 'backspace' && toeCode.length < maxToeCodeLength) {
             if (Number(source)) {
                 if (toeCode.length === 0) {
                     triggerErrorMsgAnimation('Error: Toe Clip Codes must begin with a letter');
@@ -232,11 +245,16 @@ export default function ToeCodeInput({
             } else {
                 if (Number(toeCode.charAt(toeCode.length - 1)) || toeCode.length === 0) {
                     // console.log("letter pressed")
-                    if (toeCode.length >= 2 && source <= toeCode.charAt(toeCode.length - 2)) {
+                    const previousLetter = toeCode.charAt(toeCode.length - 2);
+                    if (toeCode.length >= 2 && source < previousLetter) {
+                        triggerErrorMsgAnimation('Error: Letters must be in alphabetical order');
+                        return;
+                    }
+                    // Repeating the previous letter clips another toe on the same foot.
+                    // Blocked by default; allowed in manual entry for edge cases.
+                    if (toeCode.length >= 2 && source === previousLetter && !manualEntry) {
                         triggerErrorMsgAnimation(
-                            source < toeCode.charAt(toeCode.length - 2)
-                                ? 'Error: Letters must be in alphabetical order'
-                                : 'Error: Can only clip one toe per foot'
+                            'Error: Can only clip one toe per foot. Enable Manual entry for multiple toes on one foot.'
                         );
                         return;
                     }
@@ -397,6 +415,15 @@ export default function ToeCodeInput({
                                 <div className="flex flex-col">
                                     <p className="text-sm">Toe-Clip Code:</p>
                                     <p className="text-xl">{formattedToeCodes}</p>
+                                    {hasUnusualPattern && (
+                                        <div className="mt-1 flex max-w-[16rem] items-start gap-1 rounded-lg border border-amber-400 bg-amber-50 px-2 py-1">
+                                            <span className="text-sm leading-tight">⚠️</span>
+                                            <p className="text-xs leading-tight text-amber-800">
+                                                Unusual pattern: more than one toe on a foot.
+                                                Double-check this is intentional.
+                                            </p>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                             <div className="w-3/4 relative">
@@ -453,6 +480,16 @@ export default function ToeCodeInput({
                                         isSelected={selected[number]}
                                     />
                                 ))}
+                            </div>
+                            <div className="flex flex-col items-center">
+                                <SingleCheckbox
+                                    prompt="Manual entry"
+                                    value={manualEntry}
+                                    setValue={setManualEntry}
+                                />
+                                <p className="-mt-1 text-xs leading-none text-black/60">
+                                    multiple toes per foot · edge cases only
+                                </p>
                             </div>
                             <div className="flex flex-row items-center ">
                                 {isRecapture ? (
