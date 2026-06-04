@@ -2,3 +2,69 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.toe-code-modal {
+    inset: 0;
+    align-items: stretch;
+    padding: 0;
+}
+
+.toe-code-modal__panel.modal-box {
+    width: 100%;
+    max-width: none;
+    height: 100vh;
+    height: 100dvh;
+    min-height: 0;
+    max-height: 100vh;
+    max-height: 100dvh;
+    margin: 0;
+    transform: none;
+    padding-top: calc(env(safe-area-inset-top, 0px) + 3.5rem);
+    padding-bottom: 0.5rem;
+    padding-bottom: max(0.5rem, env(safe-area-inset-bottom, 0px));
+    border: 0;
+    border-radius: 0;
+    overscroll-behavior: contain;
+}
+
+.toe-code-modal__close {
+    top: calc(env(safe-area-inset-top, 0px) + 0.5rem);
+    right: calc(env(safe-area-inset-right, 0px) + 0.5rem);
+}
+
+.toe-code-modal__status {
+    height: 4rem;
+    flex: none;
+}
+
+.toe-code-modal__image-region {
+    flex-basis: 8rem;
+}
+
+.toe-code-modal__image {
+    height: 100%;
+    max-height: 100%;
+}
+
+.toe-code-modal__code-row {
+    min-height: 3.5rem;
+    min-height: clamp(3.25rem, 7dvh, 3.5rem);
+}
+
+.toe-code-modal__compact-control {
+    flex-shrink: 0;
+    height: 2.75rem;
+    height: clamp(2.5rem, 6dvh, 2.75rem);
+}
+
+.toe-code-modal__standard-control {
+    flex-shrink: 0;
+    height: 3.5rem;
+    height: clamp(3rem, 7dvh, 3.5rem);
+}
+
+.toe-code-modal__key {
+    flex-shrink: 0;
+    height: 4rem;
+    height: clamp(3.25rem, 7.5dvh, 4rem);
+}

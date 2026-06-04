@@ -493,26 +493,26 @@ export default function ToeCodeInput({
           "
                 />
 
-                <motion.div className="modal z-40">
-                    <div className="modal-box relative flex min-h-screen max-h-screen w-11/12 max-w-sm flex-col items-center justify-start gap-1 overflow-y-auto border-2 border-asu-maroon bg-white px-2 pb-2 pt-14">
+                <motion.div className="toe-code-modal modal z-40">
+                    <div className="toe-code-modal__panel modal-box relative flex flex-col items-center justify-start gap-1 overflow-y-auto bg-white px-2">
                         <label
                             htmlFor="my-modal-4"
                             aria-label="Cancel toe-clip code entry"
-                            className="absolute right-2 top-2 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border-2 border-asu-maroon bg-white text-xl font-semibold leading-none text-asu-maroon active:scale-90"
+                            className="toe-code-modal__close absolute right-2 top-2 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border-2 border-asu-maroon bg-white text-xl font-semibold leading-none text-asu-maroon active:scale-90"
                             onClick={cancelToeCodeEntry}
                         >
                             X
                         </label>
-                        <div className="flex w-full flex-col items-center justify-center gap-1">
+                        <div className="flex min-h-0 w-full flex-1 flex-col items-center justify-center gap-1">
                             <div
                                 role="status"
                                 aria-live="polite"
-                                className={`order-1 flex h-16 w-full max-w-xs items-center justify-center rounded-lg border px-2 py-1 text-center text-sm leading-tight ${statusClassName}`}
+                                className={`toe-code-modal__status order-1 flex w-full max-w-xs items-center justify-center rounded-lg border px-2 py-1 text-center text-sm leading-tight ${statusClassName}`}
                             >
                                 {statusMessage}
                             </div>
                             <div className="order-3 w-full max-w-xs">
-                                <div className="grid min-h-14 w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-2">
+                                <div className="toe-code-modal__code-row grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-2">
                                     <div className="flex min-w-0 flex-col items-center text-center">
                                         <p className="text-xs leading-none text-black/60">
                                             Current toe-clip code
@@ -525,27 +525,27 @@ export default function ToeCodeInput({
                                         type="button"
                                         disabled={isRecapture}
                                         onClick={() => generateNewToeCode()}
-                                        className="h-11 rounded-lg bg-asu-maroon px-3 text-sm font-semibold leading-tight text-asu-gold transition active:scale-90 active:brightness-50 disabled:cursor-not-allowed disabled:opacity-40 disabled:active:scale-100"
+                                        className="toe-code-modal__compact-control rounded-lg bg-asu-maroon px-3 text-sm font-semibold leading-tight text-asu-gold transition active:scale-90 active:brightness-50 disabled:cursor-not-allowed disabled:opacity-40 disabled:active:scale-100"
                                     >
                                         Suggest Code
                                     </button>
                                 </div>
                             </div>
-                            <div className="order-2 flex w-full max-w-xs flex-col items-center">
+                            <div className="toe-code-modal__image-region order-2 flex min-h-0 w-full max-w-xs flex-1 flex-col items-center">
                                 <img
                                     src="./toe-clip-example-img.png"
                                     alt="example toe codes"
-                                    className="max-w-[28vh] object-contain"
+                                    className="toe-code-modal__image min-h-0 w-full flex-1 object-contain"
                                 />
                             </div>
                         </div>
-                        <div className="flex w-full flex-col items-center justify-center gap-1">
-                            <div className="mt-2 grid w-full max-w-xs grid-cols-[1fr_auto] gap-2">
+                        <div className="flex w-full flex-none flex-col items-center justify-center gap-1">
+                            <div className="mt-1 grid w-full max-w-xs grid-cols-[1fr_auto] gap-2">
                                 <button
                                     type="button"
                                     aria-pressed={isRecapture}
                                     onClick={() => setIsRecapture(!isRecapture)}
-                                    className={`flex h-14 min-w-0 items-center justify-between gap-2 rounded-lg border-2 border-asu-maroon px-3 text-left text-asu-maroon transition active:scale-[0.98] ${
+                                    className={`toe-code-modal__standard-control flex min-w-0 items-center justify-between gap-2 rounded-lg border-2 border-asu-maroon px-3 text-left text-asu-maroon transition active:scale-[0.98] ${
                                         isRecapture
                                             ? 'bg-asu-maroon/10'
                                             : 'bg-white hover:bg-asu-maroon/5'
@@ -566,7 +566,7 @@ export default function ToeCodeInput({
                                     type="button"
                                     disabled={!isRecapture || !isValid}
                                     onClick={() => findPreviousLizardEntries()}
-                                    className="h-14 w-24 rounded-lg border-2 border-asu-maroon bg-white px-2 text-sm leading-tight text-asu-maroon transition active:scale-90 active:brightness-90 disabled:cursor-not-allowed disabled:opacity-40 disabled:active:scale-100"
+                                    className="toe-code-modal__standard-control w-24 rounded-lg border-2 border-asu-maroon bg-white px-2 text-sm leading-tight text-asu-maroon transition active:scale-90 active:brightness-90 disabled:cursor-not-allowed disabled:opacity-40 disabled:active:scale-100"
                                 >
                                     {historyButtonText}
                                 </button>
@@ -575,7 +575,7 @@ export default function ToeCodeInput({
                                 type="button"
                                 aria-pressed={manualEntry}
                                 onClick={() => setManualEntry(!manualEntry)}
-                                className={`mt-3 flex h-11 w-full max-w-xs items-center justify-between rounded-lg border px-3 text-left transition active:scale-[0.98] ${
+                                className={`toe-code-modal__compact-control mt-1 flex w-full max-w-xs items-center justify-between rounded-lg border px-3 text-left transition active:scale-[0.98] ${
                                     manualEntry
                                         ? 'border-amber-500 bg-amber-50 text-amber-900'
                                         : 'border-black/20 bg-white text-black'
@@ -596,7 +596,7 @@ export default function ToeCodeInput({
                                     </span>
                                 </span>
                             </button>
-                            <div className="mt-3 grid w-full max-w-xs grid-cols-5 items-center gap-1">
+                            <div className="mt-2 grid w-full max-w-xs grid-cols-5 items-center gap-1">
                                 {footOptions.map((letter) => (
                                     <Button
                                         key={letter}
@@ -608,7 +608,7 @@ export default function ToeCodeInput({
                                 <button
                                     type="button"
                                     aria-label="Delete last toe-code character"
-                                    className="h-16 w-full rounded-xl bg-asu-maroon text-2xl text-asu-gold brightness-100 transition active:scale-90 active:brightness-50"
+                                    className="toe-code-modal__key w-full rounded-xl bg-asu-maroon text-2xl text-asu-gold brightness-100 transition active:scale-90 active:brightness-50"
                                     onClick={() => handleClick('backspace')}
                                 >
                                     <svg
@@ -637,12 +637,12 @@ export default function ToeCodeInput({
                                     />
                                 ))}
                             </div>
-                            <div className="mt-2 w-full max-w-xs">
+                            <div className="mt-1 w-full max-w-xs">
                                 <button
                                     type="button"
                                     disabled={!isValid}
                                     onClick={saveToeCodeEntry}
-                                    className="h-14 w-full rounded-xl bg-asu-maroon px-2 text-xl capitalize text-asu-gold transition active:scale-90 active:brightness-50 disabled:cursor-not-allowed disabled:opacity-40 disabled:active:scale-100"
+                                    className="toe-code-modal__standard-control w-full rounded-xl bg-asu-maroon px-2 text-xl capitalize text-asu-gold transition active:scale-90 active:brightness-50 disabled:cursor-not-allowed disabled:opacity-40 disabled:active:scale-100"
                                 >
                                     Save
                                 </button>
@@ -934,8 +934,8 @@ function Button({ prompt, handler, isSelected }) {
         <button
             className={
                 isSelected
-                    ? `h-16 w-full rounded-xl bg-asu-maroon text-2xl capitalize text-asu-gold brightness-50 transition active:scale-90 active:brightness-50`
-                    : `h-16 w-full rounded-xl bg-asu-maroon text-2xl capitalize text-asu-gold brightness-100 transition active:scale-90 active:brightness-50`
+                    ? `toe-code-modal__key w-full rounded-xl bg-asu-maroon text-2xl capitalize text-asu-gold brightness-50 transition active:scale-90 active:brightness-50`
+                    : `toe-code-modal__key w-full rounded-xl bg-asu-maroon text-2xl capitalize text-asu-gold brightness-100 transition active:scale-90 active:brightness-50`
             }
             onClick={handler}
         >
