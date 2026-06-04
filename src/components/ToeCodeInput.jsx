@@ -122,7 +122,9 @@ export default function ToeCodeInput({
     // reachable via manual entry; surfaced as a warning to catch data-entry typos.
     const footLetters = toeCode.match(/[A-D]/g) ?? [];
     const hasUnusualPattern = new Set(footLetters).size !== footLetters.length;
-    const statusMessage = isCheckingValidity
+    const statusMessage = !toeCode
+        ? 'Enter or suggest a toe-clip code.'
+        : isCheckingValidity
         ? 'Checking toe-clip code availability...'
         : errorMsg
         ? errorMsg
@@ -131,7 +133,9 @@ export default function ToeCodeInput({
         : isValid
         ? 'Toe-clip code is valid and ready to save.'
         : 'Enter or suggest a toe-clip code.';
-    const statusClassName = isCheckingValidity
+    const statusClassName = !toeCode
+        ? 'border-black/30 bg-black/5 text-black/70'
+        : isCheckingValidity
         ? 'border-black/30 bg-black/5 text-black/70'
         : errorMsg
         ? 'border-red-700 bg-red-50 text-red-800'
