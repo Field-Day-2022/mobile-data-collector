@@ -1,10 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAtomValue } from 'jotai';
 import { appMode, currentSessionData } from '../utils/jotai';
 import { db } from '../index';
 import { collection, getDocsFromCache, query, where } from 'firebase/firestore';
-import { motion, useAnimationControls, AnimatePresence } from 'framer-motion';
-import SingleCheckbox from './SingleCheckbox';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const footOptions = ['A', 'B', 'C', 'D'];
 const toeOptions = ['1', '2', '3', '4', '5'];
@@ -97,51 +96,23 @@ export default function ToeCodeInput({
     const [recaptureHistoryIsOpen, setRecaptureHistoryIsOpen] = useState(false);
     const [historyButtonText, setHistoryButtonText] = useState('History');
     const [previousLizardEntries, setPreviousLizardEntries] = useState([]);
+    const [toeCodeBeforeEdit, setToeCodeBeforeEdit] = useState(toeCode);
+    const [isRecaptureBeforeEdit, setIsRecaptureBeforeEdit] = useState(isRecapture);
     // Manual entry is an escape hatch for edge cases (e.g. natural toe loss) where
     // more than one toe is clipped on a single foot. Off by default so the strict
     // one-toe-per-foot keypad stays the norm (see WORK.md item 1).
     const [manualEntry, setManualEntry] = useState(false);
+    const [isCheckingValidity, setIsCheckingValidity] = useState(false);
 
-    // const recaptureHistoryControls = useAnimationControls();
-    // const recaptureHistoryContainerControls = useAnimationControls();
-    const errorMsgControls = useAnimationControls();
+    const modalToggleRef = useRef(null);
+    const validationRequestRef = useRef(0);
 
     const environment = useAtomValue(appMode);
 
     useEffect(() => {
         checkToeCodeValidity();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [toeCode, isRecapture, manualEntry]);
-
-    const errorMsgVariant = {
-        visible: {
-            y: '0',
-            scale: 1,
-            opacity: 1,
-            transition: {
-                duration: 0.5,
-                type: 'spring',
-            },
-        },
-        hidden: {
-            y: '-100%',
-            scale: 0,
-            opacity: 0,
-            transition: {
-                duration: 0.5,
-                type: 'spring',
-                delay: 2,
-            },
-        },
-    };
-
-    const triggerErrorMsgAnimation = async (msg) => {
-        setErrorMsg(msg);
-        errorMsgControls.set('hidden');
-        errorMsgControls.start('visible').then(() => {
-            errorMsgControls.start('hidden');
-        });
-    };
+    }, [toeCode, isRecapture, manualEntry, speciesCode]);
 
     // One letter+number pair per clipped toe. Default caps at 4 feet (8 chars);
     // manual entry allows extra toes per foot for natural-toe-loss edge cases.
@@ -151,6 +122,24 @@ export default function ToeCodeInput({
     // reachable via manual entry; surfaced as a warning to catch data-entry typos.
     const footLetters = toeCode.match(/[A-D]/g) ?? [];
     const hasUnusualPattern = new Set(footLetters).size !== footLetters.length;
+    const statusMessage = isCheckingValidity
+        ? 'Checking toe-clip code availability...'
+        : errorMsg
+        ? errorMsg
+        : hasUnusualPattern
+        ? 'Unusual pattern: more than one toe on a foot. Double-check this is intentional.'
+        : isValid
+        ? 'Toe-clip code is valid and ready to save.'
+        : 'Enter or suggest a toe-clip code.';
+    const statusClassName = isCheckingValidity
+        ? 'border-black/30 bg-black/5 text-black/70'
+        : errorMsg
+        ? 'border-red-700 bg-red-50 text-red-800'
+        : hasUnusualPattern
+        ? 'border-amber-400 bg-amber-50 text-amber-800'
+        : isValid
+        ? 'border-green-700 bg-green-50 text-green-800'
+        : 'border-black/30 bg-black/5 text-black/70';
 
     const formattedToeCodes = toeCode
         ? toeCode.split('').reduce((total, current, index, array) => {
@@ -162,9 +151,41 @@ export default function ToeCodeInput({
           })
         : 'EX: A1-B2-C3';
 
+    const resetSelected = () => {
+        setSelected({
+            a: false,
+            b: false,
+            c: false,
+            d: false,
+            1: false,
+            2: false,
+            3: false,
+            4: false,
+            5: false,
+        });
+    };
+
+    const handleToeCodeModalOpen = () => {
+        if (!speciesCode) return;
+        setToeCodeBeforeEdit(toeCode);
+        setIsRecaptureBeforeEdit(isRecapture);
+        modalToggleRef.current?.click();
+    };
+
+    const cancelToeCodeEntry = () => {
+        setToeCode(toeCodeBeforeEdit);
+        setIsRecapture(isRecaptureBeforeEdit);
+        resetSelected();
+        setErrorMsg();
+    };
+
+    const saveToeCodeEntry = () => {
+        if (isValid) modalToggleRef.current?.click();
+    };
+
     const generateNewToeCode = async () => {
         if (toeCode.includes('C4') || toeCode.includes('D4')) {
-            triggerErrorMsgAnimation('App does not generate toe clip codes with C4 or D4');
+            setErrorMsg('App does not generate toe clip codes with C4 or D4');
         }
         console.log(`Environment: ${environment}`);
         const collectionName =
@@ -201,17 +222,7 @@ export default function ToeCodeInput({
                 !toeCodesArray.includes(templateToeCode.primary) // it has not be already used
             ) {
                 setToeCode(templateToeCode.primary);
-                setSelected({
-                    a: false,
-                    b: false,
-                    c: false,
-                    d: false,
-                    1: false,
-                    2: false,
-                    3: false,
-                    4: false,
-                    5: false,
-                });
+                resetSelected();
                 return;
             }
         }
@@ -227,28 +238,29 @@ export default function ToeCodeInput({
                 !templateToeCode.primary.includes('D4')
             ) {
                 setToeCode(templateToeCode.primary);
-                setSelected({
-                    a: false,
-                    b: false,
-                    c: false,
-                    d: false,
-                    1: false,
-                    2: false,
-                    3: false,
-                    4: false,
-                    5: false,
-                });
+                resetSelected();
                 return;
             }
         }
     };
 
     const checkToeCodeValidity = async () => {
+        const validationRequestId = ++validationRequestRef.current;
+        if (!speciesCode) {
+            setIsCheckingValidity(false);
+            setIsValid(false);
+            setErrorMsg('Select a species before entering a toe-clip code');
+            return;
+        }
         const validationMessage = getToeCodeValidationMessage(toeCode, manualEntry);
         if (validationMessage) {
+            setIsCheckingValidity(false);
             setIsValid(false);
             setErrorMsg(validationMessage);
         } else {
+            setIsCheckingValidity(true);
+            setIsValid(false);
+            setErrorMsg();
             const canonicalToeCode = getCanonicalToeCode(toeCode);
             const collectionName =
                 environment === 'live'
@@ -261,12 +273,15 @@ export default function ToeCodeInput({
                     where('speciesCode', '==', speciesCode)
                 )
             );
+            if (validationRequestId !== validationRequestRef.current) return;
+            setIsCheckingValidity(false);
             const matchingLizardEntries = lizardSnapshot.docs.filter((document) => {
                 return getCanonicalToeCode(document.data().toeClipCode) === canonicalToeCode;
             });
             if (isRecapture) {
                 if (matchingLizardEntries.length > 0) {
                     setIsValid(true);
+                    setErrorMsg();
                 } else {
                     setErrorMsg(
                         'Toe Clip Code is not previously recorded, please uncheck the recapture box to record a new entry'
@@ -281,6 +296,7 @@ export default function ToeCodeInput({
                     setIsValid(false);
                 } else {
                     setIsValid(true);
+                    setErrorMsg();
                 }
             }
         }
@@ -290,42 +306,32 @@ export default function ToeCodeInput({
         if (source !== 'backspace' && toeCode.length < maxToeCodeLength) {
             if (Number(source)) {
                 if (toeCode.length === 0) {
-                    triggerErrorMsgAnimation('Error: Toe Clip Codes must begin with a letter');
+                    setErrorMsg('Toe Clip Codes must begin with a letter');
                     return;
                 }
                 if (!Number(toeCode.charAt(toeCode.length - 1))) {
                     const nextToeCode = `${toeCode}${source}`;
                     const validationMessage = getToeCodeValidationMessage(nextToeCode, manualEntry);
                     if (validationMessage) {
-                        triggerErrorMsgAnimation(validationMessage);
+                        setErrorMsg(validationMessage);
                         return;
                     }
                     setToeCode(nextToeCode);
-                    setSelected({
-                        a: false,
-                        b: false,
-                        c: false,
-                        d: false,
-                        1: false,
-                        2: false,
-                        3: false,
-                        4: false,
-                        5: false,
-                    });
+                    resetSelected();
                 }
             } else {
                 if (Number(toeCode.charAt(toeCode.length - 1)) || toeCode.length === 0) {
                     // console.log("letter pressed")
                     const previousLetter = toeCode.charAt(toeCode.length - 2);
                     if (toeCode.length >= 2 && source < previousLetter) {
-                        triggerErrorMsgAnimation('Error: Letters must be in alphabetical order');
+                        setErrorMsg('Letters must be in alphabetical order');
                         return;
                     }
                     // Repeating the previous letter clips another toe on the same foot.
                     // Blocked by default; allowed in manual entry for edge cases.
                     if (toeCode.length >= 2 && source === previousLetter && !manualEntry) {
-                        triggerErrorMsgAnimation(
-                            'Error: Can only clip one toe per foot. Enable Manual entry for multiple toes on one foot.'
+                        setErrorMsg(
+                            'Can only clip one toe per foot. Enable Manual entry for multiple toes on one foot.'
                         );
                         return;
                     }
@@ -334,9 +340,7 @@ export default function ToeCodeInput({
                         source === previousLetter &&
                         toeCode.charAt(toeCode.length - 1) === '5'
                     ) {
-                        triggerErrorMsgAnimation(
-                            'Error: No higher toe number is available on this foot'
-                        );
+                        setErrorMsg('No higher toe number is available on this foot');
                         return;
                     }
                     setToeCode(`${toeCode}${source}`);
@@ -345,17 +349,7 @@ export default function ToeCodeInput({
             }
         } else if (source === 'backspace') {
             setToeCode(toeCode.substring(0, toeCode.length - 1));
-            setSelected({
-                a: false,
-                b: false,
-                c: false,
-                d: false,
-                1: false,
-                2: false,
-                3: false,
-                4: false,
-                5: false,
-            });
+            resetSelected();
             if (!Number(toeCode.charAt(toeCode.length - 2)) && toeCode.charAt(toeCode.length - 2)) {
                 setSelected({ ...selected, [toeCode.charAt(toeCode.length - 2)]: true });
             }
@@ -475,14 +469,23 @@ export default function ToeCodeInput({
                     )}
                 </AnimatePresence>
 
-                <label
-                    htmlFor="my-modal-4"
-                    className="btn capitalize text-xl text-black bg-white border-asu-maroon border-2 font-normal hover:bg-white/50"
+                <button
+                    type="button"
+                    disabled={!speciesCode}
+                    title={!speciesCode ? 'Select a species before entering a toe-clip code' : ''}
+                    className="flex min-h-14 min-w-52 flex-col items-center justify-center rounded-lg border-2 border-asu-maroon bg-white px-4 py-2 text-black transition hover:bg-white/50 active:scale-95 disabled:cursor-not-allowed disabled:border-black/20 disabled:bg-black/5 disabled:text-black/60 disabled:hover:bg-black/5 disabled:active:scale-100"
+                    onClick={handleToeCodeModalOpen}
                 >
-                    {toeCode ? `Toe-Clip Code: ${toeCode}` : 'Toe-Clip Code'}
-                </label>
+                    <span className="text-xl leading-tight">
+                        {toeCode ? `Toe-Clip Code: ${toeCode}` : 'Toe-Clip Code'}
+                    </span>
+                    {!speciesCode && (
+                        <span className="text-xs leading-tight">Select species first</span>
+                    )}
+                </button>
 
                 <input
+                    ref={modalToggleRef}
                     type="checkbox"
                     id="my-modal-4"
                     className="
@@ -491,40 +494,109 @@ export default function ToeCodeInput({
                 />
 
                 <motion.div className="modal z-40">
-                    <div className="modal-box  w-11/12  max-w-sm bg-white border-asu-maroon border-2 flex flex-col items-center justify-between min-h-screen max-h-screen p-1">
-                        <div className="flex flex-col items-center justify-center">
-                            <div>
-                                <div className="flex flex-col">
-                                    <p className="text-sm">Toe-Clip Code:</p>
-                                    <p className="text-xl">{formattedToeCodes}</p>
-                                    {hasUnusualPattern && (
-                                        <div className="mt-1 flex max-w-[16rem] items-start gap-1 rounded-lg border border-amber-400 bg-amber-50 px-2 py-1">
-                                            <span className="text-sm leading-tight">⚠️</span>
-                                            <p className="text-xs leading-tight text-amber-800">
-                                                Unusual pattern: more than one toe on a foot.
-                                                Double-check this is intentional.
-                                            </p>
-                                        </div>
-                                    )}
+                    <div className="modal-box relative flex min-h-screen max-h-screen w-11/12 max-w-sm flex-col items-center justify-start gap-1 overflow-y-auto border-2 border-asu-maroon bg-white px-2 pb-2 pt-14">
+                        <label
+                            htmlFor="my-modal-4"
+                            aria-label="Cancel toe-clip code entry"
+                            className="absolute right-2 top-2 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border-2 border-asu-maroon bg-white text-xl font-semibold leading-none text-asu-maroon active:scale-90"
+                            onClick={cancelToeCodeEntry}
+                        >
+                            X
+                        </label>
+                        <div className="flex w-full flex-col items-center justify-center gap-1">
+                            <div
+                                role="status"
+                                aria-live="polite"
+                                className={`order-1 flex h-16 w-full max-w-xs items-center justify-center rounded-lg border px-2 py-1 text-center text-sm leading-tight ${statusClassName}`}
+                            >
+                                {statusMessage}
+                            </div>
+                            <div className="order-3 w-full max-w-xs">
+                                <div className="grid min-h-14 w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-2">
+                                    <div className="flex min-w-0 flex-col items-center text-center">
+                                        <p className="text-xs leading-none text-black/60">
+                                            Current toe-clip code
+                                        </p>
+                                        <p className="mt-2 min-w-0 break-words text-xl leading-tight">
+                                            {formattedToeCodes}
+                                        </p>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        disabled={isRecapture}
+                                        onClick={() => generateNewToeCode()}
+                                        className="h-11 rounded-lg bg-asu-maroon px-3 text-sm font-semibold leading-tight text-asu-gold transition active:scale-90 active:brightness-50 disabled:cursor-not-allowed disabled:opacity-40 disabled:active:scale-100"
+                                    >
+                                        Suggest Code
+                                    </button>
                                 </div>
                             </div>
-                            <div className="w-3/4 relative">
+                            <div className="order-2 flex w-full max-w-xs flex-col items-center">
                                 <img
                                     src="./toe-clip-example-img.png"
                                     alt="example toe codes"
-                                    className="w-full z-0"
+                                    className="max-w-[28vh] object-contain"
                                 />
-                                <div className="absolute bottom-0 w-1/2 right-0">
-                                    <SingleCheckbox
-                                        prompt="Is it a recapture?"
-                                        value={isRecapture}
-                                        setValue={setIsRecapture}
-                                    />
-                                </div>
                             </div>
                         </div>
-                        <div className="flex flex-col items-center justify-center">
-                            <div className="flex w-full justify-evenly items-center">
+                        <div className="flex w-full flex-col items-center justify-center gap-1">
+                            <div className="mt-2 grid w-full max-w-xs grid-cols-[1fr_auto] gap-2">
+                                <button
+                                    type="button"
+                                    aria-pressed={isRecapture}
+                                    onClick={() => setIsRecapture(!isRecapture)}
+                                    className={`flex h-14 min-w-0 items-center justify-between gap-2 rounded-lg border-2 border-asu-maroon px-3 text-left text-asu-maroon transition active:scale-[0.98] ${
+                                        isRecapture
+                                            ? 'bg-asu-maroon/10'
+                                            : 'bg-white hover:bg-asu-maroon/5'
+                                    }`}
+                                >
+                                    <span className="whitespace-nowrap text-sm leading-tight">
+                                        Capture type
+                                    </span>
+                                    <span
+                                        className={`rounded px-2 py-1 text-sm font-semibold leading-tight ${
+                                            isRecapture ? 'bg-white shadow-sm' : 'bg-asu-maroon/10'
+                                        }`}
+                                    >
+                                        {isRecapture ? 'Recapture' : 'New'}
+                                    </span>
+                                </button>
+                                <button
+                                    type="button"
+                                    disabled={!isRecapture || !isValid}
+                                    onClick={() => findPreviousLizardEntries()}
+                                    className="h-14 w-24 rounded-lg border-2 border-asu-maroon bg-white px-2 text-sm leading-tight text-asu-maroon transition active:scale-90 active:brightness-90 disabled:cursor-not-allowed disabled:opacity-40 disabled:active:scale-100"
+                                >
+                                    {historyButtonText}
+                                </button>
+                            </div>
+                            <button
+                                type="button"
+                                aria-pressed={manualEntry}
+                                onClick={() => setManualEntry(!manualEntry)}
+                                className={`mt-3 flex h-11 w-full max-w-xs items-center justify-between rounded-lg border px-3 text-left transition active:scale-[0.98] ${
+                                    manualEntry
+                                        ? 'border-amber-500 bg-amber-50 text-amber-900'
+                                        : 'border-black/20 bg-white text-black'
+                                }`}
+                            >
+                                <span className="text-sm leading-tight">
+                                    Multiple-toe exception
+                                </span>
+                                <span className="flex items-center gap-2">
+                                    <span
+                                        className={`rounded px-2 py-0.5 text-xs font-semibold ${
+                                            manualEntry
+                                                ? 'bg-amber-200 text-amber-900'
+                                                : 'bg-black/10 text-black/60'
+                                        }`}
+                                    >
+                                        {manualEntry ? 'On' : 'Off'}
+                                    </span>
+                                </span>
+                            </button>
+                            <div className="mt-3 grid w-full max-w-xs grid-cols-5 items-center gap-1">
                                 {footOptions.map((letter) => (
                                     <Button
                                         key={letter}
@@ -533,27 +605,29 @@ export default function ToeCodeInput({
                                         isSelected={selected[letter]}
                                     />
                                 ))}
-                                <div
-                                    className="bg-asu-maroon rounded-xl brightness-100 text-2xl  capitalize  text-asu-gold z-10 active:brightness-50 active:scale-90 transition"
+                                <button
+                                    type="button"
+                                    aria-label="Delete last toe-code character"
+                                    className="h-16 w-full rounded-xl bg-asu-maroon text-2xl text-asu-gold brightness-100 transition active:scale-90 active:brightness-50"
                                     onClick={() => handleClick('backspace')}
                                 >
                                     <svg
-                                        height="72"
-                                        width="50"
-                                        viewBox="0 0 500 500"
-                                        xmlns="http://www.w3.org/2000/svg"
+                                        aria-hidden="true"
+                                        className="mx-auto h-8 w-8"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="1.75"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
                                     >
-                                        <path
-                                            fillRule="nonzero"
-                                            d="M 355.684 68.486 C 359.156 65.197 359.172 59.835 355.716 56.523 C 352.273 53.211 346.62 53.197 343.159 56.493 L 144.317 244.006 C 140.845 247.295 140.828 252.657 144.284 255.969 L 343.159 443.513 C 346.631 446.802 352.26 446.787 355.716 443.475 C 359.172 440.163 359.156 434.809 355.684 431.52 L 163.201 250.003 L 355.684 68.486 Z"
-                                            fill="rgb(255, 198, 39)"
-                                            paintOrder="fill"
-                                            strokeMiterlimit={'11'}
-                                        />
+                                        <path d="M20 5H9l-7 7 7 7h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2Z" />
+                                        <path d="m18 9-6 6" />
+                                        <path d="m12 9 6 6" />
                                     </svg>
-                                </div>
+                                </button>
                             </div>
-                            <div className="flex mt-2 w-full justify-evenly">
+                            <div className="grid w-full max-w-xs grid-cols-5 items-center gap-1">
                                 {toeOptions.map((number) => (
                                     <Button
                                         key={number}
@@ -563,56 +637,18 @@ export default function ToeCodeInput({
                                     />
                                 ))}
                             </div>
-                            <div className="flex flex-col items-center">
-                                <SingleCheckbox
-                                    prompt="Manual entry"
-                                    value={manualEntry}
-                                    setValue={setManualEntry}
-                                />
-                                <p className="-mt-1 text-xs leading-none text-black/60">
-                                    multiple toes per foot · edge cases only
-                                </p>
-                            </div>
-                            <div className="flex flex-row items-center ">
-                                {isRecapture ? (
-                                    <Button
-                                        prompt={historyButtonText}
-                                        handler={() => {
-                                            findPreviousLizardEntries();
-                                        }}
-                                    />
-                                ) : (
-                                    <Button
-                                        prompt="Generate New"
-                                        handler={() => generateNewToeCode()}
-                                    />
-                                )}
+                            <div className="mt-2 w-full max-w-xs">
                                 <button
-                                    className={`bg-asu-maroon brightness-100 p-5 rounded-xl  text-2xl  capitalize  text-asu-gold z-10 m-1 active:brightness-50 active:scale-90 transition select-none`}
+                                    type="button"
+                                    disabled={!isValid}
+                                    onClick={saveToeCodeEntry}
+                                    className="h-14 w-full rounded-xl bg-asu-maroon px-2 text-xl capitalize text-asu-gold transition active:scale-90 active:brightness-50 disabled:cursor-not-allowed disabled:opacity-40 disabled:active:scale-100"
                                 >
-                                    {isValid ? (
-                                        <label htmlFor="my-modal-4">Close</label>
-                                    ) : (
-                                        <p onClick={() => triggerErrorMsgAnimation(errorMsg)}>
-                                            Close
-                                        </p>
-                                    )}
+                                    Save
                                 </button>
                             </div>
                         </div>
                     </div>
-                    <motion.div
-                        className="toast top-10 toast-top left-0 w-full"
-                        animate={errorMsgControls}
-                        variants={errorMsgVariant}
-                        initial="hidden"
-                    >
-                        <div className="alert bg-red-800 text-white text-xl">
-                            <div>
-                                <span>{errorMsg}</span>
-                            </div>
-                        </div>
-                    </motion.div>
                 </motion.div>
             </motion.div>
         </AnimatePresence>
@@ -898,8 +934,8 @@ function Button({ prompt, handler, isSelected }) {
         <button
             className={
                 isSelected
-                    ? `bg-asu-maroon brightness-50 p-5 rounded-xl  text-2xl  capitalize  text-asu-gold z-10 m-1 active:brightness-50 active:scale-90 transition select-none`
-                    : `bg-asu-maroon brightness-100 p-5 rounded-xl  text-2xl  capitalize  text-asu-gold z-10 m-1 active:brightness-50 active:scale-90 transition select-none`
+                    ? `h-16 w-full rounded-xl bg-asu-maroon text-2xl capitalize text-asu-gold brightness-50 transition active:scale-90 active:brightness-50`
+                    : `h-16 w-full rounded-xl bg-asu-maroon text-2xl capitalize text-asu-gold brightness-100 transition active:scale-90 active:brightness-50`
             }
             onClick={handler}
         >
