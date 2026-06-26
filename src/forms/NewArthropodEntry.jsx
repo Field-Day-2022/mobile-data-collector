@@ -164,6 +164,7 @@ export default function NewArthropodEntry() {
                     completeCapture={completeCapture}
                     setConfirmationModalIsOpen={setConfirmationModalIsOpen}
                     modalType="arthropod"
+                    resetFields={() => {}}
                 />
             )}
         </FormWrapper>
