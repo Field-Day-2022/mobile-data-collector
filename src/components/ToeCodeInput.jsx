@@ -38,7 +38,7 @@ const getCanonicalToeCode = (code) => {
         .join('');
 };
 
-const getToeCodeValidationMessage = (code, manualEntry) => {
+const getToeCodeValidationMessage = (code) => {
     if (code.length < 2) return 'Toe Clip Code needs to be at least 2 characters long';
     if (code.length % 2) return 'Toe Clip Code must have an even number of characters';
 
@@ -53,9 +53,6 @@ const getToeCodeValidationMessage = (code, manualEntry) => {
         }
         if (previousFoot && foot < previousFoot) {
             return 'Toe Clip Code letters must be in alphabetical order';
-        }
-        if (previousFoot === foot && !manualEntry) {
-            return 'Toe Clip Code can only include one toe per foot unless Manual entry is enabled';
         }
         if (clippedToes.has(pair)) {
             return 'Toe Clip Code cannot include the same toe twice';
@@ -98,11 +95,8 @@ export default function ToeCodeInput({
     const [previousLizardEntries, setPreviousLizardEntries] = useState([]);
     const [toeCodeBeforeEdit, setToeCodeBeforeEdit] = useState(toeCode);
     const [isRecaptureBeforeEdit, setIsRecaptureBeforeEdit] = useState(isRecapture);
-    // Manual entry is an escape hatch for edge cases (e.g. natural toe loss) where
-    // more than one toe is clipped on a single foot. Off by default so the strict
-    // one-toe-per-foot keypad stays the norm (see WORK.md item 1).
-    const [manualEntry, setManualEntry] = useState(false);
     const [isCheckingValidity, setIsCheckingValidity] = useState(false);
+    const [confirmUnusual, setConfirmUnusual] = useState(false);
 
     const modalToggleRef = useRef(null);
     const validationRequestRef = useRef(0);
@@ -112,24 +106,34 @@ export default function ToeCodeInput({
     useEffect(() => {
         checkToeCodeValidity();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [toeCode, isRecapture, manualEntry, speciesCode]);
+    }, [toeCode, isRecapture, speciesCode]);
 
-    // One letter+number pair per clipped toe. Default caps at 4 feet (8 chars);
-    // manual entry allows extra toes per foot for natural-toe-loss edge cases.
-    const maxToeCodeLength = manualEntry ? 16 : 8;
+    useEffect(() => {
+        setConfirmUnusual(false);
+    }, [toeCode]);
 
-    // An "unusual" pattern is the same foot (letter) clipped more than once. Only
-    // reachable via manual entry; surfaced as a warning to catch data-entry typos.
+    const maxToeCodeLength = 16;
+
     const footLetters = toeCode.match(/[A-D]/g) ?? [];
-    const hasUnusualPattern = new Set(footLetters).size !== footLetters.length;
+    const hasRepeatedFoot = new Set(footLetters).size !== footLetters.length;
+    const hasCriticalToe = toeCode.includes('C4') || toeCode.includes('D4');
+    const hasUnusualPattern = hasRepeatedFoot || hasCriticalToe;
+    const unusualPatternDetail =
+        hasRepeatedFoot && hasCriticalToe
+            ? 'more than one toe on a foot, and a C4/D4 toe that is important to survival'
+            : hasCriticalToe
+            ? 'a C4 or D4 toe, which is important to survival'
+            : 'more than one toe on a foot';
     const statusMessage = !toeCode
         ? 'Enter or suggest a toe-clip code.'
         : isCheckingValidity
         ? 'Checking toe-clip code availability...'
         : errorMsg
         ? errorMsg
+        : hasUnusualPattern && confirmUnusual
+        ? `Unusual pattern: ${unusualPatternDetail}. Press Save again to confirm.`
         : hasUnusualPattern
-        ? 'Unusual pattern: more than one toe on a foot. Double-check this is intentional.'
+        ? `Unusual pattern: ${unusualPatternDetail}. Double-check this is intentional.`
         : isValid
         ? 'Toe-clip code is valid and ready to save.'
         : 'Enter or suggest a toe-clip code.';
@@ -181,10 +185,16 @@ export default function ToeCodeInput({
         setIsRecapture(isRecaptureBeforeEdit);
         resetSelected();
         setErrorMsg();
+        setConfirmUnusual(false);
     };
 
     const saveToeCodeEntry = () => {
-        if (isValid) modalToggleRef.current?.click();
+        if (!isValid) return;
+        if (hasUnusualPattern && !confirmUnusual) {
+            setConfirmUnusual(true);
+            return;
+        }
+        modalToggleRef.current?.click();
     };
 
     const generateNewToeCode = async () => {
@@ -256,7 +266,7 @@ export default function ToeCodeInput({
             setErrorMsg('Select a species before entering a toe-clip code');
             return;
         }
-        const validationMessage = getToeCodeValidationMessage(toeCode, manualEntry);
+        const validationMessage = getToeCodeValidationMessage(toeCode);
         if (validationMessage) {
             setIsCheckingValidity(false);
             setIsValid(false);
@@ -315,7 +325,7 @@ export default function ToeCodeInput({
                 }
                 if (!Number(toeCode.charAt(toeCode.length - 1))) {
                     const nextToeCode = `${toeCode}${source}`;
-                    const validationMessage = getToeCodeValidationMessage(nextToeCode, manualEntry);
+                    const validationMessage = getToeCodeValidationMessage(nextToeCode);
                     if (validationMessage) {
                         setErrorMsg(validationMessage);
                         return;
@@ -329,14 +339,6 @@ export default function ToeCodeInput({
                     const previousLetter = toeCode.charAt(toeCode.length - 2);
                     if (toeCode.length >= 2 && source < previousLetter) {
                         setErrorMsg('Letters must be in alphabetical order');
-                        return;
-                    }
-                    // Repeating the previous letter clips another toe on the same foot.
-                    // Blocked by default; allowed in manual entry for edge cases.
-                    if (toeCode.length >= 2 && source === previousLetter && !manualEntry) {
-                        setErrorMsg(
-                            'Can only clip one toe per foot. Enable Manual entry for multiple toes on one foot.'
-                        );
                         return;
                     }
                     if (
@@ -537,8 +539,8 @@ export default function ToeCodeInput({
                             </div>
                             <div className="toe-code-modal__image-region order-2 flex min-h-0 w-full max-w-xs flex-1 flex-col items-center">
                                 <img
-                                    src="./toe-clip-example-img.png"
-                                    alt="example toe codes"
+                                    src="./toe-code-diagram.svg"
+                                    alt="Diagram showing a lizard with feed labeled A-D and toes labeled 1-5."
                                     className="toe-code-modal__image min-h-0 w-full flex-1 object-contain"
                                 />
                             </div>
@@ -575,31 +577,6 @@ export default function ToeCodeInput({
                                     {historyButtonText}
                                 </button>
                             </div>
-                            <button
-                                type="button"
-                                aria-pressed={manualEntry}
-                                onClick={() => setManualEntry(!manualEntry)}
-                                className={`toe-code-modal__compact-control mt-1 flex w-full max-w-xs items-center justify-between rounded-lg border px-3 text-left transition active:scale-[0.98] ${
-                                    manualEntry
-                                        ? 'border-amber-500 bg-amber-50 text-amber-900'
-                                        : 'border-black/20 bg-white text-black'
-                                }`}
-                            >
-                                <span className="text-sm leading-tight">
-                                    Multiple-toe exception
-                                </span>
-                                <span className="flex items-center gap-2">
-                                    <span
-                                        className={`rounded px-2 py-0.5 text-xs font-semibold ${
-                                            manualEntry
-                                                ? 'bg-amber-200 text-amber-900'
-                                                : 'bg-black/10 text-black/60'
-                                        }`}
-                                    >
-                                        {manualEntry ? 'On' : 'Off'}
-                                    </span>
-                                </span>
-                            </button>
                             <div className="mt-2 grid w-full max-w-xs grid-cols-5 items-center gap-1">
                                 {footOptions.map((letter) => (
                                     <Button
@@ -646,9 +623,15 @@ export default function ToeCodeInput({
                                     type="button"
                                     disabled={!isValid}
                                     onClick={saveToeCodeEntry}
-                                    className="toe-code-modal__standard-control w-full rounded-xl bg-asu-maroon px-2 text-xl capitalize text-asu-gold transition active:scale-90 active:brightness-50 disabled:cursor-not-allowed disabled:opacity-40 disabled:active:scale-100"
+                                    className={`toe-code-modal__standard-control w-full rounded-xl px-2 text-xl capitalize text-asu-gold transition active:scale-90 active:brightness-50 disabled:cursor-not-allowed disabled:opacity-40 disabled:active:scale-100 ${
+                                        hasUnusualPattern && confirmUnusual
+                                            ? 'bg-amber-900'
+                                            : 'bg-asu-maroon'
+                                    }`}
                                 >
-                                    Save
+                                    {hasUnusualPattern && confirmUnusual
+                                        ? 'Confirm unusual code'
+                                        : 'Save'}
                                 </button>
                             </div>
                         </div>
