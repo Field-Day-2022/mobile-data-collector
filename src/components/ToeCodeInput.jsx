@@ -521,22 +521,24 @@ export default function ToeCodeInput({
 
                 <motion.div className="toe-code-modal modal z-40">
                     <div className="toe-code-modal__panel modal-box relative flex flex-col items-center justify-start gap-1 overflow-y-auto bg-white px-2">
-                        <label
-                            htmlFor="my-modal-4"
-                            aria-label="Cancel toe-clip code entry"
-                            className="toe-code-modal__close absolute right-2 top-2 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border-2 border-asu-maroon bg-white text-xl font-semibold leading-none text-asu-maroon active:scale-90"
-                            onClick={cancelToeCodeEntry}
-                        >
-                            X
-                        </label>
-                        <div className="flex min-h-0 w-full flex-1 flex-col items-center justify-center gap-1">
+                        <div className="flex w-full max-w-xs items-center gap-2">
                             <div
                                 role="status"
                                 aria-live="polite"
-                                className={`toe-code-modal__status order-1 flex w-full max-w-xs items-center justify-center rounded-lg border px-2 py-1 text-center text-sm leading-tight ${statusClassName}`}
+                                className={`toe-code-modal__status flex flex-1 items-center justify-center rounded-lg border px-2 py-1 text-center text-sm leading-tight ${statusClassName}`}
                             >
                                 {statusMessage}
                             </div>
+                            <label
+                                htmlFor="my-modal-4"
+                                aria-label="Cancel toe-clip code entry"
+                                className="toe-code-modal__close flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full border-2 border-asu-maroon bg-white text-xl font-semibold leading-none text-asu-maroon active:scale-90"
+                                onClick={cancelToeCodeEntry}
+                            >
+                                X
+                            </label>
+                        </div>
+                        <div className="flex min-h-0 w-full flex-1 flex-col items-center justify-center gap-1">
                             <div className="order-3 w-full max-w-xs">
                                 <div className="toe-code-modal__code-row grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-2">
                                     <div className="flex min-w-0 flex-col items-center text-center">
