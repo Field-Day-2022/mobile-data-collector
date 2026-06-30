@@ -19,7 +19,7 @@
     max-height: 100dvh;
     margin: 0;
     transform: none;
-    padding-top: calc(env(safe-area-inset-top, 0px) + 3.5rem);
+    padding-top: calc(env(safe-area-inset-top, 0px) + 0.5rem);
     padding-bottom: 0.5rem;
     padding-bottom: max(0.5rem, env(safe-area-inset-bottom, 0px));
     border: 0;
@@ -27,14 +27,8 @@
     overscroll-behavior: contain;
 }
 
-.toe-code-modal__close {
-    top: calc(env(safe-area-inset-top, 0px) + 0.5rem);
-    right: calc(env(safe-area-inset-right, 0px) + 0.5rem);
-}
-
 .toe-code-modal__status {
     height: 4rem;
-    flex: none;
 }
 
 .toe-code-modal__image-region {
