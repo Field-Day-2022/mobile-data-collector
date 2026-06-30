@@ -97,19 +97,35 @@ export default function ToeCodeInput({
     const [isRecaptureBeforeEdit, setIsRecaptureBeforeEdit] = useState(isRecapture);
     const [isCheckingValidity, setIsCheckingValidity] = useState(false);
     const [confirmUnusual, setConfirmUnusual] = useState(false);
+    // Fleeting feedback for keypresses we block (e.g. out-of-order letters). Kept
+    // separate from errorMsg so a rejected press—which doesn't change the code—
+    // can't leave behind a stale message that misdescribes the current code.
+    const [keypadHint, setKeypadHint] = useState('');
 
     const modalToggleRef = useRef(null);
     const validationRequestRef = useRef(0);
+    const keypadHintTimerRef = useRef(null);
 
     const environment = useAtomValue(appMode);
+
+    const showKeypadHint = (message) => {
+        setKeypadHint(message);
+        clearTimeout(keypadHintTimerRef.current);
+        keypadHintTimerRef.current = setTimeout(() => setKeypadHint(''), 1800);
+    };
 
     useEffect(() => {
         checkToeCodeValidity();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [toeCode, isRecapture, speciesCode]);
 
+    useEffect(() => () => clearTimeout(keypadHintTimerRef.current), []);
+
     useEffect(() => {
         setConfirmUnusual(false);
+        // A successful press changed the code, so any rejection hint is now stale.
+        setKeypadHint('');
+        clearTimeout(keypadHintTimerRef.current);
     }, [toeCode]);
 
     const maxToeCodeLength = 16;
@@ -124,7 +140,9 @@ export default function ToeCodeInput({
             : hasCriticalToe
             ? 'a C4 or D4 toe, which is important to survival'
             : 'more than one toe on a foot';
-    const statusMessage = !toeCode
+    const statusMessage = keypadHint
+        ? keypadHint
+        : !toeCode
         ? 'Enter or suggest a toe-clip code.'
         : isCheckingValidity
         ? 'Checking toe-clip code availability...'
@@ -137,7 +155,9 @@ export default function ToeCodeInput({
         : isValid
         ? 'Toe-clip code is valid and ready to save.'
         : 'Enter or suggest a toe-clip code.';
-    const statusClassName = !toeCode
+    const statusClassName = keypadHint
+        ? 'border-red-700 bg-red-50 text-red-800'
+        : !toeCode
         ? 'border-black/30 bg-black/5 text-black/70'
         : isCheckingValidity
         ? 'border-black/30 bg-black/5 text-black/70'
@@ -320,14 +340,14 @@ export default function ToeCodeInput({
         if (source !== 'backspace' && toeCode.length < maxToeCodeLength) {
             if (Number(source)) {
                 if (toeCode.length === 0) {
-                    setErrorMsg('Toe Clip Codes must begin with a letter');
+                    showKeypadHint('Toe Clip Codes must begin with a letter');
                     return;
                 }
                 if (!Number(toeCode.charAt(toeCode.length - 1))) {
                     const nextToeCode = `${toeCode}${source}`;
                     const validationMessage = getToeCodeValidationMessage(nextToeCode);
                     if (validationMessage) {
-                        setErrorMsg(validationMessage);
+                        showKeypadHint(validationMessage);
                         return;
                     }
                     setToeCode(nextToeCode);
@@ -338,7 +358,7 @@ export default function ToeCodeInput({
                     // console.log("letter pressed")
                     const previousLetter = toeCode.charAt(toeCode.length - 2);
                     if (toeCode.length >= 2 && source < previousLetter) {
-                        setErrorMsg('Letters must be in alphabetical order');
+                        showKeypadHint('Letters must be in alphabetical order');
                         return;
                     }
                     if (
@@ -346,7 +366,7 @@ export default function ToeCodeInput({
                         source === previousLetter &&
                         toeCode.charAt(toeCode.length - 1) === '5'
                     ) {
-                        setErrorMsg('No higher toe number is available on this foot');
+                        showKeypadHint('No higher toe number is available on this foot');
                         return;
                     }
                     setToeCode(`${toeCode}${source}`);
